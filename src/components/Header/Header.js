@@ -4,7 +4,7 @@ import logoSrc from '../../assets/clickapea_logo_800_2400.png';
 import './Header.css';
 
 const Header = () => {
-  const { isAuthenticated, user, logout } = useContext(AuthContext);
+  const { isAuthenticated, user, login, logout } = useContext(AuthContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -48,7 +48,7 @@ const Header = () => {
         </div>
       ) : (
         <button 
-          onClick={() => alert('Please log in')}
+          onClick={login}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-auto">
           Login
         </button>
