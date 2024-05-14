@@ -1,0 +1,187 @@
+{
+    "author": "Phil &amp; Sonja",
+    "equipment": [
+      "wooden spoon",
+      "oven",
+      "whisk",
+      "mixing bowl",
+      "stand mixer",
+      "rolling pin",
+      "bowl"
+    ],
+    "host": "scottishscran.com",
+    "image": "https://scottishscran.com/wp-content/uploads/2022/05/Scottish-Morning-Rolls-Recipe-10-720x720.jpg",
+    "ingredients": [
+      {
+        "amount": [
+          {
+            "confidence": 0.999591,
+            "quantity": 650.0,
+            "text": "650 g",
+            "unit": "gram"
+          },
+          {
+            "confidence": 0.997646,
+            "quantity": 5.0,
+            "text": "5 cups",
+            "unit": "cup"
+          }
+        ],
+        "comment": null,
+        "name": "strong white flour",
+        "name_confidence": 0.99754,
+        "preparation": null,
+        "preparation_confidence": null,
+        "sentence": "650g strong white flour (5 cups)"
+      },
+      {
+        "amount": [
+          {
+            "confidence": 0.99981,
+            "quantity": 1.5,
+            "text": "1.5 tsps",
+            "unit": "teaspoon"
+          }
+        ],
+        "comment": null,
+        "name": "salt",
+        "name_confidence": 0.998129,
+        "preparation": null,
+        "preparation_confidence": null,
+        "sentence": "1 ½ tsp salt"
+      },
+      {
+        "amount": [
+          {
+            "confidence": 0.978712,
+            "quantity": 400.0,
+            "text": "400 ml",
+            "unit": "milliliter"
+          },
+          {
+            "confidence": 0.997274,
+            "quantity": 1.667,
+            "text": "1.667 cups",
+            "unit": "cup"
+          }
+        ],
+        "comment": {
+          "confidence": 0.997835,
+          "text": "(between 37-43 degrees Celsius - make sure the water isn’t too hot or it will kill the yeast)"
+        },
+        "name": "water",
+        "name_confidence": 0.944545,
+        "preparation": "lukewarm",
+        "preparation_confidence": 0.86244,
+        "sentence": "400ml lukewarm water (between 37-43 degrees Celsius – make sure the water isn’t too hot or it will kill the yeast) (1 2/3 cups)"
+      },
+      {
+        "amount": [
+          {
+            "confidence": 0.9996,
+            "quantity": 1.5,
+            "text": "1.5 tsps",
+            "unit": "teaspoon"
+          }
+        ],
+        "comment": null,
+        "name": "caster sugar",
+        "name_confidence": 0.999283,
+        "preparation": null,
+        "preparation_confidence": null,
+        "sentence": "1 ½ tsp caster sugar"
+      },
+      {
+        "amount": [
+          {
+            "confidence": 0.999413,
+            "quantity": 7.0,
+            "text": "7 g",
+            "unit": "gram"
+          }
+        ],
+        "comment": null,
+        "name": "dried instant yeast",
+        "name_confidence": 0.994381,
+        "preparation": null,
+        "preparation_confidence": null,
+        "sentence": "7g dried instant yeast"
+      },
+      {
+        "amount": [
+          {
+            "confidence": 0.99915,
+            "quantity": 40.0,
+            "text": "40 g",
+            "unit": "gram"
+          },
+          {
+            "confidence": 0.91009,
+            "quantity": 3.0,
+            "text": "3 tbsps",
+            "unit": "tablespoon"
+          }
+        ],
+        "comment": {
+          "confidence": 0.91885,
+          "text": "cold"
+        },
+        "name": "lard",
+        "name_confidence": 0.998401,
+        "preparation": "chopped",
+        "preparation_confidence": 0.992025,
+        "sentence": "40g lard (cold, chopped) (3 tbsp)"
+      },
+      {
+        "amount": [
+          
+        ],
+        "comment": {
+          "confidence": 0.941111,
+          "text": "to dust"
+        },
+        "name": "Rice flour",
+        "name_confidence": 0.99476,
+        "preparation": null,
+        "preparation_confidence": null,
+        "sentence": "Rice flour to dust"
+      }
+    ],
+    "instructions": [
+      "Add the sugar to the warm water and stir until dissolved.",
+      "Add the yeast and stir again to combine. Set aside.",
+      "In the bowl of an electric stand mixer, whisk together the flour and salt.",
+      "Rub the lard into the flour mixture.",
+      "Make a well in the centre of the flour mixture and pour in the yeast mixture.",
+      "Stir with a wooden spoon until it starts to come together into a dough.",
+      "Using a dough hook attachment on your mixer, mix the dough on a medium speed for 10 minutes. You can also knead by hand if preferred but make sure to do so for the full 10 minutes to get it nice and elastic.",
+      "Sprinkle your work surface with a little rice flour. Turn the dough out onto the surface and shape into a ball with your hands.",
+      "Lightly grease a large mixing bowl with a little oil and place in the dough. Cover loosely with cling film or a tea towel and leave in a warm place (around 25 degrees C is ideal) to proof for 1 to 1 ½ hours, or until roughly doubled in size.",
+      "Turn out the dough onto your floured work surface and squash it down flat with your hands to knock out the gas. Then roughly roll it up into a sausage shape to make it easier to cut into pieces.",
+      "For perfectly even rolls, you can weigh the dough and divide it by the number of rolls you’d like to make. The mixture will make 9-12 depending on the size of the rolls and your baking tray. Cut the dough into your sections and shape these into balls by rolling them with your hands.",
+      "Dust the top of each roll with a little rice flour.",
+      "Using your hands or a rolling pin, squash the rolls down into slightly flattened disks. They will rise back up again during the second proof.",
+      "Line a large oven tray with baking paper. Place the rolls inside. Make sure they are touching to get that pull-apart effect.",
+      "Cover the tray loosely with cling film or a tea towel and leave in a warm place to proof for another 1 to 1 ½ hours or until nicely plump and risen. About 15 minutes before your proofing time is up, preheat the oven to 230C.",
+      "Bake the rolls for 15 minutes or until golden all over the top.",
+      "Use the baking paper to lift the rolls out onto a cooling rack. Allow them to cool for 15 minutes or so before pulling apart."
+    ],
+    "nutrients": {
+      "calories": "279 calories",
+      "carbohydrateContent": "53 grams carbohydrates",
+      "cholesterolContent": "3 milligrams cholesterol",
+      "fatContent": "4 grams fat",
+      "fiberContent": "2 grams fiber",
+      "proteinContent": "7 grams protein",
+      "saturatedFatContent": "1 grams saturated fat",
+      "servingSize": "1",
+      "sodiumContent": "293 milligrams sodium",
+      "sugarContent": "1 grams sugar",
+      "transFatContent": "0 grams trans fat",
+      "unsaturatedFatContent": "2 grams unsaturated fat"
+    },
+    "title": "Scottish Morning Rolls Recipe",
+    "total_time": 235,
+    "yields": "9 servings"
+  }
+  

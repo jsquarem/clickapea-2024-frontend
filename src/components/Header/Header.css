@@ -1,0 +1,12 @@
+.header {
+    background-color: #a3e4d7;
+    display: flex;
+    align-items: center;
+    padding-left: 1rem;
+  }
+  
+  .logo {
+    height: 8rem; /* 32px */
+    margin-right: 1rem;
+  }
+  
