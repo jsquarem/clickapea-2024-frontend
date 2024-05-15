@@ -1,50 +1,92 @@
 import React from 'react';
 import './Ingredients.css';
-import { formatAmount, convertToMetric, convertToImperial } from '../../utils/conversionUtils';
+
+const fractionMap = {
+  "0.125": "1/8",
+  "0.167": "1/6",
+  "0.25": "1/4",
+  "0.333": "1/3",
+  "0.375": "3/8",
+  "0.5": "1/2",
+  "0.625": "5/8",
+  "0.667": "2/3",
+  "0.75": "3/4",
+  "0.833": "5/6",
+  "0.875": "7/8"
+};
+
+const decimalToFraction = (decimal) => {
+  if (decimal === 0) return '0';
+  if (decimal === 1) return '1';
+
+  const tolerance = 0.01; // Increased tolerance for better rounding
+  for (let key in fractionMap) {
+    if (Math.abs(decimal - parseFloat(key)) < tolerance) {
+      return fractionMap[key];
+    }
+  }
+
+  const gcd = (a, b) => b ? gcd(b, a % b) : a;
+  let h1 = 1, h2 = 0, k1 = 0, k2 = 1, b = decimal;
+  do {
+    let a = Math.floor(b);
+    let aux = h1; h1 = a * h1 + h2; h2 = aux;
+    aux = k1; k1 = a * k1 + k2; k2 = aux;
+    b = 1 / (b - a);
+  } while (Math.abs(decimal - h1 / k1) > decimal * tolerance);
+
+  let numerator = h1;
+  let denominator = k1;
+
+  const commonDivisor = gcd(numerator, denominator);
+  numerator /= commonDivisor;
+  denominator /= commonDivisor;
+
+  if (denominator === 1) {
+    return `${numerator}`;
+  }
+
+  if (numerator > denominator) {
+    const wholeNumber = Math.floor(numerator / denominator);
+    const remainder = numerator % denominator;
+    if (remainder === 0) {
+      return `${wholeNumber}`;
+    } else {
+      return `${wholeNumber} ${remainder}/${denominator}`;
+    }
+  }
+
+  return `${numerator}/${denominator}`;
+};
 
 const Ingredients = ({ ingredients, isMetric }) => (
   <ul id="ingredients-list" className="list-disc list-inside mb-4">
     {ingredients.map((ingredient, index) => {
-      if (ingredient.amount.length === 0) {
-        // Handle ingredients with no amount
-        return (
-          <li key={index}>
-            {`${ingredient.name}`}
-          </li>
-        );
+      const amount = isMetric ? ingredient.metric : ingredient.imperial;
+      const other = ingredient.other;
+
+      let displayAmount;
+      if (amount && amount.quantity) {
+        const roundedQuantity = Math.round(amount.quantity * 100) / 100;
+        displayAmount = isMetric 
+          ? `${roundedQuantity} ${amount.unit}` 
+          : `${decimalToFraction(roundedQuantity)} ${amount.unit}`;
+      } else if (other && other.quantity) {
+        const roundedQuantity = Math.round(other.quantity * 100) / 100;
+        displayAmount = isMetric 
+          ? `${roundedQuantity} ${other.unit}` 
+          : `${decimalToFraction(roundedQuantity)} ${other.unit}`;
+      } else {
+        displayAmount = '';
       }
 
-      if (ingredient.amount.length === 1) {
-        // If there's only one version of the ingredient, display it as is.
-        const amountText = formatAmount(ingredient.amount[0], isMetric);
-        return (
-          <li key={index}>
-            {`${amountText} ${ingredient.name}`}
-          </li>
-        );
-      }
-
-      // If there are multiple versions, choose based on the unit type.
-      const amount = ingredient.amount.find(a =>
-        isMetric ? isMetricUnit(a.unit) : isImperialUnit(a.unit)
-      ) || (isMetric ? convertToMetric(ingredient.amount[0].quantity, ingredient.amount[0].unit) : convertToImperial(ingredient.amount[0].quantity, ingredient.amount[0].unit));
-
-      const amountText = amount ? formatAmount(amount, isMetric) : '';
       return (
         <li key={index}>
-          {amount ? `${amountText} ${ingredient.name}` : `${ingredient.name}`}
+          {displayAmount} {ingredient.name}
         </li>
       );
     })}
   </ul>
 );
-
-const isMetricUnit = (unit) => {
-  return unit === 'gram' || unit === 'milliliter';
-};
-
-const isImperialUnit = (unit) => {
-  return unit === 'cup' || unit === 'teaspoon' || unit === 'tablespoon' || unit === 'ounce' || unit === 'fluid ounce';
-};
 
 export default Ingredients;

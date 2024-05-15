@@ -1,13 +1,26 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import AuthContext from '../../AuthContext';
 
-const AddToProfileButton = () => {
-  const { isAuthenticated, login } = useContext(AuthContext);
-  const [categories, setCategories] = useState(["Breakfast", "Lunch", "Dinner"]); // Fake data for categories
+const AddToProfileButton = ({ recipeId }) => {
+  const { isAuthenticated, login, user } = useContext(AuthContext);
+  const [categories, setCategories] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [addingCategory, setAddingCategory] = useState(false);
   const [newCategory, setNewCategory] = useState('');
+  const [successfulCategories, setSuccessfulCategories] = useState([]);
   const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (user) {
+      fetch(`${process.env.REACT_APP_API_URL}/api/categories?userId=${user._id}`)
+        .then(res => res.json())
+        .then(data => {
+          setCategories(data);
+          const successCategories = data.filter(category => category.recipes.includes(recipeId)).map(category => category._id);
+          setSuccessfulCategories(successCategories);
+        });
+    }
+  }, [user, recipeId]);
 
   const handleButtonClick = () => {
     setShowDropdown(!showDropdown);
@@ -24,9 +37,19 @@ const AddToProfileButton = () => {
 
   const handleSaveCategory = () => {
     if (newCategory.trim() !== '') {
-      setCategories([...categories, newCategory]);
-      setNewCategory('');
-      setAddingCategory(false);
+      fetch(`${process.env.REACT_APP_API_URL}/api/categories`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: newCategory, user: user._id })
+      })
+        .then(res => res.json())
+        .then(data => setCategories([...categories, data]))
+        .finally(() => {
+          setNewCategory('');
+          setAddingCategory(false);
+        });
     }
   };
 
@@ -35,19 +58,39 @@ const AddToProfileButton = () => {
     setAddingCategory(false);
   };
 
+  const handleCategoryClick = (categoryId, recipeId) => {
+    fetch(`${process.env.REACT_APP_API_URL}/api/categories/${categoryId}/recipes/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ recipeId })
+    })
+      .then(res => res.json())
+      .then(() => {
+        setSuccessfulCategories([...successfulCategories, categoryId]);
+        setTimeout(() => {
+          setShowDropdown(false);
+        }, 2000); // Delay closing by 2 seconds
+      });
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !dropdownRef.current.contains(event.relatedTarget)) {
         setShowDropdown(false);
         setAddingCategory(false);
       }
     };
-
+  
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [dropdownRef]);
+  
+
+  console.log(recipeId, '<-recipeId');
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -66,26 +109,25 @@ const AddToProfileButton = () => {
             </button>
           ) : (
             <>
-              {categories.length > 0 ? (
-                <>
-                  <ul>
-                    {categories.map((category, index) => (
-                      <li key={index} className="mb-2">{category}</li>
-                    ))}
-                  </ul>
+              <ul>
+              {categories.map((category, index) => (
+                <li key={index} className="mb-2">
                   <button 
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mt-2 w-full"
-                    onClick={handleAddCategoryClick}>
-                    Add New Category
+                    onClick={() => handleCategoryClick(category._id, recipeId)} 
+                    className={`flex justify-between items-center w-full text-left hover:bg-gray-200 p-2 rounded ${successfulCategories.includes(category._id) ? 'bg-green-100' : ''}`}>
+                    {category.name}
+                    {successfulCategories.includes(category._id) && (
+                      <i className="fas fa-check text-green-500"></i>
+                    )}
                   </button>
-                </>
-              ) : (
-                <button 
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded w-full"
-                  onClick={handleAddCategoryClick}>
-                  Add New Category
-                </button>
-              )}
+                </li>
+              ))}
+              </ul>
+              <button 
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mt-2 w-full"
+                onClick={handleAddCategoryClick}>
+                Add New Category
+              </button>
               {addingCategory && (
                 <div className="mt-2">
                   <input 

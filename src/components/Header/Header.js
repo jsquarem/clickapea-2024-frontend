@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import AuthContext from '../../AuthContext';
 import logoSrc from '../../assets/clickapea_logo_800_2400.png';
 import './Header.css';
@@ -26,10 +27,16 @@ const Header = () => {
   }, [dropdownRef]);
 
   return (
-    <header className="bg-green-200 flex items-center pl-4 relative">
+    <header className="bg-green-200 flex items-center pl-4 relative pr-8">
       <img src={logoSrc} alt="Clickapea Logo" className="h-32 mr-4" />
+        <Link 
+          to="/add-recipe" 
+          className="text-green-500 hover:text-green-700 font-bold mr-4"
+        >
+          <i class="fa-solid fa-utensils"></i> Add Recipe
+        </Link>
       {isAuthenticated && user ? (
-        <div className="relative ml-auto pr-8" ref={dropdownRef}>
+        <div className="relative ml-auto flex items-center pr-8" ref={dropdownRef}>
           <img
             src={user.picture}
             alt="Profile"
@@ -39,9 +46,9 @@ const Header = () => {
           {showDropdown && (
             <div className="absolute top-full mt-2 right-0 bg-white border rounded shadow-lg p-4 z-10">
               <button 
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+                className="bg-red-300 hover:bg-red-500 text-white font-bold py-2 px-8 rounded w-full"
                 onClick={logout}>
-                Logout
+                <i className="fa-solid fa-right-from-bracket"></i> Logout
               </button>
             </div>
           )}
@@ -49,8 +56,8 @@ const Header = () => {
       ) : (
         <button 
           onClick={login}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-auto">
-          Login
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-auto pr">
+          <i class="fa-regular fa-user"></i> Login
         </button>
       )}
     </header>

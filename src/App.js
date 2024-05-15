@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { useGoogleLogin } from '@react-oauth/google';
 import AuthContext, { AuthProvider } from './AuthContext';
 import RecipePage from './pages/RecipePage/RecipePage';
+import AddRecipePage from './pages/AddRecipePage/AddRecipePage';
 import Protected from './Protected';
 import Header from './components/Header/Header';
 import './App.css';
@@ -52,6 +53,8 @@ const App = () => {
                 />
                 <Routes>
                     <Route path="/" element={<RecipePage />} />
+                    <Route path="/recipe/:id" element={<RecipePage />} />
+                    <Route path="/add-recipe" element={<AddRecipePage />} />
                     <Route path="/protected" element={
                         isAuthenticated ? <Protected /> : <Navigate to="/" />
                     } />

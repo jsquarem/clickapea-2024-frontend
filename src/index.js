@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import AppWrapper from './App';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import './index.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
