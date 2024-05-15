@@ -12,8 +12,8 @@ const DraggableRecipe = ({ recipe, index }) => {
           {...provided.dragHandleProps}
           className={`relative w-48 transition-opacity duration-200 ${snapshot.isDragging ? 'opacity-50' : 'opacity-100'}`}
         >
-          <div className="absolute top-1 left-1 bg-gray-700 p-1 rounded z-10">
-            <i className="fas fa-grip-lines text-white"></i>
+          <div className="absolute top-1 left-1 bg-gray-600 opacity-90 p-1 rounded z-10">
+            <i className="fas fa-grip-vertical text-white"></i>
           </div>
           <Link to={`/recipe/${recipe.id}`}>
             <div

@@ -3,24 +3,19 @@ import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import AuthContext from '../../AuthContext';
 import DraggableCategory from '../../components/DraggableCategory/DraggableCategory';
 import FlipMove from 'react-flip-move';
+import {
+  fetchCategories,
+  reorderRecipes,
+  moveRecipe,
+  addCategory,
+  deleteCategory,
+} from '../../api';
 import './CategoryPage.css';
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
-  return result;
-};
-
-const move = (source, destination, droppableSource, droppableDestination) => {
-  const sourceClone = Array.from(source);
-  const destClone = Array.from(destination);
-  const [removed] = sourceClone.splice(droppableSource.index, 1);
-  destClone.splice(droppableDestination.index, 0, removed);
-
-  const result = {};
-  result[droppableSource.droppableId] = sourceClone;
-  result[droppableDestination.droppableId] = destClone;
   return result;
 };
 
@@ -31,15 +26,12 @@ const CategoryPage = () => {
   const [categoryOrder, setCategoryOrder] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      fetch(
-        `${process.env.REACT_APP_API_URL}/api/categories/recipes?userId=${user._id}`
-      )
-        .then((res) => res.json())
+      fetchCategories(user._id)
         .then((data) => {
-          console.log('Fetched data:', data);
           if (
             data.categories &&
             data.categories.recipes &&
@@ -60,21 +52,14 @@ const CategoryPage = () => {
     }
   }, [isAuthenticated, user]);
 
-  const onDragEnd = (result) => {
+  const onDragEnd = async (result) => {
     const { source, destination, type } = result;
 
     if (!destination) {
       return;
     }
 
-    if (type === 'CATEGORY') {
-      const newCategoryOrder = reorder(
-        categoryOrder,
-        source.index,
-        destination.index
-      );
-      setCategoryOrder(newCategoryOrder);
-    } else {
+    if (type === 'RECIPE') {
       const start = categories[source.droppableId];
       const finish = categories[destination.droppableId];
 
@@ -93,6 +78,12 @@ const CategoryPage = () => {
           ...categories,
           [newCategory.id]: newCategory,
         });
+
+        try {
+          await reorderRecipes(newCategory.id, newRecipeIds);
+        } catch (error) {
+          console.error('Error reordering recipes:', error);
+        }
       } else {
         const startRecipeIds = Array.from(start.recipeIds);
         const [removed] = startRecipeIds.splice(source.index, 1);
@@ -113,7 +104,51 @@ const CategoryPage = () => {
           [newStart.id]: newStart,
           [newFinish.id]: newFinish,
         });
+
+        try {
+          await moveRecipe(newStart.id, newFinish.id, removed[0]);
+          await reorderRecipes(newFinish.id, newFinish.recipeIds);
+        } catch (error) {
+          console.error('Error moving or reordering recipes:', error);
+        }
       }
+    }
+  };
+
+  const handleAddCategory = async () => {
+    if (!newCategoryName) return;
+
+    try {
+      const newCategory = await addCategory(newCategoryName, user._id);
+      setCategories({
+        ...categories,
+        [newCategory._id]: {
+          id: newCategory._id,
+          title: newCategory.name,
+          recipeIds: [],
+          order: newCategory.order,
+        },
+      });
+      setCategoryOrder([...categoryOrder, newCategory._id]);
+      setNewCategoryName('');
+    } catch (error) {
+      console.error('Error adding category:', error);
+    }
+  };
+
+  const handleDeleteCategory = async (categoryId) => {
+    if (categoryId === 'all-recipes') return;
+
+    try {
+      await deleteCategory(categoryId, user._id);
+
+      const updatedCategories = { ...categories };
+      delete updatedCategories[categoryId];
+
+      setCategories(updatedCategories);
+      setCategoryOrder(categoryOrder.filter((id) => id !== categoryId));
+    } catch (error) {
+      console.error('Error deleting category:', error);
     }
   };
 
@@ -125,6 +160,19 @@ const CategoryPage = () => {
   if (!categoryOrder.length) {
     return <div>No categories found.</div>;
   }
+
+  const sortedCategoryOrder = [
+    ...categoryOrder
+      .filter((id) => categories[id]?.order !== 0)
+      .sort((a, b) => {
+        const orderA = categories[a]?.order ?? Number.MAX_SAFE_INTEGER;
+        const orderB = categories[b]?.order ?? Number.MAX_SAFE_INTEGER;
+        return orderA - orderB;
+      }),
+    ...categoryOrder.filter((id) => categories[id]?.order === 0),
+  ];
+
+  console.log(sortedCategoryOrder, '<-sortedCategoryOrder');
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -139,11 +187,26 @@ const CategoryPage = () => {
             </div>
           </div>
         </div>
+        <div className="mb-4 flex justify-center">
+          <input
+            type="text"
+            value={newCategoryName}
+            onChange={(e) => setNewCategoryName(e.target.value)}
+            placeholder="New Category Name"
+            className="border p-2 rounded mr-2"
+          />
+          <button
+            onClick={handleAddCategory}
+            className="bg-blue-500 text-white p-2 rounded"
+          >
+            Add Category
+          </button>
+        </div>
         <Droppable droppableId="all-categories" type="CATEGORY">
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
               <FlipMove duration={300} easing="ease-in-out">
-                {categoryOrder.map((categoryId, index) => {
+                {sortedCategoryOrder.map((categoryId, index) => {
                   const category = categories[categoryId];
                   if (!category) return null;
                   const categoryRecipes = category.recipeIds.map(
@@ -154,10 +217,12 @@ const CategoryPage = () => {
                     <div key={category.id}>
                       <DraggableCategory
                         category={category}
+                        userId={user._id}
                         index={index}
                         recipes={categoryRecipes}
                         categoryOrder={categoryOrder}
                         setCategoryOrder={setCategoryOrder}
+                        handleDeleteCategory={handleDeleteCategory}
                       />
                     </div>
                   );

@@ -1,0 +1,256 @@
+.icon {
+  background: url('../../assets/equipment-spritemap.webp') no-repeat;
+  width: 64px;
+  height: 64px;
+  display: inline-block;
+}
+
+.icon.bowl {
+  background-position: 0 0;
+}
+.icon.pot {
+  background-position: -64px 0;
+}
+.icon.pan {
+  background-position: -128px 0;
+}
+.icon.saucepan {
+  background-position: -192px 0;
+}
+.icon.skillet {
+  background-position: -256px 0;
+}
+.icon.frying_pan {
+  background-position: -320px 0;
+}
+.icon.stockpot {
+  background-position: -384px 0;
+}
+.icon.dutch_oven {
+  background-position: -448px 0;
+}
+.icon.pressure_cooker {
+  background-position: -512px 0;
+}
+.icon.slow_cooker {
+  background-position: -576px 0;
+}
+.icon.baking_sheet {
+  background-position: -640px 0;
+}
+.icon.cookie_sheet {
+  background-position: -704px 0;
+}
+.icon.baking_dish {
+  background-position: -768px 0;
+}
+.icon.roasting_pan {
+  background-position: -832px 0;
+}
+.icon.cake_pan {
+  background-position: -896px 0;
+}
+.icon.muffin_tin {
+  background-position: -960px 0;
+}
+.icon.loaf_pan {
+  background-position: -1024px 0;
+}
+.icon.springform_pan {
+  background-position: -1088px 0;
+}
+.icon.pie_dish {
+  background-position: -1152px 0;
+}
+.icon.mixing_bowl {
+  background-position: -1216px 0;
+}
+.icon.salad_bowl {
+  background-position: -1280px 0;
+}
+.icon.measuring_cup {
+  background-position: -1344px 0;
+}
+.icon.measuring_spoon {
+  background-position: -1408px 0;
+}
+.icon.colander {
+  background-position: -1472px 0;
+}
+.icon.strainer {
+  background-position: -1536px 0;
+}
+.icon.sieve {
+  background-position: -1600px 0;
+}
+.icon.whisk {
+  background-position: -1664px 0;
+}
+.icon.spatula {
+  background-position: -1728px 0;
+}
+.icon.tongs {
+  background-position: -1792px 0;
+}
+.icon.ladle {
+  background-position: -1856px 0;
+}
+.icon.slotted_spoon {
+  background-position: -1920px 0;
+}
+.icon.wooden_spoon {
+  background-position: -1984px 0;
+}
+.icon.grater {
+  background-position: -2048px 0;
+}
+.icon.zester {
+  background-position: -2112px 0;
+}
+.icon.peeler {
+  background-position: -2176px 0;
+}
+.icon.garlic_press {
+  background-position: -2240px 0;
+}
+.icon.can_opener {
+  background-position: -2304px 0;
+}
+.icon.bottle_opener {
+  background-position: -2368px 0;
+}
+.icon.corkscrew {
+  background-position: -2432px 0;
+}
+.icon.cutting_board {
+  background-position: -2496px 0;
+}
+.icon.chef_knife {
+  background-position: -2560px 0;
+}
+.icon.paring_knife {
+  background-position: -2624px 0;
+}
+.icon.bread_knife {
+  background-position: -2688px 0;
+}
+.icon.carving_knife {
+  background-position: -2752px 0;
+}
+.icon.utility_knife {
+  background-position: -2816px 0;
+}
+.icon.scissors {
+  background-position: -2880px 0;
+}
+.icon.kitchen_shears {
+  background-position: -2944px 0;
+}
+.icon.rolling_pin {
+  background-position: -3008px 0;
+}
+.icon.pastry_brush {
+  background-position: -3072px 0;
+}
+.icon.pizza_cutter {
+  background-position: -3136px 0;
+}
+.icon.kitchen_timer {
+  background-position: -3200px 0;
+}
+.icon.food_processor {
+  background-position: -3264px 0;
+}
+.icon.blender {
+  background-position: -3328px 0;
+}
+.icon.hand_mixer {
+  background-position: -3392px 0;
+}
+.icon.stand_mixer {
+  background-position: -3456px 0;
+}
+.icon.microwave {
+  background-position: -3520px 0;
+}
+.icon.oven {
+  background-position: -3584px 0;
+}
+.icon.stove {
+  background-position: -3648px 0;
+}
+.icon.toaster {
+  background-position: -3712px 0;
+}
+.icon.toaster_oven {
+  background-position: -3776px 0;
+}
+.icon.waffle_maker {
+  background-position: -3840px 0;
+}
+.icon.rice_cooker {
+  background-position: -3904px 0;
+}
+.icon.electric_kettle {
+  background-position: -3968px 0;
+}
+.icon.coffee_maker {
+  background-position: -4032px 0;
+}
+.icon.espresso_machine {
+  background-position: -4096px 0;
+}
+.icon.tea_infuser {
+  background-position: -4160px 0;
+}
+.icon.grill {
+  background-position: -4224px 0;
+}
+.icon.griddle {
+  background-position: -4288px 0;
+}
+.icon.broiler {
+  background-position: -4352px 0;
+}
+.icon.thermometer {
+  background-position: -4416px 0;
+}
+.icon.scale {
+  background-position: -4480px 0;
+}
+.icon.mandoline {
+  background-position: -4544px 0;
+}
+.icon.food_mill {
+  background-position: -4608px 0;
+}
+.icon.mortar_and_pestle {
+  background-position: -4672px 0;
+}
+.icon.ricer {
+  background-position: -4736px 0;
+}
+.icon.salad_spinner {
+  background-position: -4800px 0;
+}
+.icon.steamer_basket {
+  background-position: -4864px 0;
+}
+.icon.sous_vide_machine {
+  background-position: -4928px 0;
+}
+.icon.dehydrator {
+  background-position: -4992px 0;
+}
+.icon.ice_cream_maker {
+  background-position: -5056px 0;
+}
+.icon.popcorn_maker {
+  background-position: -5120px 0;
+}
+.icon.egg_slicer {
+  background-position: -5184px 0;
+}
+.icon.egg_timer {
+  background-position: -5248px 0;
+}

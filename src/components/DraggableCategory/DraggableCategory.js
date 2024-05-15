@@ -9,27 +9,59 @@ const DraggableCategory = ({
   recipes,
   categoryOrder,
   setCategoryOrder,
+  userId,
+  handleDeleteCategory,
 }) => {
-  const moveCategoryUp = () => {
+  const moveCategoryUp = async () => {
     if (index > 0) {
       const newCategoryOrder = Array.from(categoryOrder);
       const [movedCategory] = newCategoryOrder.splice(index, 1);
       newCategoryOrder.splice(index - 1, 0, movedCategory);
       setCategoryOrder(newCategoryOrder);
+
+      try {
+        await fetch(`${process.env.REACT_APP_API_URL}/api/categories/reorder`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: userId,
+            newOrder: newCategoryOrder,
+          }),
+        });
+      } catch (error) {
+        console.error('Error reordering categories:', error);
+      }
     }
   };
 
-  const moveCategoryDown = () => {
+  const moveCategoryDown = async () => {
     if (index < categoryOrder.length - 1) {
       const newCategoryOrder = Array.from(categoryOrder);
       const [movedCategory] = newCategoryOrder.splice(index, 1);
       newCategoryOrder.splice(index + 1, 0, movedCategory);
       setCategoryOrder(newCategoryOrder);
+
+      try {
+        await fetch(`${process.env.REACT_APP_API_URL}/api/categories/reorder`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: userId,
+            newOrder: newCategoryOrder,
+          }),
+        });
+      } catch (error) {
+        console.error('Error reordering categories:', error);
+      }
     }
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow mb-4 transition-transform duration-300 ease-in-out draggable-category">
+    <div className="bg-white p-4 rounded-lg shadow mb-4 transition-transform duration-300 ease-in-out draggable-category min">
       <div className="flex">
         <div className="flex flex-col items-center justify-center mr-4">
           <button
@@ -47,10 +79,20 @@ const DraggableCategory = ({
             <i className="fas fa-arrow-down"></i>
           </button>
         </div>
-        <div className="flex-grow">
-          <h3 className="text-xl font-semibold mb-2 text-left">
-            {category.title}
-          </h3>
+        <div className="flex-grow min-h-24">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-semibold mb-2 text-left">
+              {category.title}
+            </h3>
+            {category.title !== 'All Recipes' && (
+              <button
+                onClick={() => handleDeleteCategory(category.id)}
+                className="text-red-500 hover:text-red-700"
+              >
+                <i className="fas fa-trash-alt"></i>
+              </button>
+            )}
+          </div>
           <Droppable
             droppableId={category.id}
             type="RECIPE"
@@ -60,7 +102,7 @@ const DraggableCategory = ({
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className={`flex overflow-x-auto gap-4 ${snapshot.isDraggingOver ? 'bg-blue-100' : ''}`}
+                className={`flex overflow-x-auto gap-4 min-h-32 w-full ${snapshot.isDraggingOver ? 'bg-blue-100' : ''}`}
               >
                 {recipes.map((recipe, recipeIndex) => (
                   <DraggableRecipe
