@@ -17,10 +17,10 @@ const AddToProfileButton = ({ recipeId }) => {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    if (user) {
-      fetchCategories();
+    if (isAuthenticated) {
+      fetchCategories(user._id);
     }
-  }, [user, recipeId]);
+  }, [fetchCategories, isAuthenticated, user._id]);
 
   const fetchCategories = async () => {
     const data = await fetchUserCategories(user._id);
