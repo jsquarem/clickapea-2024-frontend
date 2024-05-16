@@ -81,6 +81,10 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
 
     const newIngredients = [...ingredients];
     if (subField) {
+      // Ensure the subfield object exists
+      if (!newIngredients[index][field]) {
+        newIngredients[index][field] = {};
+      }
       newIngredients[index][field][subField] = value;
     } else {
       newIngredients[index][field] = value;
@@ -186,13 +190,13 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
           if (amount && amount.quantity) {
             const roundedQuantity = Math.round(amount.quantity * 100) / 100;
             displayAmount = isMetric
-              ? `${roundedQuantity} ${amount.unit}`
-              : `${decimalToFraction(roundedQuantity)} ${amount.unit}`;
+              ? `${roundedQuantity} ${amount.unit || ''}`
+              : `${decimalToFraction(roundedQuantity)} ${amount.unit || ''}`;
           } else if (other && other.quantity) {
             const roundedQuantity = Math.round(other.quantity * 100) / 100;
             displayAmount = isMetric
-              ? `${roundedQuantity} ${other.unit}`
-              : `${decimalToFraction(roundedQuantity)} ${other.unit}`;
+              ? `${roundedQuantity} ${other.unit || ''}`
+              : `${decimalToFraction(roundedQuantity)} ${other.unit || ''}`;
           }
 
           return (
@@ -203,7 +207,13 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
                     <div className="w-1/6">
                       <input
                         type="text"
-                        value={amount?.quantity || ''}
+                        value={
+                          amount?.quantity !== undefined
+                            ? amount.quantity
+                            : other?.quantity !== undefined
+                              ? other.quantity
+                              : ''
+                        }
                         onChange={(e) =>
                           handleInputChange(
                             e,

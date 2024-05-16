@@ -1,5 +1,11 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import AuthContext from '../../AuthContext';
+import {
+  fetchUserCategories,
+  addRecipeToCategory,
+  removeRecipeFromCategory,
+  addCategory,
+} from '../../utils/api';
 
 const AddToProfileButton = ({ recipeId }) => {
   const { isAuthenticated, login, user } = useContext(AuthContext);
@@ -12,19 +18,18 @@ const AddToProfileButton = ({ recipeId }) => {
 
   useEffect(() => {
     if (user) {
-      fetch(
-        `${process.env.REACT_APP_API_URL}/api/categories?userId=${user._id}`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          setCategories(data);
-          const successCategories = data
-            .filter((category) => category.recipes.includes(recipeId))
-            .map((category) => category._id);
-          setSuccessfulCategories(successCategories);
-        });
+      fetchCategories();
     }
   }, [user, recipeId]);
+
+  const fetchCategories = async () => {
+    const data = await fetchUserCategories(user._id);
+    setCategories(data);
+    const successCategories = data
+      .filter((category) => category.recipes.includes(recipeId))
+      .map((category) => category._id);
+    setSuccessfulCategories(successCategories);
+  };
 
   const handleButtonClick = () => {
     setShowDropdown(!showDropdown);
@@ -39,21 +44,12 @@ const AddToProfileButton = ({ recipeId }) => {
     setAddingCategory(true);
   };
 
-  const handleSaveCategory = () => {
+  const handleSaveCategory = async () => {
     if (newCategory.trim() !== '') {
-      fetch(`${process.env.REACT_APP_API_URL}/api/categories`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: newCategory, user: user._id }),
-      })
-        .then((res) => res.json())
-        .then((data) => setCategories([...categories, data]))
-        .finally(() => {
-          setNewCategory('');
-          setAddingCategory(false);
-        });
+      const data = await addCategory(newCategory, user._id);
+      setCategories([...categories, data]);
+      setNewCategory('');
+      setAddingCategory(false);
     }
   };
 
@@ -62,30 +58,17 @@ const AddToProfileButton = ({ recipeId }) => {
     setAddingCategory(false);
   };
 
-  const handleCategoryClick = (categoryId) => {
+  const handleCategoryClick = async (categoryId) => {
     const isInCategory = successfulCategories.includes(categoryId);
-    const method = isInCategory ? 'DELETE' : 'POST';
-
-    fetch(
-      `${process.env.REACT_APP_API_URL}/api/categories/${categoryId}/recipes/`,
-      {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ recipeId }),
-      }
-    )
-      .then((res) => res.json())
-      .then(() => {
-        if (isInCategory) {
-          setSuccessfulCategories(
-            successfulCategories.filter((id) => id !== categoryId)
-          );
-        } else {
-          setSuccessfulCategories([...successfulCategories, categoryId]);
-        }
-      });
+    if (isInCategory) {
+      await removeRecipeFromCategory(categoryId, recipeId);
+      setSuccessfulCategories(
+        successfulCategories.filter((id) => id !== categoryId)
+      );
+    } else {
+      await addRecipeToCategory(categoryId, recipeId);
+      setSuccessfulCategories([...successfulCategories, categoryId]);
+    }
   };
 
   useEffect(() => {
@@ -110,7 +93,7 @@ const AddToProfileButton = ({ recipeId }) => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={handleButtonClick}
-        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center"
+        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full"
       >
         <i className="fas fa-user-plus mr-2"></i>
         <span>Add to Profile</span>

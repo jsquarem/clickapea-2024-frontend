@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import AuthContext from '../../AuthContext';
 import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
-import DraggableCategory from '../../components/DraggableCategory/DraggableCategory';
+import Category from '../../components/Category/Category';
 import FlipMove from 'react-flip-move';
 import {
   fetchCategories,
@@ -10,7 +10,8 @@ import {
   moveRecipe,
   addCategory,
   deleteCategory,
-} from '../../api';
+  reorderCategories,
+} from '../../utils/api';
 import './CategoryPage.css';
 
 const reorder = (list, startIndex, endIndex) => {
@@ -18,6 +19,19 @@ const reorder = (list, startIndex, endIndex) => {
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
   return result;
+};
+
+const sortCategoryOrder = (categoryOrder, categories) => {
+  return [
+    ...categoryOrder
+      .filter((id) => categories[id]?.order !== 0)
+      .sort((a, b) => {
+        const orderA = categories[a]?.order ?? Number.MAX_SAFE_INTEGER;
+        const orderB = categories[b]?.order ?? Number.MAX_SAFE_INTEGER;
+        return orderA - orderB;
+      }),
+    ...categoryOrder.filter((id) => categories[id]?.order === 0),
+  ];
 };
 
 const CategoryPage = () => {
@@ -33,6 +47,7 @@ const CategoryPage = () => {
     if (isAuthenticated && user) {
       fetchCategories(user._id)
         .then((data) => {
+          console.log('Fetched categories:', data.categories);
           if (
             data.categories &&
             data.categories.recipes &&
@@ -41,7 +56,12 @@ const CategoryPage = () => {
           ) {
             setRecipes(data.categories.recipes);
             setCategories(data.categories.categories);
-            setCategoryOrder(data.categories.categoryOrder);
+            setCategoryOrder(
+              sortCategoryOrder(
+                data.categories.categoryOrder,
+                data.categories.categories
+              )
+            );
           }
           setLoading(false);
         })
@@ -52,6 +72,10 @@ const CategoryPage = () => {
         });
     }
   }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    setCategoryOrder((prevOrder) => sortCategoryOrder(prevOrder, categories));
+  }, [categories]);
 
   const onDragEnd = async (result) => {
     const { source, destination, type } = result;
@@ -75,10 +99,10 @@ const CategoryPage = () => {
           recipeIds: newRecipeIds,
         };
 
-        setCategories({
-          ...categories,
+        setCategories((prevCategories) => ({
+          ...prevCategories,
           [newCategory.id]: newCategory,
-        });
+        }));
 
         try {
           await reorderRecipes(newCategory.id, newRecipeIds);
@@ -87,27 +111,27 @@ const CategoryPage = () => {
         }
       } else {
         const startRecipeIds = Array.from(start.recipeIds);
-        const [removed] = startRecipeIds.splice(source.index, 1);
+        const [removedRecipeId] = startRecipeIds.splice(source.index, 1); // Correctly capture the recipe ID being moved
         const newStart = {
           ...start,
           recipeIds: startRecipeIds,
         };
 
         const finishRecipeIds = Array.from(finish.recipeIds);
-        finishRecipeIds.splice(destination.index, 0, removed);
+        finishRecipeIds.splice(destination.index, 0, removedRecipeId);
         const newFinish = {
           ...finish,
           recipeIds: finishRecipeIds,
         };
 
-        setCategories({
-          ...categories,
+        setCategories((prevCategories) => ({
+          ...prevCategories,
           [newStart.id]: newStart,
           [newFinish.id]: newFinish,
-        });
+        }));
 
         try {
-          await moveRecipe(newStart.id, newFinish.id, removed[0]);
+          await moveRecipe(newStart.id, newFinish.id, removedRecipeId);
           await reorderRecipes(newFinish.id, newFinish.recipeIds);
         } catch (error) {
           console.error('Error moving or reordering recipes:', error);
@@ -121,16 +145,18 @@ const CategoryPage = () => {
 
     try {
       const newCategory = await addCategory(newCategoryName, user._id);
-      setCategories({
-        ...categories,
+      setCategories((prevCategories) => ({
+        ...prevCategories,
         [newCategory._id]: {
           id: newCategory._id,
           title: newCategory.name,
           recipeIds: [],
           order: newCategory.order,
         },
-      });
-      setCategoryOrder([...categoryOrder, newCategory._id]);
+      }));
+      setCategoryOrder((prevOrder) =>
+        sortCategoryOrder([...prevOrder, newCategory._id], categories)
+      );
       setNewCategoryName('');
     } catch (error) {
       console.error('Error adding category:', error);
@@ -143,13 +169,52 @@ const CategoryPage = () => {
     try {
       await deleteCategory(categoryId, user._id);
 
-      const updatedCategories = { ...categories };
-      delete updatedCategories[categoryId];
+      setCategories((prevCategories) => {
+        const updatedCategories = { ...prevCategories };
+        delete updatedCategories[categoryId];
+        return updatedCategories;
+      });
 
-      setCategories(updatedCategories);
-      setCategoryOrder(categoryOrder.filter((id) => id !== categoryId));
+      setCategoryOrder((prevOrder) =>
+        sortCategoryOrder(
+          prevOrder.filter((id) => id !== categoryId),
+          categories
+        )
+      );
     } catch (error) {
       console.error('Error deleting category:', error);
+    }
+  };
+
+  const moveCategoryUp = async (index) => {
+    if (index > 0) {
+      const newCategoryOrder = Array.from(categoryOrder);
+      const [movedCategory] = newCategoryOrder.splice(index, 1);
+      newCategoryOrder.splice(index - 1, 0, movedCategory);
+      console.log('Moving category up:', newCategoryOrder);
+      setCategoryOrder(newCategoryOrder);
+
+      try {
+        await reorderCategories(user._id, newCategoryOrder);
+      } catch (error) {
+        console.error('Error reordering categories:', error);
+      }
+    }
+  };
+
+  const moveCategoryDown = async (index) => {
+    if (index < categoryOrder.length - 1) {
+      const newCategoryOrder = Array.from(categoryOrder);
+      const [movedCategory] = newCategoryOrder.splice(index, 1);
+      newCategoryOrder.splice(index + 1, 0, movedCategory);
+      console.log('Moving category down:', newCategoryOrder);
+      setCategoryOrder(newCategoryOrder);
+
+      try {
+        await reorderCategories(user._id, newCategoryOrder);
+      } catch (error) {
+        console.error('Error reordering categories:', error);
+      }
     }
   };
 
@@ -162,18 +227,7 @@ const CategoryPage = () => {
     return <div>No categories found.</div>;
   }
 
-  const sortedCategoryOrder = [
-    ...categoryOrder
-      .filter((id) => categories[id]?.order !== 0)
-      .sort((a, b) => {
-        const orderA = categories[a]?.order ?? Number.MAX_SAFE_INTEGER;
-        const orderB = categories[b]?.order ?? Number.MAX_SAFE_INTEGER;
-        return orderA - orderB;
-      }),
-    ...categoryOrder.filter((id) => categories[id]?.order === 0),
-  ];
-
-  console.log(sortedCategoryOrder, '<-sortedCategoryOrder');
+  console.log('Rendering categories:', categoryOrder);
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -188,29 +242,27 @@ const CategoryPage = () => {
             </div>
           </div>
         </div>
-        <div className="flex mb-4 w-full">
-          <div className="flex flex-row w-full justify-between space-x-8">
-            <div className="w-1/4">
-              <h2 className="text-2xl font-bold text-left">Add a Category</h2>
-              <div className="mb-4 flex justify-center items-center">
-                <input
-                  type="text"
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  placeholder="New Category Name"
-                  className="border p-2 rounded mr-2 flex-1"
-                />
-                <button
-                  onClick={handleAddCategory}
-                  className="bg-blue-500 text-white p-2 rounded"
-                >
-                  Add Category
-                </button>
-              </div>
+        <div className="flex flex-col md:flex-row mb-4 w-full justify-between space-y-4 md:space-y-0 md:space-x-8">
+          <div className="w-full lg:w-1/3">
+            <h2 className="text-2xl font-bold text-left">Add a Category</h2>
+            <div className="mb-4 flex justify-center items-center">
+              <input
+                type="text"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder="New Category Name"
+                className="border p-2 rounded mr-2 flex-1 w-full md:w-auto"
+              />
+              <button
+                onClick={handleAddCategory}
+                className="bg-blue-500 text-white p-2 rounded"
+              >
+                Add Category
+              </button>
             </div>
-            <div className="w-1/2 text-left">
-              <AddRecipeForm />
-            </div>
+          </div>
+          <div className="w-full lg:w-1/2 text-left">
+            <AddRecipeForm />
           </div>
         </div>
 
@@ -218,7 +270,7 @@ const CategoryPage = () => {
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
               <FlipMove duration={300} easing="ease-in-out">
-                {sortedCategoryOrder.map((categoryId, index) => {
+                {categoryOrder.map((categoryId, index) => {
                   const category = categories[categoryId];
                   if (!category) return null;
                   const categoryRecipes = category.recipeIds.map(
@@ -227,13 +279,16 @@ const CategoryPage = () => {
 
                   return (
                     <div key={category.id}>
-                      <DraggableCategory
+                      <Category
+                        key={category.id} // Ensure proper key for FlipMove
                         category={category}
                         userId={user._id}
                         index={index}
                         recipes={categoryRecipes}
                         categoryOrder={categoryOrder}
                         setCategoryOrder={setCategoryOrder}
+                        moveCategoryUp={moveCategoryUp}
+                        moveCategoryDown={moveCategoryDown}
                         handleDeleteCategory={handleDeleteCategory}
                       />
                     </div>

@@ -8,12 +8,13 @@ import Instructions from '../../components/Instructions/Instructions';
 import NutritionalInfo from '../../components/NutritionalInfo/NutritionalInfo';
 import AddToProfileButton from '../../components/AddToProfileButton/AddToProfileButton';
 import AddToCartButton from '../../components/AddToCartButton/AddToCartButton';
-import AuthContext from '../../AuthContext'; // import AuthContext
+import AuthContext from '../../AuthContext';
+import { fetchRecipeById, updateRecipeById } from '../../utils/api';
 import './RecipePage.css';
 
 const RecipePage = (props) => {
   const { id } = useParams();
-  const { isAuthenticated, login } = useContext(AuthContext); // get isAuthenticated and login from AuthContext
+  const { isAuthenticated, login } = useContext(AuthContext);
   const [recipe, setRecipe] = useState(null);
   const [isMetric, setIsMetric] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -28,21 +29,13 @@ const RecipePage = (props) => {
       setRecipe(props.recipe);
       setLoading(false);
     } else {
-      fetchRecipeById(id);
+      loadRecipeById(id);
     }
   }, [id, props.recipe]);
 
-  const fetchRecipeById = async (recipeId) => {
+  const loadRecipeById = async (recipeId) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/recipes/${recipeId}`
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch recipe');
-      }
-
+      const data = await fetchRecipeById(recipeId);
       setRecipe(data);
     } catch (error) {
       console.error('Error fetching recipe:', error);
@@ -67,25 +60,8 @@ const RecipePage = (props) => {
 
   const handleSaveClick = async () => {
     if (validateInputs()) {
-      console.log(editedRecipe);
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/recipes/${recipe._id}`,
-          {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(editedRecipe),
-          }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to save recipe');
-        }
-
-        const updatedRecipe = await response.json();
+        const updatedRecipe = await updateRecipeById(recipe._id, editedRecipe);
         setRecipe(updatedRecipe);
         setEditedRecipe(updatedRecipe);
         setSaveMessage('Recipe saved successfully.');
@@ -113,7 +89,6 @@ const RecipePage = (props) => {
     }
     setEditedRecipe(newEditedRecipe);
 
-    // Validate total time field
     if (field === 'total_time') {
       const isValid = value === '' || !isNaN(value);
       if (!isValid) {
@@ -182,13 +157,13 @@ const RecipePage = (props) => {
             onInputChange={handleInputChange}
           />
           <div className="flex flex-col">
-            <div className="flex space-x-2">
+            <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2">
               <AddToProfileButton recipeId={recipe._id} />
               <AddToCartButton />
               {isEditing ? (
                 <button
                   onClick={handleSaveClick}
-                  className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded inline-flex items-center"
+                  className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
                 >
                   <i className="fas fa-save mr-2"></i>
                   <span>Save</span>
@@ -197,13 +172,13 @@ const RecipePage = (props) => {
                 <div className="relative group">
                   <button
                     onClick={handleEditClick}
-                    className={`font-bold py-2 px-4 rounded inline-flex items-center text-white ${isAuthenticated ? 'bg-blue-500 hover:bg-blue-700' : 'bg-gray-500 cursor-not-allowed'}`}
+                    className={`font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto text-white ${isAuthenticated ? 'bg-blue-500 hover:bg-blue-700' : 'bg-gray-500 cursor-not-allowed'}`}
                   >
                     <i className="fas fa-edit mr-2"></i>
                     <span>Edit</span>
                   </button>
                   {!isAuthenticated && (
-                    <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-full bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       Please log in to edit
                     </div>
                   )}

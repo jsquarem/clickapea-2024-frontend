@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { addRecipe } from '../../utils/api';
 
 const AddRecipeForm = () => {
   const [url, setUrl] = useState('');
@@ -12,22 +13,7 @@ const AddRecipeForm = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/recipes/add`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ url }),
-        }
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to add recipe');
-      }
-
+      const data = await addRecipe(url);
       navigate(`/recipe/${data._id}`);
     } catch (error) {
       console.error('Error adding recipe:', error);

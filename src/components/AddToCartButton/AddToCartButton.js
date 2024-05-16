@@ -17,7 +17,7 @@ const AddToCartButton = () => {
     <div className="relative group">
       <button
         onClick={handleAddToCart}
-        className={`font-bold py-2 px-4 rounded inline-flex items-center text-white ${isAuthenticated ? 'bg-orange-500 hover:bg-orange-700' : 'bg-gray-500 cursor-not-allowed'}`}
+        className={`font-bold py-2 px-4 rounded inline-flex items-center w-full text-white ${isAuthenticated ? 'bg-orange-500 hover:bg-orange-700' : 'bg-gray-500 cursor-not-allowed'}`}
       >
         <i className="fas fa-shopping-cart mr-2"></i>
         <span>Add to Cart</span>
