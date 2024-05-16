@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import AuthContext from '../../AuthContext';
+import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
 import DraggableCategory from '../../components/DraggableCategory/DraggableCategory';
 import FlipMove from 'react-flip-move';
 import {
@@ -176,10 +177,10 @@ const CategoryPage = () => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="bg-gray-100 text-gray-800 p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold mx-auto">Your Categories</h2>
-          <div className="relative group z-10">
+      <div className="bg-gray-100 text-gray-800 p-6 w-full">
+        <div className="flex flex-row justify-center items-start">
+          <h1 className="text-4xl font-bold text-center pb-4">Your Recipes</h1>
+          <div className="relative group ml-2 mt-1">
             <i className="fas fa-question-circle text-xl cursor-pointer"></i>
             <div className="absolute top-full right-0 transform mt-2 w-48 bg-black text-white text-center rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
               Drag recipes to the desired category. Click arrows to change
@@ -187,21 +188,32 @@ const CategoryPage = () => {
             </div>
           </div>
         </div>
-        <div className="mb-4 flex justify-center">
-          <input
-            type="text"
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-            placeholder="New Category Name"
-            className="border p-2 rounded mr-2"
-          />
-          <button
-            onClick={handleAddCategory}
-            className="bg-blue-500 text-white p-2 rounded"
-          >
-            Add Category
-          </button>
+        <div className="flex mb-4 w-full">
+          <div className="flex flex-row w-full justify-between space-x-8">
+            <div className="w-1/4">
+              <h2 className="text-2xl font-bold text-left">Add a Category</h2>
+              <div className="mb-4 flex justify-center items-center">
+                <input
+                  type="text"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder="New Category Name"
+                  className="border p-2 rounded mr-2 flex-1"
+                />
+                <button
+                  onClick={handleAddCategory}
+                  className="bg-blue-500 text-white p-2 rounded"
+                >
+                  Add Category
+                </button>
+              </div>
+            </div>
+            <div className="w-1/2 text-left">
+              <AddRecipeForm />
+            </div>
+          </div>
         </div>
+
         <Droppable droppableId="all-categories" type="CATEGORY">
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>

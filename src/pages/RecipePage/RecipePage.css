@@ -1,5 +1,65 @@
-.bg-cover-custom {
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+/* General form input styles */
+.form-input,
+.form-textarea {
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #333;
+  background-color: #f9f9f9;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* Focused form input styles */
+.form-input:focus,
+.form-textarea:focus {
+  background-color: #fff;
+  border-color: #4a90e2;
+  outline: none;
+}
+
+/* Editable fields styles */
+.editable-field {
+  display: flex;
+  align-items: center;
+}
+
+.editable-field label {
+  width: 100px;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.editable-field input,
+.editable-field textarea {
+  flex: 1;
+}
+
+.editable-field textarea {
+  resize: vertical;
+}
+
+/* Ensure list icons are displayed */
+#ingredients-list {
+  list-style-type: disc;
+  list-style-position: inside;
+}
+
+#ingredients-list li.list-item {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 1em; /* Ensure there is space for the marker */
+}
+
+#ingredients-list li.list-item::before {
+  content: '•'; /* Custom marker, as default list-style is overridden by flex */
+  position: absolute;
+  left: 0;
+  font-size: 1.2em; /* Adjust marker size if needed */
+  color: #333;
 }

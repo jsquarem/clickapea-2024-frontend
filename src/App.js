@@ -7,12 +7,13 @@ import {
 } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import AuthContext, { AuthProvider } from './AuthContext';
+import HomePage from './pages/HomePage/HomePage';
 import RecipePage from './pages/RecipePage/RecipePage';
 import AddRecipePage from './pages/AddRecipePage/AddRecipePage';
 import CategoryPage from './pages/CategoryPage/CategoryPage';
-import Test from './pages/CategoryPage/Test';
 import Protected from './Protected';
 import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
 import './App.css';
 
 const App = () => {
@@ -50,7 +51,7 @@ const App = () => {
 
   return (
     <Router>
-      <div className="App">
+      <div className="App flex flex-col min-h-screen">
         <Header
           isAuthenticated={isAuthenticated}
           user={user}
@@ -59,23 +60,26 @@ const App = () => {
           showMenu={showMenu}
           setShowMenu={setShowMenu}
         />
-        <Routes>
-          <Route path="/" element={<RecipePage />} />
-          <Route path="/recipe/:id" element={<RecipePage />} />
-          <Route path="/add-recipe" element={<AddRecipePage />} />
-          <Route
-            path="/categories"
-            element={
-              isAuthenticated && user ? <CategoryPage /> : <Navigate to="/" />
-            }
-          />
-          <Route
-            path="/protected"
-            element={
-              isAuthenticated && user ? <Protected /> : <Navigate to="/" />
-            }
-          />
-        </Routes>
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/recipe/:id" element={<RecipePage />} />
+            <Route path="/add-recipe" element={<AddRecipePage />} />
+            <Route
+              path="/categories"
+              element={
+                isAuthenticated && user ? <CategoryPage /> : <Navigate to="/" />
+              }
+            />
+            <Route
+              path="/protected"
+              element={
+                isAuthenticated && user ? <Protected /> : <Navigate to="/" />
+              }
+            />
+          </Routes>
+        </main>
+        <Footer />
       </div>
     </Router>
   );
