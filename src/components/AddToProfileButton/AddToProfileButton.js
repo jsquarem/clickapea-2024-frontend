@@ -17,19 +17,18 @@ const AddToProfileButton = ({ recipeId }) => {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchCategories(user._id);
-    }
-  }, [fetchCategories, isAuthenticated, user._id]);
-
-  const fetchCategories = async () => {
-    const data = await fetchUserCategories(user._id);
-    setCategories(data);
-    const successCategories = data
-      .filter((category) => category.recipes.includes(recipeId))
-      .map((category) => category._id);
-    setSuccessfulCategories(successCategories);
-  };
+    const fetchCategories = async () => {
+      if (isAuthenticated) {
+        const data = await fetchUserCategories(user._id);
+        setCategories(data);
+        const successCategories = data
+          .filter((category) => category.recipes.includes(recipeId))
+          .map((category) => category._id);
+        setSuccessfulCategories(successCategories);
+      }
+    };
+    fetchCategories();
+  }, [isAuthenticated, user._id, recipeId]);
 
   const handleButtonClick = () => {
     setShowDropdown(!showDropdown);
