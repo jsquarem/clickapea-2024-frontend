@@ -58,8 +58,13 @@ export const fetchRecipeById = async (recipeId) => {
   return response.data;
 };
 
-export const updateRecipeById = async (recipeId, recipeData) => {
-  const response = await api.put(`/api/recipes/${recipeId}`, recipeData);
+export const fetchUserRecipeById = async (recipeId) => {
+  const response = await api.get(`/api/recipes/user/${recipeId}`);
+  return response.data;
+};
+
+export const updateUserRecipeById = async (recipeId, recipeData) => {
+  const response = await api.put(`/api/recipes/user/${recipeId}`, recipeData);
   return response.data;
 };
 
@@ -92,6 +97,11 @@ export const reorderCategories = async (userId, newOrder) => {
     userId,
     newOrder,
   });
+};
+
+export const fetchAllRecipes = async () => {
+  const response = await api.get('/api/recipes/all');
+  return response.data;
 };
 
 export default api;

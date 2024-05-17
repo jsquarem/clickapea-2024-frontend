@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import RecipeInfo from '../../components/RecipeInfo/RecipeInfo';
 import ToggleSwitch from '../../components/ToggleSwitch/ToggleSwitch';
 import Ingredients from '../../components/Ingredients/Ingredients';
@@ -9,11 +9,16 @@ import NutritionalInfo from '../../components/NutritionalInfo/NutritionalInfo';
 import AddToProfileButton from '../../components/AddToProfileButton/AddToProfileButton';
 import AddToCartButton from '../../components/AddToCartButton/AddToCartButton';
 import AuthContext from '../../AuthContext';
-import { fetchRecipeById, updateRecipeById } from '../../utils/api';
+import {
+  fetchRecipeById,
+  fetchUserRecipeById,
+  updateUserRecipeById,
+} from '../../utils/api';
 import './RecipePage.css';
 
 const RecipePage = (props) => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { isAuthenticated, login } = useContext(AuthContext);
   const [recipe, setRecipe] = useState(null);
   const [isMetric, setIsMetric] = useState(false);
@@ -29,7 +34,11 @@ const RecipePage = (props) => {
       setRecipe(props.recipe);
       setLoading(false);
     } else {
-      loadRecipeById(id);
+      if (window.location.pathname.includes('/user/')) {
+        loadUserRecipeById(id);
+      } else {
+        loadRecipeById(id);
+      }
     }
   }, [id, props.recipe]);
 
@@ -39,6 +48,18 @@ const RecipePage = (props) => {
       setRecipe(data);
     } catch (error) {
       console.error('Error fetching recipe:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadUserRecipeById = async (recipeId) => {
+    try {
+      const data = await fetchUserRecipeById(recipeId);
+      setRecipe(data);
+    } catch (error) {
+      console.error('Error fetching user recipe:', error);
       setError(error.message);
     } finally {
       setLoading(false);
@@ -61,7 +82,10 @@ const RecipePage = (props) => {
   const handleSaveClick = async () => {
     if (validateInputs()) {
       try {
-        const updatedRecipe = await updateRecipeById(recipe._id, editedRecipe);
+        const updatedRecipe = await updateUserRecipeById(
+          recipe._id,
+          editedRecipe
+        );
         setRecipe(updatedRecipe);
         setEditedRecipe(updatedRecipe);
         setSaveMessage('Recipe saved successfully.');
@@ -113,6 +137,10 @@ const RecipePage = (props) => {
     return isValid;
   };
 
+  const handleUpdateRecipeId = (newRecipeId) => {
+    navigate(`/recipe/user/${newRecipeId}`);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -158,7 +186,10 @@ const RecipePage = (props) => {
           />
           <div className="flex flex-col">
             <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2">
-              <AddToProfileButton recipeId={recipe._id} />
+              <AddToProfileButton
+                recipeId={recipe._id}
+                onUpdateRecipeId={handleUpdateRecipeId}
+              />
               <AddToCartButton />
               {isEditing ? (
                 <button

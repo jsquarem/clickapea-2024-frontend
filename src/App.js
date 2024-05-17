@@ -1,23 +1,20 @@
 import React, { useContext, useState } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import AuthContext, { AuthProvider } from './AuthContext';
 import HomePage from './pages/HomePage/HomePage';
 import RecipePage from './pages/RecipePage/RecipePage';
 import AddRecipePage from './pages/AddRecipePage/AddRecipePage';
 import CategoryPage from './pages/CategoryPage/CategoryPage';
+import RecipeListPage from './pages/RecipeListPage/RecipeListPage';
 import Protected from './Protected';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
+import ProtectedRoute from './ProtectedRoute';
 import './App.css';
 
 const App = () => {
-  const { isAuthenticated, setIsAuthenticated, user, setUser } =
+  const { isAuthenticated, setIsAuthenticated, user, setUser, loading } =
     useContext(AuthContext);
   const [showMenu, setShowMenu] = useState(false);
 
@@ -49,6 +46,10 @@ const App = () => {
     setUser(null);
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Router>
       <div className="App flex flex-col min-h-screen">
@@ -63,18 +64,31 @@ const App = () => {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/recipe/:id" element={<RecipePage />} />
             <Route path="/add-recipe" element={<AddRecipePage />} />
+            <Route path="/recipe/:id" element={<RecipePage />} />
+            <Route path="/recipes" element={<RecipeListPage />} />
+            <Route
+              path="/recipe/user/:id"
+              element={
+                <ProtectedRoute>
+                  <RecipePage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/categories"
               element={
-                isAuthenticated && user ? <CategoryPage /> : <Navigate to="/" />
+                <ProtectedRoute>
+                  <CategoryPage />
+                </ProtectedRoute>
               }
             />
             <Route
               path="/protected"
               element={
-                isAuthenticated && user ? <Protected /> : <Navigate to="/" />
+                <ProtectedRoute>
+                  <Protected />
+                </ProtectedRoute>
               }
             />
           </Routes>
