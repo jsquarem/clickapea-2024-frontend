@@ -7,7 +7,7 @@ import {
   addCategory,
 } from '../../utils/api';
 
-const AddToProfileButton = ({ recipeId }) => {
+const AddToProfileButton = ({ recipeId, onUpdateRecipeId }) => {
   const { isAuthenticated, login, user } = useContext(AuthContext);
   const [categories, setCategories] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -18,7 +18,7 @@ const AddToProfileButton = ({ recipeId }) => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      if (isAuthenticated) {
+      if (isAuthenticated && user && user._id) {
         const data = await fetchUserCategories(user._id);
         setCategories(data);
         const successCategories = data
@@ -28,7 +28,7 @@ const AddToProfileButton = ({ recipeId }) => {
       }
     };
     fetchCategories();
-  }, [isAuthenticated, user._id, recipeId]);
+  }, [isAuthenticated, user, recipeId]);
 
   const handleButtonClick = () => {
     setShowDropdown(!showDropdown);
@@ -44,7 +44,7 @@ const AddToProfileButton = ({ recipeId }) => {
   };
 
   const handleSaveCategory = async () => {
-    if (newCategory.trim() !== '') {
+    if (newCategory.trim() !== '' && user && user._id) {
       const data = await addCategory(newCategory, user._id);
       setCategories([...categories, data]);
       setNewCategory('');
@@ -65,8 +65,10 @@ const AddToProfileButton = ({ recipeId }) => {
         successfulCategories.filter((id) => id !== categoryId)
       );
     } else {
-      await addRecipeToCategory(categoryId, recipeId);
+      const response = await addRecipeToCategory(categoryId, recipeId);
+      const { userRecipeId } = response;
       setSuccessfulCategories([...successfulCategories, categoryId]);
+      onUpdateRecipeId(userRecipeId);
     }
   };
 

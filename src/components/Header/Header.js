@@ -45,7 +45,9 @@ const Header = () => {
 
   return (
     <header className="bg-green-200 p-4 flex items-center justify-between relative">
-      <img src={logoSrc} alt="Clickapea Logo" className="h-32" />
+      <Link to="/">
+        <img src={logoSrc} alt="Clickapea Logo" className="h-32" />
+      </Link>
       <button
         className="block lg:hidden text-green-500 hover:text-green-700 focus:outline-none"
         onClick={toggleMenu}
@@ -63,13 +65,21 @@ const Header = () => {
             <span className="ml-2 lg:ml-0">Home</span>
           </div>
         </Link>
+        <Link to="/recipes" className={getLinkClass('/recipes')}>
+          <div className="flex items-center lg:flex-col lg:items-center">
+            <i className="fa-solid fa-book lg:mb-1 lg:text-lg"></i>
+            <span className="ml-2 lg:ml-0">All Recipes</span>
+          </div>
+        </Link>
         {isAuthenticated && user && (
-          <Link to="/categories" className={getLinkClass('/categories')}>
-            <div className="flex items-center lg:flex-col lg:items-center">
-              <i className="fa-solid fa-list lg:mb-1 lg:text-lg"></i>
-              <span className="ml-2 lg:ml-0">Categories</span>
-            </div>
-          </Link>
+          <>
+            <Link to="/categories" className={getLinkClass('/categories')}>
+              <div className="flex items-center lg:flex-col lg:items-center">
+                <i className="fa-solid fa-folder lg:mb-1 lg:text-lg"></i>
+                <span className="ml-2 lg:ml-0">Categories</span>
+              </div>
+            </Link>
+          </>
         )}
         <Link to="/add-recipe" className={getLinkClass('/add-recipe')}>
           <div className="flex items-center lg:flex-col lg:items-center">

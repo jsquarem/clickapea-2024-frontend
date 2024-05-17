@@ -64,7 +64,7 @@ const Category = ({
                 {...provided.droppableProps}
                 className={`flex overflow-x-auto gap-4 min-h-32 w-full ${
                   snapshot.isDraggingOver ? 'bg-blue-100' : ''
-                }`}
+                } horizontal-scroll-container`}
               >
                 {recipes.map((recipe, recipeIndex) => (
                   <DraggableRecipe

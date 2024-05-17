@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 
@@ -7,6 +7,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const login = useGoogleLogin({
     onSuccess: async (response) => {
@@ -35,6 +36,7 @@ export const AuthProvider = ({ children }) => {
         const { token, user } = data;
 
         localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
 
         setIsAuthenticated(true);
         setUser(user);
@@ -56,10 +58,23 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     setUser(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+    if (token && storedUser) {
+      setIsAuthenticated(true);
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false);
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, user, login, logout, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );
