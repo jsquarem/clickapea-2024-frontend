@@ -5,7 +5,7 @@ import AuthContext, { AuthProvider } from './AuthContext';
 import HomePage from './pages/HomePage/HomePage';
 import RecipePage from './pages/RecipePage/RecipePage';
 import AddRecipePage from './pages/AddRecipePage/AddRecipePage';
-import CategoryPage from './pages/CategoryPage/CategoryPage';
+import CategoriesPage from './pages/CategoriesPage/CategoriesPage';
 import RecipeListPage from './pages/RecipeListPage/RecipeListPage';
 import Protected from './Protected';
 import Header from './components/Header/Header';
@@ -79,7 +79,7 @@ const App = () => {
               path="/categories"
               element={
                 <ProtectedRoute>
-                  <CategoryPage />
+                  <CategoriesPage />
                 </ProtectedRoute>
               }
             />

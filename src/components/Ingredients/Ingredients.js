@@ -104,65 +104,9 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
     }
   };
 
-  const imperialUnits = [
-    'teaspoon',
-    'tsp',
-    'tsp.',
-    'tablespoon',
-    'tbsp',
-    'tbsp.',
-    'cup',
-    'cups',
-    'pint',
-    'pt',
-    'pt.',
-    'quart',
-    'qt',
-    'qt.',
-    'gallon',
-    'gal',
-    'oz',
-    'ounce',
-    'ounces',
-    'lb',
-    'pound',
-    'pounds',
-    'in',
-    'inch',
-    'inches',
-  ];
+  const imperialUnits = ['cup', 'oz', 'lb', 'tsp', 'tbsp'];
 
-  const metricUnits = [
-    'milliliter',
-    'ml',
-    'millilitres',
-    'milliliters',
-    'ml.',
-    'liter',
-    'litre',
-    'liters',
-    'litres',
-    'l',
-    'g',
-    'gram',
-    'grams',
-    'gramme',
-    'grammes',
-    'kilogram',
-    'kg',
-    'kilograms',
-    'kilogrammes',
-    'cm',
-    'centimeter',
-    'centimetre',
-    'centimeters',
-    'centimetres',
-    'mm',
-    'millimeter',
-    'millimetre',
-    'millimeters',
-    'millimetres',
-  ];
+  const metricUnits = ['ml', 'g', 'l', 'kg'];
 
   const groupedOptions = [
     {

@@ -12,7 +12,7 @@ import {
   deleteCategory,
   reorderCategories,
 } from '../../utils/api';
-import './CategoryPage.css';
+import './CategoriesPage.css';
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -34,7 +34,7 @@ const sortCategoryOrder = (categoryOrder, categories) => {
   ];
 };
 
-const CategoryPage = () => {
+const CategoriesPage = () => {
   const { isAuthenticated, user } = useContext(AuthContext);
   const [recipes, setRecipes] = useState({});
   const [categories, setCategories] = useState({});
@@ -304,4 +304,4 @@ const CategoryPage = () => {
   );
 };
 
-export default CategoryPage;
+export default CategoriesPage;

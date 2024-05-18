@@ -15,7 +15,7 @@ const DraggableRecipe = ({ recipe, index }) => {
           <div className="absolute top-1 left-1 bg-gray-600 opacity-90 p-1 rounded z-10">
             <i className="fas fa-grip-vertical text-white"></i>
           </div>
-          <Link to={`/recipe/${recipe.id}`}>
+          <Link to={`/recipe/user/${recipe.id}`}>
             <div
               className="w-48 h-32 bg-cover bg-center rounded-lg"
               style={{ backgroundImage: `url("${recipe.image}")` }}
