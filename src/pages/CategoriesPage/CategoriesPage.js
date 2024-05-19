@@ -3,7 +3,7 @@ import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import AuthContext from '../../AuthContext';
 import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
 import Category from '../../components/Category/Category';
-// import FlipMove from 'react-flip-move';
+import FlipMove from 'react-flip-move';
 import {
   fetchCategories,
   reorderRecipes,
@@ -231,7 +231,7 @@ const CategoriesPage = () => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="bg-gray-100 text-gray-800 p-6 max-w-6xl mx-auto">
+      <div className="p-6 max-w-6xl mx-auto">
         <div className="flex flex-row justify-center items-start">
           <h1 className="text-4xl font-bold text-center pb-4">Your Recipes</h1>
           <div className="relative group ml-2 mt-1">
@@ -242,7 +242,7 @@ const CategoriesPage = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col md:flex-row mb-4 w-full justify-between space-y-4 md:space-y-0 md:space-x-8">
+        <div className="flex flex-col md:flex-row w-full justify-between space-y-4 md:space-y-0 md:space-x-8">
           <div className="w-full lg:w-1/3">
             <h2 className="text-2xl font-bold text-left">Add a Category</h2>
             <div className="mb-4 flex justify-start items-center space-x-2 w-full">
@@ -265,36 +265,37 @@ const CategoriesPage = () => {
             <AddRecipeForm />
           </div>
         </div>
-
+      </div>
+      <div className="bg-gray-100 text-gray-800 p-6 max-w-6xl mx-auto lg:max-h-[46vh] lg:overflow-y-auto">
         <Droppable droppableId="all-categories" type="CATEGORY">
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
-              {/* <FlipMove duration={300} easing="ease-in-out"> */}
-              {categoryOrder.map((categoryId, index) => {
-                const category = categories[categoryId];
-                if (!category) return null;
-                const categoryRecipes = category.recipeIds.map(
-                  (recipeId) => recipes[recipeId]
-                );
+              <FlipMove duration={300} easing="ease-in-out">
+                {categoryOrder.map((categoryId, index) => {
+                  const category = categories[categoryId];
+                  if (!category) return null;
+                  const categoryRecipes = category.recipeIds.map(
+                    (recipeId) => recipes[recipeId]
+                  );
 
-                return (
-                  <div key={category.id}>
-                    <Category
-                      key={category.id} // Ensure proper key for FlipMove
-                      category={category}
-                      userId={user._id}
-                      index={index}
-                      recipes={categoryRecipes}
-                      categoryOrder={categoryOrder}
-                      setCategoryOrder={setCategoryOrder}
-                      moveCategoryUp={moveCategoryUp}
-                      moveCategoryDown={moveCategoryDown}
-                      handleDeleteCategory={handleDeleteCategory}
-                    />
-                  </div>
-                );
-              })}
-              {/* </FlipMove> */}
+                  return (
+                    <div key={category.id}>
+                      <Category
+                        key={category.id} // Ensure proper key for FlipMove
+                        category={category}
+                        userId={user._id}
+                        index={index}
+                        recipes={categoryRecipes}
+                        categoryOrder={categoryOrder}
+                        setCategoryOrder={setCategoryOrder}
+                        moveCategoryUp={moveCategoryUp}
+                        moveCategoryDown={moveCategoryDown}
+                        handleDeleteCategory={handleDeleteCategory}
+                      />
+                    </div>
+                  );
+                })}
+              </FlipMove>
               {provided.placeholder}
             </div>
           )}

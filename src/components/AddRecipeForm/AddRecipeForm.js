@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addRecipe } from '../../utils/api';
+import Loading from '../Loading/Loading';
 
 const AddRecipeForm = () => {
   const [url, setUrl] = useState('');
@@ -43,7 +44,7 @@ const AddRecipeForm = () => {
           Add Recipe
         </button>
       </div>
-      {loading && <div className="text-center mt-4">Loading...</div>}
+      {loading && <Loading pageClasses="" />}
       {error && <div className="text-red-500 text-center mt-4">{error}</div>}
     </form>
   );

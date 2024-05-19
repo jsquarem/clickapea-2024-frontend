@@ -5,14 +5,14 @@ import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
 const HomePage = () => {
   return (
     <div>
-      <header className="text-center py-8 bg-white shadow">
+      <header className="text-center py-8 bg-white">
         <h1 className="text-3xl lg:text-4xl font-bold">
           Welcome to Clickapea!
         </h1>
         <p className="text-xl text-gray-600">Your ultimate sous chef bestie</p>
       </header>
 
-      <section className="py-8 bg-white">
+      <section className="py-8 bg-white max-w-6xl mx-auto">
         <div className="w-full flex justify-center pb-16">
           <div className="w-11/12 lg:w-1/2 text-center bg-gray-100 border border-gray-300 p-6 rounded-lg shadow-md">
             <AddRecipeForm />
@@ -21,7 +21,7 @@ const HomePage = () => {
         <h2 className="text-3xl font-semibold text-center mb-8">
           Key Features
         </h2>
-        <div className="max-w-6xl mx-auto grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           <div className="text-center">
             <h3 className="text-2xl font-semibold mb-2">Recipe Management</h3>
             <p className="text-gray-600 px-2">

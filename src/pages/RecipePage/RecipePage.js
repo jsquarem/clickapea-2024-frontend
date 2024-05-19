@@ -10,6 +10,7 @@ import AddToProfileButton from '../../components/AddToProfileButton/AddToProfile
 import AddToCartButton from '../../components/AddToCartButton/AddToCartButton';
 import AuthContext from '../../AuthContext';
 import ImageUploadModal from '../../components/ImageUploadModal/ImageUploadModal';
+import Loading from '../../components/Loading/Loading';
 import {
   fetchRecipeById,
   fetchUserRecipeById,
@@ -220,7 +221,7 @@ const RecipePage = (props) => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (error) {
@@ -246,8 +247,8 @@ const RecipePage = (props) => {
     currentImageIndex + visibleImageCount < displayImages.length;
 
   return (
-    <div className="bg-gray-100 text-gray-800 text-left">
-      <main className="max-w-6xl mx-auto p-6 bg-white shadow-md mt-6 rounded-lg">
+    <div className="text-gray-800 text-left">
+      <main className="max-w-6xl mx-auto p-6 bg-white mt-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">{recipe.title}</h2>
           {saveMessage && <div className="text-green-500">{saveMessage}</div>}
