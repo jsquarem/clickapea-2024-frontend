@@ -251,11 +251,11 @@ const CategoriesPage = () => {
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 placeholder="New Category Name"
-                className="border p-2 rounded w-7/12 lg:w-3/4"
+                className="border p-2 rounded w-7/12 lg:w-2/3"
               />
               <button
                 onClick={handleAddCategory}
-                className="bg-blue-500 text-white p-2 rounded w-5/12 lg:w-1/4"
+                className="bg-blue-500 text-white p-2 rounded w-5/12 lg:w-1/3"
               >
                 Add Category
               </button>
