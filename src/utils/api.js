@@ -104,4 +104,17 @@ export const fetchAllRecipes = async () => {
   return response.data;
 };
 
+export const uploadAdditionalImage = async (recipeId, formData) => {
+  const response = await api.post(
+    `/api/recipes/user/${recipeId}/images`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+  return response.data;
+};
+
 export default api;

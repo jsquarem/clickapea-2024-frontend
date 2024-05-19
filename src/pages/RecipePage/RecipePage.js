@@ -9,11 +9,14 @@ import NutritionalInfo from '../../components/NutritionalInfo/NutritionalInfo';
 import AddToProfileButton from '../../components/AddToProfileButton/AddToProfileButton';
 import AddToCartButton from '../../components/AddToCartButton/AddToCartButton';
 import AuthContext from '../../AuthContext';
+import ImageUploadModal from '../../components/ImageUploadModal/ImageUploadModal';
 import {
   fetchRecipeById,
   fetchUserRecipeById,
   updateUserRecipeById,
+  uploadAdditionalImage,
 } from '../../utils/api';
+
 import './RecipePage.css';
 
 const RecipePage = (props) => {
@@ -28,10 +31,17 @@ const RecipePage = (props) => {
   const [editedRecipe, setEditedRecipe] = useState(null);
   const [validationError, setValidationError] = useState(null);
   const [saveMessage, setSaveMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [visibleImageCount, setVisibleImageCount] = useState(5);
+  const [mainImage, setMainImage] = useState('');
+  const [displayImages, setDisplayImages] = useState([]);
 
   useEffect(() => {
     if (props.recipe) {
       setRecipe(props.recipe);
+      setMainImage(props.recipe.image);
+      setDisplayImages([props.recipe.image, ...props.recipe.additional_images]);
       setLoading(false);
     } else {
       if (window.location.pathname.includes('/user/')) {
@@ -40,12 +50,28 @@ const RecipePage = (props) => {
         loadRecipeById(id);
       }
     }
+
+    const handleResize = () => {
+      setVisibleImageCount(window.innerWidth < 768 ? 2 : 5);
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
   }, [id, props.recipe]);
 
   const loadRecipeById = async (recipeId) => {
     try {
       const data = await fetchRecipeById(recipeId);
       setRecipe(data);
+      setMainImage(data.image);
+
+      const imagesArray = [data.image];
+      if (Array.isArray(data.additional_images)) {
+        imagesArray.push(...data.additional_images);
+      }
+      setDisplayImages(imagesArray);
     } catch (error) {
       console.error('Error fetching recipe:', error);
       setError(error.message);
@@ -58,6 +84,13 @@ const RecipePage = (props) => {
     try {
       const data = await fetchUserRecipeById(recipeId);
       setRecipe(data);
+      setMainImage(data.image);
+
+      const imagesArray = [data.image];
+      if (Array.isArray(data.additional_images)) {
+        imagesArray.push(...data.additional_images);
+      }
+      setDisplayImages(imagesArray);
     } catch (error) {
       console.error('Error fetching user recipe:', error);
       setError(error.message);
@@ -141,6 +174,48 @@ const RecipePage = (props) => {
     navigate(`/recipe/user/${newRecipeId}`);
   };
 
+  const handleImageClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleImageUpload = async (files) => {
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append('images', file);
+    });
+
+    try {
+      const updatedRecipe = await uploadAdditionalImage(recipe._id, formData);
+      setRecipe(updatedRecipe);
+      setDisplayImages([
+        updatedRecipe.image,
+        ...updatedRecipe.additional_images,
+      ]);
+    } catch (error) {
+      console.error('Error uploading images:', error);
+    }
+  };
+
+  const handleNextImage = () => {
+    if (currentImageIndex + visibleImageCount < displayImages.length) {
+      setCurrentImageIndex(currentImageIndex + 1);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (currentImageIndex > 0) {
+      setCurrentImageIndex(currentImageIndex - 1);
+    }
+  };
+
+  const handleImageSelect = (image) => {
+    setMainImage(image);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -162,6 +237,10 @@ const RecipePage = (props) => {
       ? `${hours} hrs ${remainingMinutes} mins`
       : `${remainingMinutes} mins`;
   };
+
+  const canNavigatePrev = currentImageIndex > 0;
+  const canNavigateNext =
+    currentImageIndex + visibleImageCount < displayImages.length;
 
   return (
     <div className="bg-gray-100 text-gray-800 text-left">
@@ -196,7 +275,6 @@ const RecipePage = (props) => {
                   onClick={handleSaveClick}
                   className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
                 >
-                  <i className="fas fa-save mr-2"></i>
                   <span>Save</span>
                 </button>
               ) : (
@@ -205,7 +283,6 @@ const RecipePage = (props) => {
                     onClick={handleEditClick}
                     className={`font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto text-white ${isAuthenticated ? 'bg-blue-500 hover:bg-blue-700' : 'bg-gray-500 cursor-not-allowed'}`}
                   >
-                    <i className="fas fa-edit mr-2"></i>
                     <span>Edit</span>
                   </button>
                   {!isAuthenticated && (
@@ -221,16 +298,76 @@ const RecipePage = (props) => {
             )}
           </div>
         </div>
-        <div className="flex flex-wrap lg:flex-nowrap mb-6">
-          <div
-            className={`w-full lg:w-1/2 h-64 lg:h-auto rounded-lg mb-4 lg:mb-0 ${
-              recipe.image ? 'bg-cover bg-center' : 'bg-gray-300'
-            }`}
-            style={{
-              backgroundImage: recipe.image ? `url("${recipe.image}")` : 'none',
-            }}
-          ></div>
-          <section className="w-full lg:w-1/2 lg:pl-6">
+        <div className="flex flex-wrap lg:flex-nowrap mb-6 min-h-[40rem]">
+          <div className="w-full lg:w-1/2 lg:h-[32rem] h-full rounded-lg mb-4 lg:mb-0">
+            <div className="relative h-full">
+              <img
+                src={mainImage}
+                alt={recipe.title}
+                className="rounded-lg cursor-pointer w-full h-[32rem] lg:h-full object-cover"
+              />
+              <div
+                className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity rounded-lg cursor-pointer"
+                onClick={handleImageClick}
+              >
+                <span className="text-white text-4xl">+</span>
+              </div>
+            </div>
+            {displayImages.length > 1 && (
+              <div className="w-full mt-4 flex justify-between items-center space-x-2">
+                <button
+                  onClick={handlePrevImage}
+                  className={`h-full ${
+                    canNavigatePrev
+                      ? 'text-blue-500 hover:bg-blue-800'
+                      : 'opacity-50 cursor-not-allowed text-gray-500'
+                  } ${!canNavigatePrev ? '' : 'hover:bg-blue-100'} rounded-l-lg`}
+                  disabled={!canNavigatePrev}
+                >
+                  <i className="fas fa-chevron-left text-2xl"></i>
+                </button>
+                <div className="flex flex-wrap justify-center space-x-2">
+                  {displayImages
+                    .slice(
+                      currentImageIndex,
+                      currentImageIndex + visibleImageCount
+                    )
+                    .map((image, index, arr) => (
+                      <div
+                        key={index}
+                        className={`w-20 h-20 transform transition duration-300 ease-in-out hover:scale-105 cursor-pointer ${
+                          index === 0 ? 'rounded-l-lg' : ''
+                        } ${index === arr.length - 1 ? 'rounded-r-lg' : ''}`}
+                        onClick={() => handleImageSelect(image)}
+                      >
+                        <img
+                          src={image}
+                          alt={`Additional ${index}`}
+                          className={`w-full h-full object-cover ${
+                            mainImage === image
+                              ? 'border-4 border-blue-500'
+                              : ''
+                          }`}
+                        />
+                      </div>
+                    ))}
+                </div>
+                <button
+                  onClick={handleNextImage}
+                  className={`h-full ${
+                    canNavigateNext
+                      ? 'text-blue-500 hover:bg-blue-800'
+                      : 'opacity-50 cursor-not-allowed text-gray-500'
+                  } ${!canNavigateNext ? '' : 'hover:bg-blue-100'} rounded-r-lg`}
+                  disabled={!canNavigateNext}
+                >
+                  <i className="fas fa-chevron-right text-2xl"></i>
+                </button>
+              </div>
+            )}
+          </div>
+
+          <section className="w-full lg:w-1/2 lg:pl-6 mt-6 lg:mt-0">
             <ToggleSwitch onToggle={handleToggle} />
             <Ingredients
               ingredients={
@@ -296,6 +433,12 @@ const RecipePage = (props) => {
           </div>
         </div>
       </main>
+
+      <ImageUploadModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onUpload={handleImageUpload}
+      />
     </div>
   );
 };
