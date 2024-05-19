@@ -100,7 +100,7 @@ const AddToProfileButton = ({ recipeId, onUpdateRecipeId }) => {
         <span>Add to Profile</span>
       </button>
       {showDropdown && (
-        <div className="absolute top-full mt-2 bg-white border rounded shadow-lg p-4 z-10 w-64">
+        <div className="absolute top-full mt-2 bg-white border rounded shadow-lg p-4 z-10 w-64 right-0 lg:right-auto lg:left-0">
           {!isAuthenticated ? (
             <button
               onClick={handleLogin}

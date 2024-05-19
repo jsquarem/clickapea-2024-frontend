@@ -27,6 +27,11 @@ const Header = () => {
     };
   }, [dropdownRef]);
 
+  useEffect(() => {
+    // Close the mobile menu when navigating to a new page
+    setMenuOpen(false);
+  }, [location]);
+
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -46,7 +51,7 @@ const Header = () => {
   return (
     <header className="bg-green-200 p-4 flex items-center justify-between relative">
       <Link to="/">
-        <img src={logoSrc} alt="Clickapea Logo" className="h-32" />
+        <img src={logoSrc} alt="Clickapea Logo" className="h-24 lg:h-32" />
       </Link>
       <button
         className="block lg:hidden text-green-500 hover:text-green-700 focus:outline-none"

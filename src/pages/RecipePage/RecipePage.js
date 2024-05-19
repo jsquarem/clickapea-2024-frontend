@@ -195,6 +195,9 @@ const RecipePage = (props) => {
         updatedRecipe.image,
         ...updatedRecipe.additional_images,
       ]);
+      if (!window.location.pathname.includes('/user/')) {
+        handleUpdateRecipeId(updatedRecipe._id);
+      }
     } catch (error) {
       console.error('Error uploading images:', error);
     }

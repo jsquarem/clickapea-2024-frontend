@@ -6,13 +6,15 @@ const HomePage = () => {
   return (
     <div>
       <header className="text-center py-8 bg-white shadow">
-        <h1 className="text-4xl font-bold">Welcome to Clickapea!</h1>
+        <h1 className="text-3xl lg:text-4xl font-bold">
+          Welcome to Clickapea!
+        </h1>
         <p className="text-xl text-gray-600">Your ultimate sous chef bestie</p>
       </header>
 
       <section className="py-8 bg-white">
         <div className="w-full flex justify-center pb-16">
-          <div className="w-1/2 text-center bg-gray-100 border border-gray-300 p-6 rounded-lg shadow-md">
+          <div className="w-11/12 lg:w-1/2 text-center bg-gray-100 border border-gray-300 p-6 rounded-lg shadow-md">
             <AddRecipeForm />
           </div>
         </div>

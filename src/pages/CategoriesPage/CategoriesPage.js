@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import AuthContext from '../../AuthContext';
 import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
 import Category from '../../components/Category/Category';
-import FlipMove from 'react-flip-move';
+// import FlipMove from 'react-flip-move';
 import {
   fetchCategories,
   reorderRecipes,
@@ -231,7 +231,7 @@ const CategoriesPage = () => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="bg-gray-100 text-gray-800 p-6 w-full">
+      <div className="bg-gray-100 text-gray-800 p-6 max-w-6xl mx-auto">
         <div className="flex flex-row justify-center items-start">
           <h1 className="text-4xl font-bold text-center pb-4">Your Recipes</h1>
           <div className="relative group ml-2 mt-1">
@@ -245,17 +245,17 @@ const CategoriesPage = () => {
         <div className="flex flex-col md:flex-row mb-4 w-full justify-between space-y-4 md:space-y-0 md:space-x-8">
           <div className="w-full lg:w-1/3">
             <h2 className="text-2xl font-bold text-left">Add a Category</h2>
-            <div className="mb-4 flex justify-center items-center">
+            <div className="mb-4 flex justify-start items-center space-x-2 w-full">
               <input
                 type="text"
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 placeholder="New Category Name"
-                className="border p-2 rounded mr-2 flex-1 w-full md:w-auto"
+                className="border p-2 rounded w-7/12 lg:w-3/4"
               />
               <button
                 onClick={handleAddCategory}
-                className="bg-blue-500 text-white p-2 rounded"
+                className="bg-blue-500 text-white p-2 rounded w-5/12 lg:w-1/4"
               >
                 Add Category
               </button>
@@ -269,32 +269,32 @@ const CategoriesPage = () => {
         <Droppable droppableId="all-categories" type="CATEGORY">
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
-              <FlipMove duration={300} easing="ease-in-out">
-                {categoryOrder.map((categoryId, index) => {
-                  const category = categories[categoryId];
-                  if (!category) return null;
-                  const categoryRecipes = category.recipeIds.map(
-                    (recipeId) => recipes[recipeId]
-                  );
+              {/* <FlipMove duration={300} easing="ease-in-out"> */}
+              {categoryOrder.map((categoryId, index) => {
+                const category = categories[categoryId];
+                if (!category) return null;
+                const categoryRecipes = category.recipeIds.map(
+                  (recipeId) => recipes[recipeId]
+                );
 
-                  return (
-                    <div key={category.id}>
-                      <Category
-                        key={category.id} // Ensure proper key for FlipMove
-                        category={category}
-                        userId={user._id}
-                        index={index}
-                        recipes={categoryRecipes}
-                        categoryOrder={categoryOrder}
-                        setCategoryOrder={setCategoryOrder}
-                        moveCategoryUp={moveCategoryUp}
-                        moveCategoryDown={moveCategoryDown}
-                        handleDeleteCategory={handleDeleteCategory}
-                      />
-                    </div>
-                  );
-                })}
-              </FlipMove>
+                return (
+                  <div key={category.id}>
+                    <Category
+                      key={category.id} // Ensure proper key for FlipMove
+                      category={category}
+                      userId={user._id}
+                      index={index}
+                      recipes={categoryRecipes}
+                      categoryOrder={categoryOrder}
+                      setCategoryOrder={setCategoryOrder}
+                      moveCategoryUp={moveCategoryUp}
+                      moveCategoryDown={moveCategoryDown}
+                      handleDeleteCategory={handleDeleteCategory}
+                    />
+                  </div>
+                );
+              })}
+              {/* </FlipMove> */}
               {provided.placeholder}
             </div>
           )}

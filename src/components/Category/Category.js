@@ -1,7 +1,6 @@
 import React from 'react';
-import { Droppable } from 'react-beautiful-dnd';
+import { Droppable } from '@hello-pangea/dnd';
 import DraggableRecipe from '../DraggableRecipe/DraggableRecipe';
-import './Category.css';
 
 const Category = ({
   category,
@@ -13,7 +12,7 @@ const Category = ({
   handleDeleteCategory,
 }) => {
   return (
-    <div className="bg-white p-4 rounded-lg shadow mb-4 transition-transform duration-300 ease-in-out draggable-category min">
+    <div className="bg-white p-4 rounded-lg shadow mb-4 transition-transform duration-300 ease-in-out draggable-category">
       <div className="flex">
         <div className="flex flex-col items-center justify-center mr-4">
           <button
@@ -62,9 +61,14 @@ const Category = ({
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className={`flex overflow-x-auto gap-4 min-h-32 w-full ${
+                className={`flex overflow-x-auto gap-4 min-h-32 max-w-[17rem] lg:max-w-[64rem] pb-2 ${
                   snapshot.isDraggingOver ? 'bg-blue-100' : ''
-                } horizontal-scroll-container`}
+                }`}
+                style={{
+                  scrollbarWidth: 'auto',
+                  WebkitOverflowScrolling: 'touch',
+                  overflowY: 'hidden',
+                }}
               >
                 {recipes.map((recipe, recipeIndex) => (
                   <DraggableRecipe
