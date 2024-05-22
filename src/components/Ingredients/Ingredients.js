@@ -68,7 +68,13 @@ const decimalToFraction = (decimal) => {
   return `${numerator}/${denominator}`;
 };
 
-const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
+const Ingredients = ({
+  ingredients,
+  isMetric,
+  isEditing,
+  onInputChange,
+  onRemove,
+}) => {
   const [errors, setErrors] = useState({});
 
   const handleInputChange = (e, index, field, subField) => {
@@ -81,7 +87,6 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
 
     const newIngredients = [...ingredients];
     if (subField) {
-      // Ensure the subfield object exists
       if (!newIngredients[index][field]) {
         newIngredients[index][field] = {};
       }
@@ -91,7 +96,6 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
     }
     onInputChange(e, index, field, subField);
 
-    // Validate quantity field
     if (subField === 'quantity') {
       const isValid = value === '' || !isNaN(value);
       setErrors((prevErrors) => ({
@@ -105,7 +109,6 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
   };
 
   const imperialUnits = ['cup', 'oz', 'lb', 'tsp', 'tbsp'];
-
   const metricUnits = ['ml', 'g', 'l', 'kg'];
 
   const groupedOptions = [
@@ -124,112 +127,118 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
   let displayAmount;
 
   return (
-    <section className="mb-6">
-      <ul id="ingredients-list" className="list-disc list-inside mb-4">
-        {ingredients.map((ingredient, index) => {
-          const amount = isMetric ? ingredient.metric : ingredient.imperial;
-          const other = ingredient.other;
+    <ul id="ingredients-list" className="list-disc list-inside mb-4">
+      {ingredients.map((ingredient, index) => {
+        const amount = isMetric ? ingredient.metric : ingredient.imperial;
+        const other = ingredient.other;
 
-          displayAmount = '';
-          if (amount && amount.quantity) {
-            const roundedQuantity = Math.round(amount.quantity * 100) / 100;
-            displayAmount = isMetric
-              ? `${roundedQuantity} ${amount.unit || ''}`
-              : `${decimalToFraction(roundedQuantity)} ${amount.unit || ''}`;
-          } else if (other && other.quantity) {
-            const roundedQuantity = Math.round(other.quantity * 100) / 100;
-            displayAmount = isMetric
-              ? `${roundedQuantity} ${other.unit || ''}`
-              : `${decimalToFraction(roundedQuantity)} ${other.unit || ''}`;
-          }
+        displayAmount = '';
+        if (amount && amount.quantity) {
+          const roundedQuantity = Math.round(amount.quantity * 100) / 100;
+          displayAmount = isMetric
+            ? `${roundedQuantity} ${amount.unit || ''}`
+            : `${decimalToFraction(roundedQuantity)} ${amount.unit || ''}`;
+        } else if (other && other.quantity) {
+          const roundedQuantity = Math.round(other.quantity * 100) / 100;
+          displayAmount = isMetric
+            ? `${roundedQuantity} ${other.unit || ''}`
+            : `${decimalToFraction(roundedQuantity)} ${other.unit || ''}`;
+        }
 
-          return (
-            <div key={index} className="mb-2">
-              <li className="items-center list-item">
-                {isEditing ? (
-                  <div className="flex flex-row w-full gap-2">
-                    <div className="w-1/6">
-                      <input
-                        type="text"
-                        value={
-                          amount?.quantity !== undefined
-                            ? amount.quantity
-                            : other?.quantity !== undefined
-                              ? other.quantity
-                              : ''
-                        }
-                        onChange={(e) =>
-                          handleInputChange(
-                            e,
-                            index,
-                            isMetric ? 'metric' : 'imperial',
-                            'quantity'
-                          )
-                        }
-                        className="form-input w-full h-10"
-                      />
-                    </div>
-                    <div className="w-1/4">
-                      <Select
-                        value={{
-                          value: amount?.unit || '',
-                          label: amount?.unit || '',
-                        }}
-                        onChange={(selectedOption) =>
-                          handleInputChange(
-                            { target: { value: selectedOption.value } },
-                            index,
-                            isMetric ? 'metric' : 'imperial',
-                            'unit'
-                          )
-                        }
-                        options={groupedOptions}
-                        className="form-select w-full"
-                        styles={{
-                          control: (base) => ({
-                            ...base,
-                            height: '2.5rem',
-                            minHeight: '2.5rem',
-                          }),
-                          valueContainer: (base) => ({
-                            ...base,
-                            height: '2.5rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                          }),
-                          input: (base) => ({
-                            ...base,
-                            margin: 0,
-                            padding: 0,
-                          }),
-                        }}
-                      />
-                    </div>
-                    <div className="flex-grow">
-                      <input
-                        type="text"
-                        value={ingredient.name}
-                        onChange={(e) => handleInputChange(e, index, 'name')}
-                        className="form-input w-full h-10"
-                      />
-                    </div>
+        return (
+          <div key={index} className="mb-2 flex items-center">
+            <li className="items-center list-item flex-grow">
+              {isEditing ? (
+                <div className="flex flex-row w-full gap-2">
+                  <div className="w-1/6">
+                    <input
+                      type="text"
+                      value={
+                        amount?.quantity !== undefined
+                          ? amount.quantity
+                          : other?.quantity !== undefined
+                            ? other.quantity
+                            : ''
+                      }
+                      onChange={(e) =>
+                        handleInputChange(
+                          e,
+                          index,
+                          isMetric ? 'metric' : 'imperial',
+                          'quantity'
+                        )
+                      }
+                      className="form-input w-full h-10"
+                    />
                   </div>
-                ) : (
-                  <>
-                    {displayAmount} {ingredient.name}
-                  </>
-                )}
-              </li>
-              {errors[index]?.quantity && (
-                <span className="text-red-500 text-sm">
-                  Quantity must be a number
-                </span>
+                  <div className="w-1/4">
+                    <Select
+                      value={{
+                        value: amount?.unit || '',
+                        label: amount?.unit || '',
+                      }}
+                      onChange={(selectedOption) =>
+                        handleInputChange(
+                          { target: { value: selectedOption.value } },
+                          index,
+                          isMetric ? 'metric' : 'imperial',
+                          'unit'
+                        )
+                      }
+                      options={groupedOptions}
+                      className="form-select w-full"
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          height: '2.5rem',
+                          minHeight: '2.5rem',
+                        }),
+                        valueContainer: (base) => ({
+                          ...base,
+                          height: '2.5rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                        }),
+                        input: (base) => ({
+                          ...base,
+                          margin: 0,
+                          padding: 0,
+                        }),
+                      }}
+                    />
+                  </div>
+                  <div className="flex-grow">
+                    <input
+                      type="text"
+                      value={ingredient.name}
+                      onChange={(e) => handleInputChange(e, index, 'name')}
+                      className="form-input w-full h-10"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {displayAmount} {ingredient.name}
+                </>
               )}
-            </div>
-          );
-        })}
-      </ul>
-    </section>
+            </li>
+            {isEditing && (
+              <button
+                onClick={() => onRemove(index)}
+                className="ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            )}
+            {errors[index]?.quantity && (
+              <span className="text-red-500 text-sm">
+                Quantity must be a number
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </ul>
   );
 };
 

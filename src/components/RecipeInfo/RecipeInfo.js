@@ -13,7 +13,7 @@ const RecipeInfo = ({
   <div className="mb-4 text-gray-600 w-1/2">
     {isEditing ? (
       <>
-        <div className="editable-field">
+        <div className="editable-field py-1 py-1">
           <label>Author:</label>
           <input
             type="text"
@@ -22,7 +22,7 @@ const RecipeInfo = ({
             className="form-input"
           />
         </div>
-        <div className="editable-field">
+        <div className="editable-field py-1">
           <label>Source:</label>
           <input
             type="text"
@@ -31,7 +31,7 @@ const RecipeInfo = ({
             className="form-input"
           />
         </div>
-        <div className="editable-field">
+        <div className="editable-field py-1">
           <label>Recipe URL:</label>
           <input
             type="text"
@@ -40,7 +40,7 @@ const RecipeInfo = ({
             className="form-input"
           />
         </div>
-        <div className="editable-field">
+        <div className="editable-field py-1">
           <label>Total Time:</label>
           <input
             type="text"
@@ -54,7 +54,7 @@ const RecipeInfo = ({
             </span>
           )}
         </div>
-        <div className="editable-field">
+        <div className="editable-field py-1">
           <label>Servings:</label>
           <input
             type="text"

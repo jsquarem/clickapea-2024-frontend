@@ -4,6 +4,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import AuthContext, { AuthProvider } from './AuthContext';
 import HomePage from './pages/HomePage/HomePage';
 import RecipePage from './pages/RecipePage/RecipePage';
+import CreateRecipePage from './pages/CreateRecipePage/CreateRecipePage';
 import AddRecipePage from './pages/AddRecipePage/AddRecipePage';
 import CategoriesPage from './pages/CategoriesPage/CategoriesPage';
 import RecipeListPage from './pages/RecipeListPage/RecipeListPage';
@@ -67,6 +68,7 @@ const App = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/add-recipe" element={<AddRecipePage />} />
             <Route path="/recipe/:id" element={<RecipePage />} />
+            <Route path="/create-recipe" element={<CreateRecipePage />} />
             <Route path="/recipes" element={<RecipeListPage />} />
             <Route
               path="/recipe/user/:id"

@@ -220,6 +220,57 @@ const RecipePage = (props) => {
     setMainImage(image);
   };
 
+  const addIngredient = () => {
+    const newIngredients = [
+      ...editedRecipe.ingredients,
+      {
+        name: '',
+        metric: { quantity: '', unit: '' },
+        imperial: { quantity: '', unit: '' },
+        other: { quantity: '', unit: '' },
+      },
+    ];
+    setEditedRecipe({
+      ...editedRecipe,
+      ingredients: newIngredients,
+    });
+  };
+
+  const addEquipment = () => {
+    const newEquipment = [...editedRecipe.equipment, ''];
+    setEditedRecipe({
+      ...editedRecipe,
+      equipment: newEquipment,
+    });
+  };
+
+  const addInstruction = () => {
+    const newInstructions = [...editedRecipe.instructions, ''];
+    setEditedRecipe({
+      ...editedRecipe,
+      instructions: newInstructions,
+    });
+  };
+
+  const removeIngredient = (index) => {
+    const newIngredients = editedRecipe.ingredients.filter(
+      (_, i) => i !== index
+    );
+    setEditedRecipe({ ...editedRecipe, ingredients: newIngredients });
+  };
+
+  const removeEquipment = (index) => {
+    const newEquipment = editedRecipe.equipment.filter((_, i) => i !== index);
+    setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
+  };
+
+  const removeInstruction = (index) => {
+    const newInstructions = editedRecipe.instructions.filter(
+      (_, i) => i !== index
+    );
+    setEditedRecipe({ ...editedRecipe, instructions: newInstructions });
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -302,7 +353,7 @@ const RecipePage = (props) => {
             )}
           </div>
         </div>
-        <div className="flex flex-wrap lg:flex-nowrap mb-6 min-h-[40rem]">
+        <div className="flex flex-wrap lg:flex-nowrap mb-6 min-h-[38rem]">
           <div className="w-full lg:w-1/2 lg:h-[32rem] h-full rounded-lg mb-4 lg:mb-0">
             <div className="relative h-full">
               <img
@@ -372,53 +423,100 @@ const RecipePage = (props) => {
           </div>
 
           <section className="w-full lg:w-1/2 lg:pl-6 mt-6 lg:mt-0">
-            <ToggleSwitch onToggle={handleToggle} />
-            <Ingredients
-              ingredients={
-                isEditing ? editedRecipe.ingredients : recipe.ingredients
-              }
-              isMetric={isMetric}
-              isEditing={isEditing}
-              onInputChange={(e, index, field, subField) => {
-                const newIngredients = [...editedRecipe.ingredients];
-                if (subField) {
-                  newIngredients[index][field][subField] = e.target.value;
-                } else {
-                  newIngredients[index][field] = e.target.value;
+            <section className="mb-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-xl font-semibold">
+                  {isEditing ? (
+                    <button className="text-blue-500" onClick={addIngredient}>
+                      <i className="fas fa-plus"></i> Add Ingredient
+                    </button>
+                  ) : (
+                    'Ingredients'
+                  )}
+                </h3>
+                <ToggleSwitch onToggle={handleToggle} />
+              </div>
+              <Ingredients
+                ingredients={
+                  isEditing ? editedRecipe.ingredients : recipe.ingredients
                 }
-                setEditedRecipe({
-                  ...editedRecipe,
-                  ingredients: newIngredients,
-                });
-              }}
-            />
-            <Equipment
-              equipment={isEditing ? editedRecipe.equipment : recipe.equipment}
-              isEditing={isEditing}
-              onInputChange={(e, index) => {
-                const newEquipment = [...editedRecipe.equipment];
-                newEquipment[index] = e.target.value;
-                setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
-              }}
-            />
+                isMetric={isMetric}
+                isEditing={isEditing}
+                onInputChange={(e, index, field, subField) => {
+                  const newIngredients = [...editedRecipe.ingredients];
+                  if (subField) {
+                    newIngredients[index][field][subField] = e.target.value;
+                  } else {
+                    newIngredients[index][field] = e.target.value;
+                  }
+                  setEditedRecipe({
+                    ...editedRecipe,
+                    ingredients: newIngredients,
+                  });
+                }}
+                onRemove={removeIngredient}
+              />
+            </section>
+            <section className="mb-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-xl font-semibold">
+                  {isEditing ? (
+                    <button className="text-blue-500" onClick={addEquipment}>
+                      <i className="fas fa-plus"></i> Add Equipment
+                    </button>
+                  ) : (
+                    'Equipment'
+                  )}
+                </h3>
+              </div>
+              <Equipment
+                equipment={
+                  isEditing ? editedRecipe.equipment : recipe.equipment
+                }
+                isEditing={isEditing}
+                onInputChange={(e, index) => {
+                  const newEquipment = [...editedRecipe.equipment];
+                  newEquipment[index] = e.target.value;
+                  setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
+                }}
+                onRemove={removeEquipment}
+              />
+            </section>
           </section>
         </div>
         <div className="flex flex-col lg:flex-row">
           <div className="lg:w-2/3">
-            <Instructions
-              instructions={
-                isEditing ? editedRecipe.instructions : recipe.instructions
-              }
-              isEditing={isEditing}
-              onInputChange={(e, index) => {
-                const newInstructions = [...editedRecipe.instructions];
-                newInstructions[index] = e.target.value;
-                setEditedRecipe({
-                  ...editedRecipe,
-                  instructions: newInstructions,
-                });
-              }}
-            />
+            <section className="mb-6">
+              <div className="mb-2 flex items-center justify-between">
+                <h3 className="text-xl font-semibold">
+                  {isEditing ? (
+                    <button
+                      className="text-blue-500 hover:text-white hover:bg-blue-500 rounded-md p-2"
+                      onClick={addInstruction}
+                    >
+                      <i className="fas fa-plus"></i> Add Instruction
+                    </button>
+                  ) : (
+                    'Instructions'
+                  )}
+                </h3>
+              </div>
+              <Instructions
+                instructions={
+                  isEditing ? editedRecipe.instructions : recipe.instructions
+                }
+                isEditing={isEditing}
+                onInputChange={(e, index) => {
+                  const newInstructions = [...editedRecipe.instructions];
+                  newInstructions[index] = e.target.value;
+                  setEditedRecipe({
+                    ...editedRecipe,
+                    instructions: newInstructions,
+                  });
+                }}
+                onRemove={removeInstruction}
+              />
+            </section>
           </div>
           <div className="lg:w-1/3 lg:ml-6 mt-6 lg:mt-0">
             <NutritionalInfo
