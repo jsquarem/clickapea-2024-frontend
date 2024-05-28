@@ -76,6 +76,15 @@ const Ingredients = ({
   onRemove,
 }) => {
   const [errors, setErrors] = useState({});
+  const [completed, setCompleted] = useState(
+    Array(ingredients.length).fill(false)
+  );
+
+  const handleItemClick = (index) => {
+    const newCompleted = [...completed];
+    newCompleted[index] = !newCompleted[index];
+    setCompleted(newCompleted);
+  };
 
   const handleInputChange = (e, index, field, subField) => {
     let value;
@@ -146,82 +155,110 @@ const Ingredients = ({
         }
 
         return (
-          <div key={index} className="mb-2 flex items-center">
-            <li className="items-center list-item flex-grow">
-              {isEditing ? (
-                <div className="flex flex-row w-full gap-2">
-                  <div className="w-1/6">
-                    <input
-                      type="text"
-                      value={
-                        amount?.quantity !== undefined
-                          ? amount.quantity
-                          : other?.quantity !== undefined
-                            ? other.quantity
-                            : ''
-                      }
-                      onChange={(e) =>
-                        handleInputChange(
-                          e,
-                          index,
-                          isMetric ? 'metric' : 'imperial',
-                          'quantity'
-                        )
-                      }
-                      className="form-input w-full h-10"
-                    />
+          <div key={index} className="flex items-center">
+            <li
+              key={index}
+              className={`flex items-center p-1 w-full ${
+                !isEditing ? 'cursor-pointer' : ''
+              } ${completed[index] ? 'bg-green-100' : !isEditing ? 'hover:bg-gray-200' : ''}`}
+              onClick={() => !isEditing && handleItemClick(index)}
+            >
+              <div
+                className="flex-shrink-0 mr-4"
+                style={{
+                  height: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                {completed[index] ? (
+                  <i
+                    className="fas fa-check text-green-500"
+                    style={{ fontSize: '1.5rem' }}
+                  ></i>
+                ) : (
+                  <span className="text-2xl" style={{ fontSize: '1.5rem' }}>
+                    &#8226;
+                  </span>
+                )}
+              </div>
+              <div className="flex-1">
+                {isEditing ? (
+                  <div className="flex flex-row w-full gap-2">
+                    <div className="w-1/6">
+                      <input
+                        type="text"
+                        value={
+                          amount?.quantity !== undefined
+                            ? amount.quantity
+                            : other?.quantity !== undefined
+                              ? other.quantity
+                              : ''
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            e,
+                            index,
+                            isMetric ? 'metric' : 'imperial',
+                            'quantity'
+                          )
+                        }
+                        className="form-input w-full h-10"
+                      />
+                    </div>
+                    <div className="w-1/4">
+                      <Select
+                        value={{
+                          value: amount?.unit || '',
+                          label: amount?.unit || '',
+                        }}
+                        onChange={(selectedOption) =>
+                          handleInputChange(
+                            { target: { value: selectedOption.value } },
+                            index,
+                            isMetric ? 'metric' : 'imperial',
+                            'unit'
+                          )
+                        }
+                        options={groupedOptions}
+                        className="form-select w-full"
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            height: '2.5rem',
+                            minHeight: '2.5rem',
+                          }),
+                          valueContainer: (base) => ({
+                            ...base,
+                            height: '2.5rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                          }),
+                          input: (base) => ({
+                            ...base,
+                            margin: 0,
+                            padding: 0,
+                          }),
+                        }}
+                      />
+                    </div>
+                    <div className="flex-grow">
+                      <input
+                        type="text"
+                        value={ingredient.name}
+                        onChange={(e) => handleInputChange(e, index, 'name')}
+                        className="form-input w-full h-10"
+                      />
+                    </div>
                   </div>
-                  <div className="w-1/4">
-                    <Select
-                      value={{
-                        value: amount?.unit || '',
-                        label: amount?.unit || '',
-                      }}
-                      onChange={(selectedOption) =>
-                        handleInputChange(
-                          { target: { value: selectedOption.value } },
-                          index,
-                          isMetric ? 'metric' : 'imperial',
-                          'unit'
-                        )
-                      }
-                      options={groupedOptions}
-                      className="form-select w-full"
-                      styles={{
-                        control: (base) => ({
-                          ...base,
-                          height: '2.5rem',
-                          minHeight: '2.5rem',
-                        }),
-                        valueContainer: (base) => ({
-                          ...base,
-                          height: '2.5rem',
-                          display: 'flex',
-                          alignItems: 'center',
-                        }),
-                        input: (base) => ({
-                          ...base,
-                          margin: 0,
-                          padding: 0,
-                        }),
-                      }}
-                    />
-                  </div>
-                  <div className="flex-grow">
-                    <input
-                      type="text"
-                      value={ingredient.name}
-                      onChange={(e) => handleInputChange(e, index, 'name')}
-                      className="form-input w-full h-10"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <>
-                  {displayAmount} {ingredient.name}
-                </>
-              )}
+                ) : (
+                  <>
+                    {displayAmount} {ingredient.name}
+                  </>
+                )}
+              </div>
             </li>
+
             {isEditing && (
               <button
                 onClick={() => onRemove(index)}

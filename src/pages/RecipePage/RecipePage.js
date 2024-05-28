@@ -480,6 +480,7 @@ const RecipePage = (props) => {
                   setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
                 }}
                 onRemove={removeEquipment}
+                colorClass=""
               />
             </section>
           </section>
