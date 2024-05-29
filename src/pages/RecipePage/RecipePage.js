@@ -37,6 +37,8 @@ const RecipePage = (props) => {
   const [visibleImageCount, setVisibleImageCount] = useState(5);
   const [mainImage, setMainImage] = useState('');
   const [displayImages, setDisplayImages] = useState([]);
+  const [completedIngredients, setCompletedIngredients] = useState([]);
+  const [completedInstructions, setCompletedInstructions] = useState([]);
 
   useEffect(() => {
     if (props.recipe) {
@@ -109,6 +111,8 @@ const RecipePage = (props) => {
       login();
     } else {
       setEditedRecipe({ ...recipe });
+      setCompletedIngredients([]);
+      setCompletedInstructions([]);
       setIsEditing(true);
     }
   };
@@ -220,6 +224,69 @@ const RecipePage = (props) => {
     setMainImage(image);
   };
 
+  const addIngredient = () => {
+    const newIngredients = [
+      ...editedRecipe.ingredients,
+      {
+        name: '',
+        metric: { quantity: '', unit: '' },
+        imperial: { quantity: '', unit: '' },
+        other: { quantity: '', unit: '' },
+      },
+    ];
+    setEditedRecipe({
+      ...editedRecipe,
+      ingredients: newIngredients,
+    });
+  };
+
+  const addEquipment = () => {
+    const newEquipment = [...editedRecipe.equipment, ''];
+    setEditedRecipe({
+      ...editedRecipe,
+      equipment: newEquipment,
+    });
+  };
+
+  const addInstruction = () => {
+    const newInstructions = [...editedRecipe.instructions, ''];
+    setEditedRecipe({
+      ...editedRecipe,
+      instructions: newInstructions,
+    });
+  };
+
+  const removeIngredient = (index) => {
+    const newIngredients = editedRecipe.ingredients.filter(
+      (_, i) => i !== index
+    );
+    setEditedRecipe({ ...editedRecipe, ingredients: newIngredients });
+  };
+
+  const removeEquipment = (index) => {
+    const newEquipment = editedRecipe.equipment.filter((_, i) => i !== index);
+    setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
+  };
+
+  const removeInstruction = (index) => {
+    const newInstructions = editedRecipe.instructions.filter(
+      (_, i) => i !== index
+    );
+    setEditedRecipe({ ...editedRecipe, instructions: newInstructions });
+  };
+
+  const toggleCompletedIngredient = (index) => {
+    setCompletedIngredients((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
+
+  const toggleCompletedInstruction = (index) => {
+    setCompletedInstructions((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -255,6 +322,7 @@ const RecipePage = (props) => {
         </div>
         <div className="flex justify-between items-start mb-4">
           <RecipeInfo
+            title={isEditing ? editedRecipe.title : recipe.title}
             author={isEditing ? editedRecipe.author : recipe.author}
             host={isEditing ? editedRecipe.host : recipe.host}
             recipeUrl={isEditing ? editedRecipe.url : recipe.url}
@@ -275,12 +343,20 @@ const RecipePage = (props) => {
               />
               <AddToCartButton />
               {isEditing ? (
-                <button
-                  onClick={handleSaveClick}
-                  className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
-                >
-                  <span>Save</span>
-                </button>
+                <>
+                  <button
+                    onClick={handleSaveClick}
+                    className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
+                  >
+                    <span>Save</span>
+                  </button>
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
+                  >
+                    <span>Cancel</span>
+                  </button>
+                </>
               ) : (
                 <div className="relative group">
                   <button
@@ -302,7 +378,7 @@ const RecipePage = (props) => {
             )}
           </div>
         </div>
-        <div className="flex flex-wrap lg:flex-nowrap mb-6 min-h-[40rem]">
+        <div className="flex flex-wrap lg:flex-nowrap mb-6 min-h-[38rem]">
           <div className="w-full lg:w-1/2 lg:h-[32rem] h-full rounded-lg mb-4 lg:mb-0">
             <div className="relative h-full">
               <img
@@ -321,9 +397,9 @@ const RecipePage = (props) => {
               <div className="w-full mt-4 flex justify-between items-center space-x-2">
                 <button
                   onClick={handlePrevImage}
-                  className={`h-full ${
+                  className={`h-20 w-12 ${
                     canNavigatePrev
-                      ? 'text-blue-500 hover:bg-blue-800'
+                      ? 'text-blue-500 hover:text-blue-200 hover:bg-blue-500'
                       : 'opacity-50 cursor-not-allowed text-gray-500'
                   } ${!canNavigatePrev ? '' : 'hover:bg-blue-100'} rounded-l-lg`}
                   disabled={!canNavigatePrev}
@@ -347,7 +423,7 @@ const RecipePage = (props) => {
                         <img
                           src={image}
                           alt={`Additional ${index}`}
-                          className={`w-full h-full object-cover ${
+                          className={`w-full h-full object-cover rounded-lg ${
                             mainImage === image
                               ? 'border-4 border-blue-500'
                               : ''
@@ -358,9 +434,9 @@ const RecipePage = (props) => {
                 </div>
                 <button
                   onClick={handleNextImage}
-                  className={`h-full ${
+                  className={`h-20 w-12 ${
                     canNavigateNext
-                      ? 'text-blue-500 hover:bg-blue-800'
+                      ? 'text-blue-500 hover:text-blue-200 hover:bg-blue-500'
                       : 'opacity-50 cursor-not-allowed text-gray-500'
                   } ${!canNavigateNext ? '' : 'hover:bg-blue-100'} rounded-r-lg`}
                   disabled={!canNavigateNext}
@@ -372,53 +448,105 @@ const RecipePage = (props) => {
           </div>
 
           <section className="w-full lg:w-1/2 lg:pl-6 mt-6 lg:mt-0">
-            <ToggleSwitch onToggle={handleToggle} />
-            <Ingredients
-              ingredients={
-                isEditing ? editedRecipe.ingredients : recipe.ingredients
-              }
-              isMetric={isMetric}
-              isEditing={isEditing}
-              onInputChange={(e, index, field, subField) => {
-                const newIngredients = [...editedRecipe.ingredients];
-                if (subField) {
-                  newIngredients[index][field][subField] = e.target.value;
-                } else {
-                  newIngredients[index][field] = e.target.value;
+            <section className="mb-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-xl font-semibold">
+                  {isEditing ? (
+                    <button className="text-blue-500" onClick={addIngredient}>
+                      <i className="fas fa-plus"></i> Add Ingredient
+                    </button>
+                  ) : (
+                    'Ingredients'
+                  )}
+                </h3>
+                <ToggleSwitch onToggle={handleToggle} />
+              </div>
+              <Ingredients
+                ingredients={
+                  isEditing ? editedRecipe.ingredients : recipe.ingredients
                 }
-                setEditedRecipe({
-                  ...editedRecipe,
-                  ingredients: newIngredients,
-                });
-              }}
-            />
-            <Equipment
-              equipment={isEditing ? editedRecipe.equipment : recipe.equipment}
-              isEditing={isEditing}
-              onInputChange={(e, index) => {
-                const newEquipment = [...editedRecipe.equipment];
-                newEquipment[index] = e.target.value;
-                setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
-              }}
-            />
+                isMetric={isMetric}
+                isEditing={isEditing}
+                onInputChange={(e, index, field, subField) => {
+                  const newIngredients = [...editedRecipe.ingredients];
+                  if (subField) {
+                    newIngredients[index][field][subField] = e.target.value;
+                  } else {
+                    newIngredients[index][field] = e.target.value;
+                  }
+                  setEditedRecipe({
+                    ...editedRecipe,
+                    ingredients: newIngredients,
+                  });
+                }}
+                onRemove={removeIngredient}
+                onToggleComplete={toggleCompletedIngredient}
+                completedIngredients={completedIngredients}
+              />
+            </section>
+            <section className="mb-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-xl font-semibold">
+                  {isEditing ? (
+                    <button className="text-blue-500" onClick={addEquipment}>
+                      <i className="fas fa-plus"></i> Add Equipment
+                    </button>
+                  ) : (
+                    'Equipment'
+                  )}
+                </h3>
+              </div>
+              <Equipment
+                equipment={
+                  isEditing ? editedRecipe.equipment : recipe.equipment
+                }
+                isEditing={isEditing}
+                onInputChange={(e, index) => {
+                  const newEquipment = [...editedRecipe.equipment];
+                  newEquipment[index] = e.target.value;
+                  setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
+                }}
+                onRemove={removeEquipment}
+                colorClass=""
+              />
+            </section>
           </section>
         </div>
         <div className="flex flex-col lg:flex-row">
           <div className="lg:w-2/3">
-            <Instructions
-              instructions={
-                isEditing ? editedRecipe.instructions : recipe.instructions
-              }
-              isEditing={isEditing}
-              onInputChange={(e, index) => {
-                const newInstructions = [...editedRecipe.instructions];
-                newInstructions[index] = e.target.value;
-                setEditedRecipe({
-                  ...editedRecipe,
-                  instructions: newInstructions,
-                });
-              }}
-            />
+            <section className="mb-6">
+              <div className="mb-2 flex items-center justify-between">
+                <h3 className="text-xl font-semibold">
+                  {isEditing ? (
+                    <button
+                      className="text-blue-500 hover:text-white hover:bg-blue-500 rounded-md p-2"
+                      onClick={addInstruction}
+                    >
+                      <i className="fas fa-plus"></i> Add Instruction
+                    </button>
+                  ) : (
+                    'Instructions'
+                  )}
+                </h3>
+              </div>
+              <Instructions
+                instructions={
+                  isEditing ? editedRecipe.instructions : recipe.instructions
+                }
+                isEditing={isEditing}
+                onInputChange={(e, index) => {
+                  const newInstructions = [...editedRecipe.instructions];
+                  newInstructions[index] = e.target.value;
+                  setEditedRecipe({
+                    ...editedRecipe,
+                    instructions: newInstructions,
+                  });
+                }}
+                onRemove={removeInstruction}
+                onToggleComplete={toggleCompletedInstruction}
+                completedInstructions={completedInstructions}
+              />
+            </section>
           </div>
           <div className="lg:w-1/3 lg:ml-6 mt-6 lg:mt-0">
             <NutritionalInfo

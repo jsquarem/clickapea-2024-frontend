@@ -86,10 +86,10 @@ const Header = () => {
             </Link>
           </>
         )}
-        <Link to="/add-recipe" className={getLinkClass('/add-recipe')}>
+        <Link to="/create-recipe" className={getLinkClass('/create-recipe')}>
           <div className="flex items-center lg:flex-col lg:items-center">
             <i className="fa-solid fa-utensils lg:mb-1 lg:text-lg"></i>
-            <span className="ml-2 lg:ml-0">Add Recipe</span>
+            <span className="ml-2 lg:ml-0">Create Recipe</span>
           </div>
         </Link>
         {isAuthenticated && user ? (

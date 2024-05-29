@@ -73,6 +73,15 @@ export const addRecipe = async (url) => {
   return response.data;
 };
 
+export const createRecipe = async (recipe) => {
+  const response = await api.post('/api/recipes/new', recipe, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
 export const fetchUserCategories = async (userId) => {
   const response = await api.get(`/api/categories?userId=${userId}`);
   return response.data;
@@ -101,6 +110,19 @@ export const reorderCategories = async (userId, newOrder) => {
 
 export const fetchAllRecipes = async () => {
   const response = await api.get('/api/recipes/all');
+  return response.data;
+};
+
+export const uploadMainImage = async (recipeId, formData) => {
+  const response = await api.post(
+    `/api/recipes/${recipeId}/uploadMainImage`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
   return response.data;
 };
 

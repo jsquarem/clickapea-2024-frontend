@@ -68,8 +68,23 @@ const decimalToFraction = (decimal) => {
   return `${numerator}/${denominator}`;
 };
 
-const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
+const Ingredients = ({
+  ingredients,
+  isMetric,
+  isEditing,
+  onInputChange,
+  onRemove,
+}) => {
   const [errors, setErrors] = useState({});
+  const [completed, setCompleted] = useState(
+    Array(ingredients.length).fill(false)
+  );
+
+  const handleItemClick = (index) => {
+    const newCompleted = [...completed];
+    newCompleted[index] = !newCompleted[index];
+    setCompleted(newCompleted);
+  };
 
   const handleInputChange = (e, index, field, subField) => {
     let value;
@@ -81,7 +96,6 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
 
     const newIngredients = [...ingredients];
     if (subField) {
-      // Ensure the subfield object exists
       if (!newIngredients[index][field]) {
         newIngredients[index][field] = {};
       }
@@ -91,7 +105,6 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
     }
     onInputChange(e, index, field, subField);
 
-    // Validate quantity field
     if (subField === 'quantity') {
       const isValid = value === '' || !isNaN(value);
       setErrors((prevErrors) => ({
@@ -105,7 +118,6 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
   };
 
   const imperialUnits = ['cup', 'oz', 'lb', 'tsp', 'tbsp'];
-
   const metricUnits = ['ml', 'g', 'l', 'kg'];
 
   const groupedOptions = [
@@ -124,28 +136,53 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
   let displayAmount;
 
   return (
-    <section className="mb-6">
-      <ul id="ingredients-list" className="list-disc list-inside mb-4">
-        {ingredients.map((ingredient, index) => {
-          const amount = isMetric ? ingredient.metric : ingredient.imperial;
-          const other = ingredient.other;
+    <ul id="ingredients-list" className="list-disc list-inside mb-4">
+      {ingredients.map((ingredient, index) => {
+        const amount = isMetric ? ingredient.metric : ingredient.imperial;
+        const other = ingredient.other;
 
-          displayAmount = '';
-          if (amount && amount.quantity) {
-            const roundedQuantity = Math.round(amount.quantity * 100) / 100;
-            displayAmount = isMetric
-              ? `${roundedQuantity} ${amount.unit || ''}`
-              : `${decimalToFraction(roundedQuantity)} ${amount.unit || ''}`;
-          } else if (other && other.quantity) {
-            const roundedQuantity = Math.round(other.quantity * 100) / 100;
-            displayAmount = isMetric
-              ? `${roundedQuantity} ${other.unit || ''}`
-              : `${decimalToFraction(roundedQuantity)} ${other.unit || ''}`;
-          }
+        displayAmount = '';
+        if (amount && amount.quantity) {
+          const roundedQuantity = Math.round(amount.quantity * 100) / 100;
+          displayAmount = isMetric
+            ? `${roundedQuantity} ${amount.unit || ''}`
+            : `${decimalToFraction(roundedQuantity)} ${amount.unit || ''}`;
+        } else if (other && other.quantity) {
+          const roundedQuantity = Math.round(other.quantity * 100) / 100;
+          displayAmount = isMetric
+            ? `${roundedQuantity} ${other.unit || ''}`
+            : `${decimalToFraction(roundedQuantity)} ${other.unit || ''}`;
+        }
 
-          return (
-            <div key={index} className="mb-2">
-              <li className="items-center list-item">
+        return (
+          <div key={index} className="flex items-center">
+            <li
+              key={index}
+              className={`flex items-center p-1 w-full ${
+                !isEditing ? 'cursor-pointer' : ''
+              } ${completed[index] && !isEditing ? 'bg-green-100' : !isEditing ? 'hover:bg-gray-200' : ''}`}
+              onClick={() => !isEditing && handleItemClick(index)}
+            >
+              <div
+                className="flex-shrink-0 mr-4"
+                style={{
+                  height: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                {completed[index] && !isEditing ? (
+                  <i
+                    className="fas fa-check text-green-500"
+                    style={{ fontSize: '1.5rem' }}
+                  ></i>
+                ) : (
+                  <span className="text-2xl" style={{ fontSize: '1.5rem' }}>
+                    &#8226;
+                  </span>
+                )}
+              </div>
+              <div className="flex-1">
                 {isEditing ? (
                   <div className="flex flex-row w-full gap-2">
                     <div className="w-1/6">
@@ -219,17 +256,26 @@ const Ingredients = ({ ingredients, isMetric, isEditing, onInputChange }) => {
                     {displayAmount} {ingredient.name}
                   </>
                 )}
-              </li>
-              {errors[index]?.quantity && (
-                <span className="text-red-500 text-sm">
-                  Quantity must be a number
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </ul>
-    </section>
+              </div>
+            </li>
+
+            {isEditing && (
+              <button
+                onClick={() => onRemove(index)}
+                className="ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            )}
+            {errors[index]?.quantity && (
+              <span className="text-red-500 text-sm">
+                Quantity must be a number
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </ul>
   );
 };
 

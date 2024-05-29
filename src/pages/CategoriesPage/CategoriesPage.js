@@ -3,6 +3,7 @@ import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import AuthContext from '../../AuthContext';
 import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
 import Category from '../../components/Category/Category';
+import Loading from '../../components/Loading/Loading';
 import FlipMove from 'react-flip-move';
 import {
   fetchCategories,
@@ -218,7 +219,9 @@ const CategoriesPage = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return <Loading />;
+  }
   if (error) return <div>{error}</div>;
   if (!isAuthenticated || !user)
     return <div>Please log in to view your categories</div>;
