@@ -19,7 +19,7 @@ const icons = ['🍴', '🥄', '🍲', '🍳', '🧀', '🥖'];
 
 const Loading = ({ pageClasses }) => {
   return (
-    <div className={`flex justify-center items-center ${pageClasses}`}>
+    <div className={`flex justify-center items-center ${pageClasses} pt-10`}>
       <div className="flex space-x-4">
         {icons.map((icon, index) => (
           <div

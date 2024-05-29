@@ -160,7 +160,7 @@ const Ingredients = ({
               key={index}
               className={`flex items-center p-1 w-full ${
                 !isEditing ? 'cursor-pointer' : ''
-              } ${completed[index] ? 'bg-green-100' : !isEditing ? 'hover:bg-gray-200' : ''}`}
+              } ${completed[index] && !isEditing ? 'bg-green-100' : !isEditing ? 'hover:bg-gray-200' : ''}`}
               onClick={() => !isEditing && handleItemClick(index)}
             >
               <div
@@ -171,7 +171,7 @@ const Ingredients = ({
                   alignItems: 'center',
                 }}
               >
-                {completed[index] ? (
+                {completed[index] && !isEditing ? (
                   <i
                     className="fas fa-check text-green-500"
                     style={{ fontSize: '1.5rem' }}

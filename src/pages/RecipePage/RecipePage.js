@@ -37,6 +37,8 @@ const RecipePage = (props) => {
   const [visibleImageCount, setVisibleImageCount] = useState(5);
   const [mainImage, setMainImage] = useState('');
   const [displayImages, setDisplayImages] = useState([]);
+  const [completedIngredients, setCompletedIngredients] = useState([]);
+  const [completedInstructions, setCompletedInstructions] = useState([]);
 
   useEffect(() => {
     if (props.recipe) {
@@ -109,6 +111,8 @@ const RecipePage = (props) => {
       login();
     } else {
       setEditedRecipe({ ...recipe });
+      setCompletedIngredients([]);
+      setCompletedInstructions([]);
       setIsEditing(true);
     }
   };
@@ -271,6 +275,18 @@ const RecipePage = (props) => {
     setEditedRecipe({ ...editedRecipe, instructions: newInstructions });
   };
 
+  const toggleCompletedIngredient = (index) => {
+    setCompletedIngredients((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
+
+  const toggleCompletedInstruction = (index) => {
+    setCompletedInstructions((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -306,6 +322,7 @@ const RecipePage = (props) => {
         </div>
         <div className="flex justify-between items-start mb-4">
           <RecipeInfo
+            title={isEditing ? editedRecipe.title : recipe.title}
             author={isEditing ? editedRecipe.author : recipe.author}
             host={isEditing ? editedRecipe.host : recipe.host}
             recipeUrl={isEditing ? editedRecipe.url : recipe.url}
@@ -326,12 +343,20 @@ const RecipePage = (props) => {
               />
               <AddToCartButton />
               {isEditing ? (
-                <button
-                  onClick={handleSaveClick}
-                  className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
-                >
-                  <span>Save</span>
-                </button>
+                <>
+                  <button
+                    onClick={handleSaveClick}
+                    className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
+                  >
+                    <span>Save</span>
+                  </button>
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
+                  >
+                    <span>Cancel</span>
+                  </button>
+                </>
               ) : (
                 <div className="relative group">
                   <button
@@ -372,9 +397,9 @@ const RecipePage = (props) => {
               <div className="w-full mt-4 flex justify-between items-center space-x-2">
                 <button
                   onClick={handlePrevImage}
-                  className={`h-full ${
+                  className={`h-20 w-12 ${
                     canNavigatePrev
-                      ? 'text-blue-500 hover:bg-blue-800'
+                      ? 'text-blue-500 hover:text-blue-200 hover:bg-blue-500'
                       : 'opacity-50 cursor-not-allowed text-gray-500'
                   } ${!canNavigatePrev ? '' : 'hover:bg-blue-100'} rounded-l-lg`}
                   disabled={!canNavigatePrev}
@@ -398,7 +423,7 @@ const RecipePage = (props) => {
                         <img
                           src={image}
                           alt={`Additional ${index}`}
-                          className={`w-full h-full object-cover ${
+                          className={`w-full h-full object-cover rounded-lg ${
                             mainImage === image
                               ? 'border-4 border-blue-500'
                               : ''
@@ -409,9 +434,9 @@ const RecipePage = (props) => {
                 </div>
                 <button
                   onClick={handleNextImage}
-                  className={`h-full ${
+                  className={`h-20 w-12 ${
                     canNavigateNext
-                      ? 'text-blue-500 hover:bg-blue-800'
+                      ? 'text-blue-500 hover:text-blue-200 hover:bg-blue-500'
                       : 'opacity-50 cursor-not-allowed text-gray-500'
                   } ${!canNavigateNext ? '' : 'hover:bg-blue-100'} rounded-r-lg`}
                   disabled={!canNavigateNext}
@@ -455,6 +480,8 @@ const RecipePage = (props) => {
                   });
                 }}
                 onRemove={removeIngredient}
+                onToggleComplete={toggleCompletedIngredient}
+                completedIngredients={completedIngredients}
               />
             </section>
             <section className="mb-6">
@@ -516,6 +543,8 @@ const RecipePage = (props) => {
                   });
                 }}
                 onRemove={removeInstruction}
+                onToggleComplete={toggleCompletedInstruction}
+                completedInstructions={completedInstructions}
               />
             </section>
           </div>

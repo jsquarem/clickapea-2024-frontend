@@ -21,13 +21,13 @@ const Instructions = ({ instructions, isEditing, onInputChange, onRemove }) => {
           key={index}
           className={`flex items-start p-2 ${
             !isEditing ? 'cursor-pointer' : ''
-          } ${completed[index] ? 'bg-green-100' : !isEditing ? 'hover:bg-gray-200' : ''}`}
+          } ${completed[index] && !isEditing ? 'bg-green-100' : !isEditing ? 'hover:bg-gray-200' : ''}`}
           onClick={() => handleRowClick(index)}
         >
           <div
-            className={`text-2xl w-10 text-center ${completed[index] ? 'text-green-500' : ''}`}
+            className={`text-2xl w-10 text-center ${completed[index] && !isEditing ? 'text-green-500' : ''}`}
           >
-            {completed[index] ? (
+            {completed[index] && !isEditing ? (
               <i className="fas fa-check"></i>
             ) : (
               <div>{index + 1}</div>

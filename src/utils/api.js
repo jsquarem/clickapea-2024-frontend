@@ -74,7 +74,11 @@ export const addRecipe = async (url) => {
 };
 
 export const createRecipe = async (recipe) => {
-  const response = await api.post('/api/recipes/new', recipe);
+  const response = await api.post('/api/recipes/new', recipe, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return response.data;
 };
 

@@ -6,6 +6,7 @@ import Ingredients from '../../components/Ingredients/Ingredients';
 import Equipment from '../../components/Equipment/Equipment';
 import Instructions from '../../components/Instructions/Instructions';
 import ImageUploadModal from '../../components/ImageUploadModal/ImageUploadModal';
+import LoginModal from '../../components/LoginModal/LoginModal';
 import Loading from '../../components/Loading/Loading';
 import AuthContext from '../../AuthContext';
 import { createRecipe } from '../../utils/api';
@@ -14,9 +15,10 @@ import './CreateRecipePage.css';
 
 const CreateRecipePage = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useContext(AuthContext);
   const [recipe, setRecipe] = useState({
     title: '',
-    author: '',
+    author: `${user ? user.name : ''}`,
     host: '',
     url: '',
     total_time: '',
@@ -27,7 +29,6 @@ const CreateRecipePage = () => {
     equipment: [],
     instructions: [],
   });
-  const { isAuthenticated, login } = useContext(AuthContext);
   const [isMetric, setIsMetric] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -35,6 +36,7 @@ const CreateRecipePage = () => {
   const [saveMessage, setSaveMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mainImage, setMainImage] = useState('');
+  const [mainImageFile, setMainImageFile] = useState(null);
   const [displayImages, setDisplayImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [visibleImageCount, setVisibleImageCount] = useState(5);
@@ -53,7 +55,10 @@ const CreateRecipePage = () => {
   useEffect(() => {
     if (recipe.image) {
       setMainImage(recipe.image);
-      setDisplayImages([recipe.image, ...recipe.additional_images]);
+      setDisplayImages([
+        recipe.image,
+        ...recipe.additional_images.map((img) => img.url),
+      ]);
     } else {
       setMainImage('');
       setDisplayImages([]);
@@ -73,14 +78,48 @@ const CreateRecipePage = () => {
     if (validateInputs()) {
       setLoading(true);
       try {
-        const newRecipe = {
-          ...recipe,
-          image: mainImage,
-          additional_images: displayImages.filter((img) => img !== mainImage),
-        };
-        const createdRecipe = await createRecipe(newRecipe);
+        const formData = new FormData();
+        formData.append('title', recipe.title);
+        formData.append('author', recipe.author);
+        formData.append('host', recipe.host);
+        formData.append('url', recipe.url);
+        formData.append('total_time', recipe.total_time);
+        formData.append('yields', recipe.yields);
+        if (mainImageFile) formData.append('image', mainImageFile); // Main image field name
+
+        recipe.additional_images.forEach((image, index) => {
+          if (image.file) {
+            formData.append('additional_images', image.file); // Additional images field name
+          }
+        });
+
+        // Ensure the ingredients have the correct structure
+        const formattedIngredients = recipe.ingredients.map((ingredient) => ({
+          name: ingredient.name,
+          amount: [
+            {
+              quantity: ingredient.metric.quantity,
+              unit: ingredient.metric.unit,
+            },
+            {
+              quantity: ingredient.imperial.quantity,
+              unit: ingredient.imperial.unit,
+            },
+            {
+              quantity: ingredient.other.quantity,
+              unit: ingredient.other.unit,
+            },
+          ].filter((amount) => amount.quantity && amount.unit),
+        }));
+
+        formData.append('ingredients', JSON.stringify(formattedIngredients));
+        formData.append('equipment', JSON.stringify(recipe.equipment));
+        formData.append('instructions', JSON.stringify(recipe.instructions));
+
+        const createdRecipe = await createRecipe(formData); // Send FormData
+        console.log(createdRecipe);
         setSaveMessage('Recipe created successfully.');
-        // navigate(`/recipe/user/${createdRecipe._id}`);
+        navigate(`/recipe/user/${createdRecipe._id}`);
       } catch (error) {
         console.error('Error creating recipe:', error);
         setSaveMessage(`Error: ${error.message}`);
@@ -92,6 +131,32 @@ const CreateRecipePage = () => {
         'Please correct the errors in the form before saving.'
       );
     }
+  };
+
+  const handleImageUpload = (files) => {
+    const newDisplayImages = [...displayImages];
+    const newFiles = [...recipe.additional_images];
+
+    files.forEach((file, index) => {
+      const imageUrl = URL.createObjectURL(file);
+      const imageObj = { url: imageUrl, file };
+
+      if (!mainImage && index === 0) {
+        setMainImage(imageUrl);
+        setMainImageFile(file);
+        newDisplayImages.unshift(imageUrl); // Set as main image and add to displayImages
+      } else {
+        newDisplayImages.push(imageUrl);
+        newFiles.push(imageObj); // Add to additional images
+      }
+    });
+
+    setDisplayImages(newDisplayImages);
+    setRecipe((prevRecipe) => ({
+      ...prevRecipe,
+      image: newDisplayImages[0], // Ensure the main image is set correctly
+      additional_images: newFiles,
+    }));
   };
 
   const handleInputChange = (field, value, subField = null, index = null) => {
@@ -129,31 +194,13 @@ const CreateRecipePage = () => {
     return isValid;
   };
 
-  const handleImageClick = () => {
+  const handleMainImageClick = (e) => {
+    e.stopPropagation();
     setIsModalOpen(true);
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-  };
-
-  const handleImageUpload = (files) => {
-    const newDisplayImages = [...displayImages];
-    files.forEach((file) => {
-      const imageUrl = URL.createObjectURL(file);
-      if (!mainImage) {
-        setMainImage(imageUrl);
-        newDisplayImages.unshift(imageUrl);
-      } else {
-        newDisplayImages.push(imageUrl);
-      }
-    });
-    setDisplayImages(newDisplayImages);
-    setRecipe((prevRecipe) => ({
-      ...prevRecipe,
-      image: newDisplayImages[0],
-      additional_images: newDisplayImages.slice(1),
-    }));
   };
 
   const handleNextImage = () => {
@@ -168,7 +215,8 @@ const CreateRecipePage = () => {
     }
   };
 
-  const handleImageSelect = (image) => {
+  const handleImageSelect = (image, e) => {
+    e.stopPropagation();
     setMainImage(image);
   };
 
@@ -188,7 +236,6 @@ const CreateRecipePage = () => {
   };
 
   const addEquipment = () => {
-    console.log(recipe.equipment);
     setRecipe({
       ...recipe,
       equipment: [...recipe.equipment, ''],
@@ -217,18 +264,6 @@ const CreateRecipePage = () => {
     setRecipe({ ...recipe, instructions: newInstructions });
   };
 
-  const handleModalBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      setIsModalOpen(false);
-      setIsAuthModalOpen(false);
-    }
-  };
-
-  const handleLoginClick = () => {
-    login();
-    setIsAuthModalOpen(false);
-  };
-
   if (loading) {
     return <Loading />;
   }
@@ -253,6 +288,7 @@ const CreateRecipePage = () => {
             totalTime={recipe.total_time}
             servings={recipe.yields}
             isEditing={true}
+            isCreating={true}
             onInputChange={handleInputChange}
           />
           <div className="flex flex-col">
@@ -268,16 +304,14 @@ const CreateRecipePage = () => {
           </div>
         </div>
         <div className="flex flex-wrap lg:flex-nowrap mb-6 min-h-[38rem]">
-          <div
-            className="w-full lg:w-1/2 lg:h-[32rem] h-full rounded-lg mb-4 lg:mb-0 cursor-pointer"
-            onClick={handleImageClick}
-          >
+          <div className="w-full lg:w-1/2 lg:h-[32rem] h-full rounded-lg mb-4 lg:mb-0 cursor-pointer">
             <div
               className={`relative h-full ${
                 !mainImage
                   ? 'hover:bg-gray-300 bg-gray-200 border border-dashed border-gray-400'
                   : ''
               } rounded-lg flex justify-center items-center`}
+              onClick={handleMainImageClick}
             >
               {mainImage ? (
                 <>
@@ -288,7 +322,7 @@ const CreateRecipePage = () => {
                   />
                   <div
                     className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity rounded-lg cursor-pointer"
-                    onClick={handleImageClick}
+                    onClick={handleMainImageClick}
                   >
                     <span className="text-white text-4xl">+</span>
                   </div>
@@ -304,11 +338,11 @@ const CreateRecipePage = () => {
             <div className="w-full mt-4 flex justify-between items-center space-x-2 min-h-28">
               <button
                 onClick={handlePrevImage}
-                className={`h-full ${
+                className={`flex items-center justify-center h-20 w-12 rounded-l-lg ${
                   canNavigatePrev
-                    ? 'text-blue-500 hover:bg-blue-800'
+                    ? 'text-blue-500 hover:text-blue-200 hover:bg-blue-500'
                     : 'opacity-50 cursor-not-allowed text-gray-500'
-                } ${!canNavigatePrev ? '' : 'hover:bg-blue-100'} rounded-l-lg`}
+                } ${!canNavigatePrev ? '' : 'hover:bg-blue-100'}`}
                 disabled={!canNavigatePrev}
               >
                 <i className="fas fa-chevron-left text-2xl"></i>
@@ -322,16 +356,16 @@ const CreateRecipePage = () => {
                   .map((image, index, arr) => (
                     <div
                       key={index}
-                      className={`w-20 h-20 transform transition duration-300 ease-in-out hover:scale-105 cursor-pointer ${
-                        index === 0 ? 'rounded-l-lg' : ''
-                      } ${index === arr.length - 1 ? 'rounded-r-lg' : ''}`}
-                      onClick={() => handleImageSelect(image)}
+                      className={`w-20 h-20 transform transition duration-300 ease-in-out hover:scale-105 cursor-pointer`}
+                      onClick={(e) => handleImageSelect(image, e)}
                     >
                       <img
                         src={image}
                         alt={`Additional ${index}`}
                         className={`w-full h-full object-cover ${
-                          mainImage === image ? 'border-4 border-blue-500' : ''
+                          mainImage === image
+                            ? 'border-4 border-blue-500 rounded-lg'
+                            : ''
                         }`}
                       />
                     </div>
@@ -339,11 +373,11 @@ const CreateRecipePage = () => {
               </div>
               <button
                 onClick={handleNextImage}
-                className={`h-full ${
+                className={`h-20 flex items-center justify-center w-12 rounded-r-lg ${
                   canNavigateNext
-                    ? 'text-blue-500 hover:bg-blue-800'
+                    ? 'text-blue-500 hover:text-blue-200 hover:bg-blue-500'
                     : 'opacity-50 cursor-not-allowed text-gray-500'
-                } ${!canNavigateNext ? '' : 'hover:bg-blue-100'} rounded-r-lg`}
+                } ${!canNavigateNext ? '' : 'hover:bg-blue-100'}`}
                 disabled={!canNavigateNext}
               >
                 <i className="fas fa-chevron-right text-2xl"></i>
@@ -475,24 +509,11 @@ const CreateRecipePage = () => {
         onClose={handleModalClose}
         onUpload={handleImageUpload}
       />
-
-      {isAuthModalOpen && (
-        <div
-          className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50"
-          onClick={handleModalBackdropClick}
-        >
-          <div className="bg-white p-6 rounded-lg max-w-md w-full text-center">
-            <h2 className="text-xl font-bold mb-4">
-              You must be logged in to create a recipe
-            </h2>
-            <button
-              onClick={handleLoginClick}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Log In
-            </button>
-          </div>
-        </div>
+      {!isAuthenticated && (
+        <LoginModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+        />
       )}
     </div>
   );

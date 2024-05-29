@@ -15,6 +15,7 @@ const AddRecipeForm = () => {
     setError('');
     try {
       const data = await addRecipe(url);
+      console.log(data);
       navigate(`/recipe/${data._id}`);
     } catch (error) {
       console.error('Error adding recipe:', error);

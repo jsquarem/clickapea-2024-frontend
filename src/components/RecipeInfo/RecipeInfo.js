@@ -2,18 +2,29 @@ import React from 'react';
 import './RecipeInfo.css';
 
 const RecipeInfo = ({
+  title,
   author,
   recipeUrl,
   host,
   totalTime,
   servings,
   isEditing,
+  isCreating,
   onInputChange,
 }) => (
   <div className="mb-4 text-gray-600 w-1/2">
     {isEditing ? (
       <>
-        <div className="editable-field py-1 py-1">
+        <div className="editable-field py-1">
+          <label>Title:</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => onInputChange('title', e.target.value)}
+            className="form-input"
+          />
+        </div>
+        <div className="editable-field py-1">
           <label>Author:</label>
           <input
             type="text"
@@ -22,24 +33,28 @@ const RecipeInfo = ({
             className="form-input"
           />
         </div>
-        <div className="editable-field py-1">
-          <label>Source:</label>
-          <input
-            type="text"
-            value={host}
-            onChange={(e) => onInputChange('host', e.target.value)}
-            className="form-input"
-          />
-        </div>
-        <div className="editable-field py-1">
-          <label>Recipe URL:</label>
-          <input
-            type="text"
-            value={recipeUrl}
-            onChange={(e) => onInputChange('url', e.target.value)}
-            className="form-input"
-          />
-        </div>
+        {!isCreating ?? (
+          <>
+            <div className="editable-field py-1">
+              <label>Source:</label>
+              <input
+                type="text"
+                value={host}
+                onChange={(e) => onInputChange('host', e.target.value)}
+                className="form-input"
+              />
+            </div>
+            <div className="editable-field py-1">
+              <label>Recipe URL:</label>
+              <input
+                type="text"
+                value={recipeUrl}
+                onChange={(e) => onInputChange('url', e.target.value)}
+                className="form-input"
+              />
+            </div>
+          </>
+        )}
         <div className="editable-field py-1">
           <label>Total Time:</label>
           <input
