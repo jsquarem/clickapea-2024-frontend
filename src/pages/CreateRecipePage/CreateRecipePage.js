@@ -31,7 +31,6 @@ const CreateRecipePage = () => {
   });
   const [isMetric, setIsMetric] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [validationError, setValidationError] = useState(null);
   const [saveMessage, setSaveMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
