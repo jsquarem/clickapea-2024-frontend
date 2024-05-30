@@ -139,4 +139,13 @@ export const uploadAdditionalImage = async (recipeId, formData) => {
   return response.data;
 };
 
+export const scanRecipe = async (formData) => {
+  const response = await api.post('/api/recipes/scan-recipe', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
 export default api;
