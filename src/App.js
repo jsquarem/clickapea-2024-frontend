@@ -4,6 +4,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import AuthContext, { AuthProvider } from './AuthContext';
 import HomePage from './pages/HomePage/HomePage';
 import RecipePage from './pages/RecipePage/RecipePage';
+import ImagePreprocessingPage from './pages/ImagePreprocessingPage/ImagePreprocessingPage';
 import CreateRecipePage from './pages/CreateRecipePage/CreateRecipePage';
 import CategoriesPage from './pages/CategoriesPage/CategoriesPage';
 import RecipeListPage from './pages/RecipeListPage/RecipeListPage';
@@ -65,6 +66,7 @@ const App = () => {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/recipe-scan" element={<ImagePreprocessingPage />} />
             <Route path="/recipe/:id" element={<RecipePage />} />
             <Route path="/create-recipe" element={<CreateRecipePage />} />
             <Route path="/recipes" element={<RecipeListPage />} />

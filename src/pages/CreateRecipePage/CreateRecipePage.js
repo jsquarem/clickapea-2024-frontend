@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import RecipeInfo from '../../components/RecipeInfo/RecipeInfo';
 import ToggleSwitch from '../../components/ToggleSwitch/ToggleSwitch';
 import Ingredients from '../../components/Ingredients/Ingredients';
@@ -9,13 +9,18 @@ import ImageUploadModal from '../../components/ImageUploadModal/ImageUploadModal
 import LoginModal from '../../components/LoginModal/LoginModal';
 import Loading from '../../components/Loading/Loading';
 import AuthContext from '../../AuthContext';
-import { createRecipe } from '../../utils/api';
-
+import { createRecipe, scanRecipe } from '../../utils/api';
 import './CreateRecipePage.css';
 
 const CreateRecipePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, user } = useContext(AuthContext);
+
+  const initialIngredients = location.state?.ingredients || [];
+  const initialInstructions = location.state?.instructions || [];
+  const initialImage = location.state?.image || '';
+
   const [recipe, setRecipe] = useState({
     title: '',
     author: `${user ? user.name : ''}`,
@@ -23,23 +28,28 @@ const CreateRecipePage = () => {
     url: '',
     total_time: '',
     yields: '',
-    image: '',
+    image: initialImage,
     additional_images: [],
-    ingredients: [],
+    ingredients: initialIngredients,
     equipment: [],
-    instructions: [],
+    instructions: initialInstructions,
   });
+
   const [isMetric, setIsMetric] = useState(false);
   const [loading, setLoading] = useState(false);
   const [validationError, setValidationError] = useState(null);
   const [saveMessage, setSaveMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mainImage, setMainImage] = useState('');
+  const [mainImage, setMainImage] = useState(initialImage);
   const [mainImageFile, setMainImageFile] = useState(null);
-  const [displayImages, setDisplayImages] = useState([]);
+  const [displayImages, setDisplayImages] = useState([initialImage]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [visibleImageCount, setVisibleImageCount] = useState(5);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isLoadingScan, setIsLoadingScan] = useState(false);
+
+  const [isScanModalOpen, setIsScanModalOpen] = useState(false);
+  const [scanImage, setScanImage] = useState(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -64,6 +74,10 @@ const CreateRecipePage = () => {
     }
   }, [recipe]);
 
+  useEffect(() => {
+    console.log('isLoadingScan updated:', isLoadingScan);
+  }, [isLoadingScan]);
+
   const handleToggle = (isMetric) => {
     setIsMetric(isMetric);
   };
@@ -84,39 +98,24 @@ const CreateRecipePage = () => {
         formData.append('url', recipe.url);
         formData.append('total_time', recipe.total_time);
         formData.append('yields', recipe.yields);
-        if (mainImageFile) formData.append('image', mainImageFile); // Main image field name
+        if (mainImageFile) formData.append('image', mainImageFile);
 
         recipe.additional_images.forEach((image, index) => {
           if (image.file) {
-            formData.append('additional_images', image.file); // Additional images field name
+            formData.append('additional_images', image.file);
           }
         });
 
-        // Ensure the ingredients have the correct structure
-        const formattedIngredients = recipe.ingredients.map((ingredient) => ({
-          name: ingredient.name,
-          amount: [
-            {
-              quantity: ingredient.metric.quantity,
-              unit: ingredient.metric.unit,
-            },
-            {
-              quantity: ingredient.imperial.quantity,
-              unit: ingredient.imperial.unit,
-            },
-            {
-              quantity: ingredient.other.quantity,
-              unit: ingredient.other.unit,
-            },
-          ].filter((amount) => amount.quantity && amount.unit),
-        }));
+        // const formattedIngredients = recipe.ingredients.map((ingredient) => ({
+        //   ...ingredient,
+        //   amount: [],
+        // }));
 
-        formData.append('ingredients', JSON.stringify(formattedIngredients));
+        formData.append('ingredients', JSON.stringify(recipe.ingredients));
         formData.append('equipment', JSON.stringify(recipe.equipment));
         formData.append('instructions', JSON.stringify(recipe.instructions));
 
-        const createdRecipe = await createRecipe(formData); // Send FormData
-        console.log(createdRecipe);
+        const createdRecipe = await createRecipe(formData);
         setSaveMessage('Recipe created successfully.');
         navigate(`/recipe/user/${createdRecipe._id}`);
       } catch (error) {
@@ -143,19 +142,54 @@ const CreateRecipePage = () => {
       if (!mainImage && index === 0) {
         setMainImage(imageUrl);
         setMainImageFile(file);
-        newDisplayImages.unshift(imageUrl); // Set as main image and add to displayImages
+        newDisplayImages.unshift(imageUrl);
       } else {
         newDisplayImages.push(imageUrl);
-        newFiles.push(imageObj); // Add to additional images
+        newFiles.push(imageObj);
       }
     });
 
     setDisplayImages(newDisplayImages);
     setRecipe((prevRecipe) => ({
       ...prevRecipe,
-      image: newDisplayImages[0], // Ensure the main image is set correctly
+      image: newDisplayImages[0],
       additional_images: newFiles,
     }));
+  };
+
+  const handleScanRecipeClick = () => {
+    setIsScanModalOpen(true);
+  };
+
+  const handleScanImageUpload = async (files) => {
+    console.log('isLoadingScan before start: ', isLoadingScan);
+    setIsLoadingScan(true);
+    console.log('isLoadingScan after start: ', isLoadingScan);
+    const file = files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setScanImage(imageUrl);
+      setIsScanModalOpen(false);
+
+      const formData = new FormData();
+      formData.append('imageFile', file);
+
+      try {
+        const result = await scanRecipe(formData);
+        console.log('scanned recipe:', result);
+        setRecipe((prevRecipe) => ({
+          ...prevRecipe,
+          ingredients: result.ingredients,
+          instructions: result.instructions,
+        }));
+      } catch (error) {
+        console.error('Error scanning recipe:', error);
+      } finally {
+        console.log('isLoadingScan before end: ', isLoadingScan);
+        setIsLoadingScan(false);
+        console.log('isLoadingScan after end: ', isLoadingScan);
+      }
+    }
   };
 
   const handleInputChange = (field, value, subField = null, index = null) => {
@@ -200,6 +234,10 @@ const CreateRecipePage = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+  };
+
+  const handleScanModalClose = () => {
+    setIsScanModalOpen(false);
   };
 
   const handleNextImage = () => {
@@ -290,15 +328,36 @@ const CreateRecipePage = () => {
             isCreating={true}
             onInputChange={handleInputChange}
           />
-          <div className="flex flex-col">
-            <button
-              onClick={handleSaveClick}
-              className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
-            >
-              <span>Save</span>
-            </button>
+          <div className="flex flex-col w-1/2">
+            <div className="flex flex-row justify-end gap-2">
+              <button
+                onClick={handleScanRecipeClick}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
+              >
+                <span>Scan Recipe</span>
+              </button>
+              <button
+                onClick={handleSaveClick}
+                className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
+              >
+                <span>Save</span>
+              </button>
+            </div>
             {validationError && (
               <div className="text-red-500 pt-2">{validationError}</div>
+            )}
+            {scanImage && (
+              <div className="w-full flex flex-col justify-center items-center mt-4">
+                {isLoadingScan ?? <Loading />}
+                <h3 className="text-2xl font-semibold text-blue-500">
+                  Scanning Image:
+                </h3>
+                <img
+                  src={scanImage}
+                  alt="Scanned"
+                  className="rounded-lg mt-2 max-h-64"
+                />
+              </div>
             )}
           </div>
         </div>
@@ -508,6 +567,13 @@ const CreateRecipePage = () => {
         onClose={handleModalClose}
         onUpload={handleImageUpload}
       />
+
+      <ImageUploadModal
+        isOpen={isScanModalOpen}
+        onClose={handleScanModalClose}
+        onUpload={handleScanImageUpload}
+      />
+
       {!isAuthenticated && (
         <LoginModal
           isOpen={isAuthModalOpen}
