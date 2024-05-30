@@ -47,9 +47,9 @@ const CreateRecipePage = () => {
   const [visibleImageCount, setVisibleImageCount] = useState(5);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isLoadingScan, setIsLoadingScan] = useState(false);
-
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
   const [scanImage, setScanImage] = useState(null);
+  const [scanMessage, setScanMessage] = useState('Scanning Image:');
 
   useEffect(() => {
     const handleResize = () => {
@@ -88,6 +88,11 @@ const CreateRecipePage = () => {
       return;
     }
 
+    if (recipe.title.trim() === '') {
+      setValidationError('Title is required.');
+      return;
+    }
+
     if (validateInputs()) {
       setLoading(true);
       try {
@@ -105,11 +110,6 @@ const CreateRecipePage = () => {
             formData.append('additional_images', image.file);
           }
         });
-
-        // const formattedIngredients = recipe.ingredients.map((ingredient) => ({
-        //   ...ingredient,
-        //   amount: [],
-        // }));
 
         formData.append('ingredients', JSON.stringify(recipe.ingredients));
         formData.append('equipment', JSON.stringify(recipe.equipment));
@@ -162,9 +162,7 @@ const CreateRecipePage = () => {
   };
 
   const handleScanImageUpload = async (files) => {
-    console.log('isLoadingScan before start: ', isLoadingScan);
     setIsLoadingScan(true);
-    console.log('isLoadingScan after start: ', isLoadingScan);
     const file = files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
@@ -176,7 +174,7 @@ const CreateRecipePage = () => {
 
       try {
         const result = await scanRecipe(formData);
-        console.log('scanned recipe:', result);
+        setScanMessage('Scanned Image:');
         setRecipe((prevRecipe) => ({
           ...prevRecipe,
           ingredients: result.ingredients,
@@ -185,9 +183,7 @@ const CreateRecipePage = () => {
       } catch (error) {
         console.error('Error scanning recipe:', error);
       } finally {
-        console.log('isLoadingScan before end: ', isLoadingScan);
         setIsLoadingScan(false);
-        console.log('isLoadingScan after end: ', isLoadingScan);
       }
     }
   };
@@ -317,18 +313,20 @@ const CreateRecipePage = () => {
           <h2 className="text-2xl font-bold">Create New Recipe</h2>
           {saveMessage && <div className="text-green-500">{saveMessage}</div>}
         </div>
-        <div className="flex justify-between items-start mb-4">
-          <RecipeInfo
-            author={recipe.author}
-            host={recipe.host}
-            recipeUrl={recipe.url}
-            totalTime={recipe.total_time}
-            servings={recipe.yields}
-            isEditing={true}
-            isCreating={true}
-            onInputChange={handleInputChange}
-          />
-          <div className="flex flex-col w-1/2">
+        <div className="flex flex-col lg:flex-row w-full">
+          <div className="flex justify-between items-start mb-4 w-full lg:w-1/2">
+            <RecipeInfo
+              author={recipe.author}
+              host={recipe.host}
+              recipeUrl={recipe.url}
+              totalTime={recipe.total_time}
+              servings={recipe.yields}
+              isEditing={true}
+              isCreating={true}
+              onInputChange={handleInputChange}
+            />
+          </div>
+          <div className="flex flex-col w-full lg:w-1/2 pb-4">
             <div className="flex flex-row justify-end gap-2">
               <button
                 onClick={handleScanRecipeClick}
@@ -344,13 +342,15 @@ const CreateRecipePage = () => {
               </button>
             </div>
             {validationError && (
-              <div className="text-red-500 pt-2">{validationError}</div>
+              <div className="text-red-500 pt-2 text-right">
+                {validationError}
+              </div>
             )}
             {scanImage && (
               <div className="w-full flex flex-col justify-center items-center mt-4">
-                {isLoadingScan ?? <Loading />}
+                {isLoadingScan && <Loading />}
                 <h3 className="text-2xl font-semibold text-blue-500">
-                  Scanning Image:
+                  {scanMessage}
                 </h3>
                 <img
                   src={scanImage}
@@ -364,7 +364,7 @@ const CreateRecipePage = () => {
         <div className="flex flex-wrap lg:flex-nowrap mb-6 min-h-[38rem]">
           <div className="w-full lg:w-1/2 lg:h-[32rem] h-full rounded-lg mb-4 lg:mb-0 cursor-pointer">
             <div
-              className={`relative h-full ${
+              className={`relative h-full pt-4 ${
                 !mainImage
                   ? 'hover:bg-gray-300 bg-gray-200 border border-dashed border-gray-400'
                   : ''
@@ -376,7 +376,7 @@ const CreateRecipePage = () => {
                   <img
                     src={mainImage}
                     alt={recipe.title}
-                    className="rounded-lg cursor-pointer w-full h-[32rem] lg:h-full object-cover"
+                    className="rounded-lg cursor-pointer w-full h-[18rem] lg:h-[32rem] object-cover"
                   />
                   <div
                     className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity rounded-lg cursor-pointer"
@@ -386,7 +386,7 @@ const CreateRecipePage = () => {
                   </div>
                 </>
               ) : (
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between h-[18rem] lg:h[24rem]">
                   <h3 className="text-3xl font-semibold text-blue-500">
                     <i className="fas fa-plus"></i> Add an Image
                   </h3>

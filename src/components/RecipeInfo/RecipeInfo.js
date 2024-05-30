@@ -12,7 +12,7 @@ const RecipeInfo = ({
   isCreating,
   onInputChange,
 }) => (
-  <div className="mb-4 text-gray-600 w-1/2">
+  <div className="mb-4 text-gray-600">
     {isEditing ? (
       <>
         <div className="editable-field py-1">
