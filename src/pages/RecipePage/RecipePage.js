@@ -11,7 +11,6 @@ import AddToCartButton from '../../components/AddToCartButton/AddToCartButton';
 import AuthContext from '../../AuthContext';
 import ImageUploadModal from '../../components/ImageUploadModal/ImageUploadModal';
 import Loading from '../../components/Loading/Loading';
-import { fetchSvg } from '../../utils/svg';
 import {
   fetchRecipeById,
   fetchUserRecipeById,
@@ -43,8 +42,6 @@ const RecipePage = (props) => {
   const [completedInstructions, setCompletedInstructions] = useState([]);
 
   useEffect(() => {
-    const svgPath = `/assets/images/recipe-placeholder-800x800.svg`;
-
     if (props.recipe) {
       console.log('props.recipe:', props.recipe);
       setRecipe(props.recipe);
