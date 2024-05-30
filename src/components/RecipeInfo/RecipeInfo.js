@@ -56,18 +56,13 @@ const RecipeInfo = ({
           </>
         )}
         <div className="editable-field py-1">
-          <label>Total Time:</label>
+          <label>Total Time (in minutes):</label>
           <input
             type="text"
             value={totalTime}
             onChange={(e) => onInputChange('total_time', e.target.value)}
             className="form-input"
           />
-          {isNaN(totalTime) && (
-            <span className="text-red-500 text-sm">
-              Total time must be a number
-            </span>
-          )}
         </div>
         <div className="editable-field py-1">
           <label>Servings:</label>

@@ -49,7 +49,7 @@ const CreateRecipePage = () => {
   const [isLoadingScan, setIsLoadingScan] = useState(false);
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
   const [scanImage, setScanImage] = useState(null);
-  const [scanMessage, setScanMessage] = useState('Scanning Image:');
+  const [isScanned, setIsScanned] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -77,6 +77,10 @@ const CreateRecipePage = () => {
   useEffect(() => {
     console.log('isLoadingScan updated:', isLoadingScan);
   }, [isLoadingScan]);
+
+  useEffect(() => {
+    console.log('isScanned updated:', isScanned);
+  }, [isScanned]);
 
   const handleToggle = (isMetric) => {
     setIsMetric(isMetric);
@@ -167,25 +171,27 @@ const CreateRecipePage = () => {
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setScanImage(imageUrl);
-      setIsScanModalOpen(false);
+      // setIsScanModalOpen(false);
 
       const formData = new FormData();
       formData.append('imageFile', file);
 
       try {
         const result = await scanRecipe(formData);
-        setScanMessage('Scanned Image:');
         setRecipe((prevRecipe) => ({
           ...prevRecipe,
           ingredients: result.ingredients,
           instructions: result.instructions,
         }));
+        handleImageUpload([file]); // Add the scanned image as the main or additional image
+        setIsScanModalOpen(false);
       } catch (error) {
         console.error('Error scanning recipe:', error);
       } finally {
         setIsLoadingScan(false);
       }
     }
+    setIsScanned(true);
   };
 
   const handleInputChange = (field, value, subField = null, index = null) => {
@@ -346,18 +352,26 @@ const CreateRecipePage = () => {
                 {validationError}
               </div>
             )}
-            {scanImage && (
-              <div className="w-full flex flex-col justify-center items-center mt-4">
-                {isLoadingScan && <Loading />}
-                <h3 className="text-2xl font-semibold text-blue-500">
-                  {scanMessage}
-                </h3>
-                <img
-                  src={scanImage}
-                  alt="Scanned"
-                  className="rounded-lg mt-2 max-h-64"
-                />
+            {isScanned ? (
+              <div className="w-full text-left p-2">
+                <div className="flex flex-row">
+                  <div className="flex justify-center items-center p-4">
+                    <i className="fas fa-check text-5xl font-bold text-green-500"></i>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold">
+                      Recipe Successfully Scanned
+                    </h3>
+                    <p>
+                      Just add additional details and images, double check the
+                      ingredients and instructions are accurate, and click save
+                      to add your new recipe!
+                    </p>
+                  </div>
+                </div>
               </div>
+            ) : (
+              ''
             )}
           </div>
         </div>
@@ -566,12 +580,18 @@ const CreateRecipePage = () => {
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onUpload={handleImageUpload}
+        isLoadingScan={isLoadingScan}
+        scanImage={scanImage}
+        scanMessage={''}
       />
 
       <ImageUploadModal
         isOpen={isScanModalOpen}
         onClose={handleScanModalClose}
         onUpload={handleScanImageUpload}
+        isLoadingScan={isLoadingScan}
+        scanImage={scanImage}
+        scanMessage={'Scanning Recipe:'}
       />
 
       {!isAuthenticated && (

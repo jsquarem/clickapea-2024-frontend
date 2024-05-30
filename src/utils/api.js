@@ -148,4 +148,8 @@ export const scanRecipe = async (formData) => {
   return response.data;
 };
 
+export const deleteUserRecipe = async (recipeId) => {
+  await api.delete(`/api/recipes/user/${recipeId}`);
+};
+
 export default api;

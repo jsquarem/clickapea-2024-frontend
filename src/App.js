@@ -8,11 +8,13 @@ import ImagePreprocessingPage from './pages/ImagePreprocessingPage/ImagePreproce
 import CreateRecipePage from './pages/CreateRecipePage/CreateRecipePage';
 import CategoriesPage from './pages/CategoriesPage/CategoriesPage';
 import RecipeListPage from './pages/RecipeListPage/RecipeListPage';
+import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import Protected from './Protected';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import ProtectedRoute from './ProtectedRoute';
 import Loading from './components/Loading/Loading';
+
 import './App.css';
 
 const App = () => {
@@ -94,6 +96,8 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
         <Footer />

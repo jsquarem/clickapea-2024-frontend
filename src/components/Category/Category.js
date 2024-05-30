@@ -1,3 +1,5 @@
+// src/components/Category/Category.js
+
 import React from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import DraggableRecipe from '../DraggableRecipe/DraggableRecipe';
@@ -9,7 +11,7 @@ const Category = ({
   categoryOrder,
   moveCategoryUp,
   moveCategoryDown,
-  handleDeleteCategory,
+  onShowDeleteModal,
 }) => {
   return (
     <div className="bg-white p-4 rounded-lg shadow mb-4 transition-transform duration-300 ease-in-out draggable-category">
@@ -45,7 +47,7 @@ const Category = ({
             </h3>
             {category.title !== 'All Recipes' && (
               <button
-                onClick={() => handleDeleteCategory(category.id)}
+                onClick={() => onShowDeleteModal('category', category.id)}
                 className="text-red-500 hover:text-red-700"
               >
                 <i className="fas fa-trash-alt"></i>
@@ -61,7 +63,7 @@ const Category = ({
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className={`flex overflow-x-auto gap-4 min-h-32 max-w-[17rem] lg:max-w-[64rem] pb-2 ${
+                className={`flex overflow-x-auto gap-4 min-h-32 max-w-[17rem] lg:max-w-[64rem] pt-4 pb-2 ${
                   snapshot.isDraggingOver ? 'bg-blue-100' : ''
                 }`}
                 style={{
@@ -75,6 +77,7 @@ const Category = ({
                     key={recipe.id}
                     recipe={recipe}
                     index={recipeIndex}
+                    onShowDeleteModal={onShowDeleteModal}
                   />
                 ))}
                 {provided.placeholder}

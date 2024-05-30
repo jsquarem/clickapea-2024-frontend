@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import AuthContext from '../../AuthContext';
 import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
@@ -12,7 +12,9 @@ import {
   addCategory,
   deleteCategory,
   reorderCategories,
+  deleteUserRecipe,
 } from '../../utils/api';
+import DeleteModal from '../../components/DeleteModal/DeleteModal'; // Import DeleteModal
 import './CategoriesPage.css';
 
 const reorder = (list, startIndex, endIndex) => {
@@ -43,36 +45,42 @@ const CategoriesPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteAction, setDeleteAction] = useState(null);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
-  useEffect(() => {
+  const fetchAndSetCategories = useCallback(async () => {
     if (isAuthenticated && user) {
-      fetchCategories(user._id)
-        .then((data) => {
-          console.log('Fetched categories:', data.categories);
-          if (
-            data.categories &&
-            data.categories.recipes &&
-            data.categories.categories &&
-            data.categories.categoryOrder
-          ) {
-            setRecipes(data.categories.recipes);
-            setCategories(data.categories.categories);
-            setCategoryOrder(
-              sortCategoryOrder(
-                data.categories.categoryOrder,
-                data.categories.categories
-              )
-            );
-          }
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error('Error fetching categories:', error);
-          setError('Failed to fetch categories');
-          setLoading(false);
-        });
+      try {
+        const data = await fetchCategories(user._id);
+        console.log('Fetched categories:', data.categories);
+        if (
+          data.categories &&
+          data.categories.recipes &&
+          data.categories.categories &&
+          data.categories.categoryOrder
+        ) {
+          setRecipes(data.categories.recipes);
+          setCategories(data.categories.categories);
+          setCategoryOrder(
+            sortCategoryOrder(
+              data.categories.categoryOrder,
+              data.categories.categories
+            )
+          );
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        setError('Failed to fetch categories');
+        setLoading(false);
+      }
     }
   }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    fetchAndSetCategories();
+  }, [fetchAndSetCategories]);
 
   useEffect(() => {
     setCategoryOrder((prevOrder) => sortCategoryOrder(prevOrder, categories));
@@ -141,7 +149,8 @@ const CategoriesPage = () => {
     }
   };
 
-  const handleAddCategory = async () => {
+  const handleAddCategory = async (event) => {
+    event.preventDefault();
     if (!newCategoryName) return;
 
     try {
@@ -169,22 +178,31 @@ const CategoriesPage = () => {
 
     try {
       await deleteCategory(categoryId, user._id);
-
-      setCategories((prevCategories) => {
-        const updatedCategories = { ...prevCategories };
-        delete updatedCategories[categoryId];
-        return updatedCategories;
-      });
-
-      setCategoryOrder((prevOrder) =>
-        sortCategoryOrder(
-          prevOrder.filter((id) => id !== categoryId),
-          categories
-        )
-      );
+      await fetchAndSetCategories(); // Re-fetch categories after deletion
     } catch (error) {
       console.error('Error deleting category:', error);
     }
+  };
+
+  const handleShowDeleteModal = (action, itemId) => {
+    setDeleteAction(action);
+    setItemToDelete(itemId);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (deleteAction === 'recipe') {
+      console.log('Deleting recipe with ID:', itemToDelete);
+      try {
+        await deleteUserRecipe(itemToDelete);
+        await fetchAndSetCategories();
+      } catch (error) {
+        console.error('Error deleting recipe:', error);
+      }
+    } else if (deleteAction === 'category') {
+      handleDeleteCategory(itemToDelete);
+    }
+    setShowDeleteModal(false);
   };
 
   const moveCategoryUp = async (index) => {
@@ -220,7 +238,11 @@ const CategoriesPage = () => {
   };
 
   if (loading) {
-    return <Loading />;
+    return (
+      <div className="h-[48vh]">
+        <Loading />
+      </div>
+    );
   }
   if (error) return <div>{error}</div>;
   if (!isAuthenticated || !user)
@@ -229,8 +251,6 @@ const CategoriesPage = () => {
   if (!categoryOrder.length) {
     return <div>No categories found.</div>;
   }
-
-  console.log('Rendering categories:', categoryOrder);
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -248,7 +268,10 @@ const CategoriesPage = () => {
         <div className="flex flex-col md:flex-row w-full justify-between space-y-4 md:space-y-0 md:space-x-8">
           <div className="w-full lg:w-1/3">
             <h2 className="text-2xl font-bold text-left">Add a Category</h2>
-            <div className="mb-4 flex justify-start items-center space-x-2 w-full">
+            <form
+              onSubmit={handleAddCategory}
+              className="mb-4 flex justify-start items-center space-x-2 w-full"
+            >
               <input
                 type="text"
                 value={newCategoryName}
@@ -257,19 +280,19 @@ const CategoriesPage = () => {
                 className="border p-2 rounded w-7/12 lg:w-2/3"
               />
               <button
-                onClick={handleAddCategory}
+                type="submit"
                 className="bg-blue-500 text-white p-2 rounded w-5/12 lg:w-1/3"
               >
                 Add Category
               </button>
-            </div>
+            </form>
           </div>
           <div className="w-full lg:w-1/2 text-left">
             <AddRecipeForm />
           </div>
         </div>
       </div>
-      <div className="bg-gray-100 text-gray-800 p-6 max-w-6xl mx-auto lg:max-h-[46vh] lg:overflow-y-auto">
+      <div className="bg-gray-100 text-gray-800 p-6 max-w-6xl mx-auto lg:min-h-[46vh]">
         <Droppable droppableId="all-categories" type="CATEGORY">
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
@@ -294,6 +317,7 @@ const CategoriesPage = () => {
                         moveCategoryUp={moveCategoryUp}
                         moveCategoryDown={moveCategoryDown}
                         handleDeleteCategory={handleDeleteCategory}
+                        onShowDeleteModal={handleShowDeleteModal} // Pass down to handle modal
                       />
                     </div>
                   );
@@ -304,6 +328,24 @@ const CategoriesPage = () => {
           )}
         </Droppable>
       </div>
+      {showDeleteModal && (
+        <DeleteModal
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleDelete}
+          title={
+            deleteAction === 'recipe'
+              ? 'Are you sure you want to delete this recipe?'
+              : 'Are you sure you want to delete this category?'
+          }
+          text={
+            deleteAction === 'recipe'
+              ? 'This is irreversible and you will have to re-import it later if you want it back.'
+              : 'All orphaned recipes will move to your "All Recipes" Category, which is not deletable.'
+          }
+          confirmText="Yes (Delete)"
+          cancelText="No (Go Back)"
+        />
+      )}
     </DragDropContext>
   );
 };
