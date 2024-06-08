@@ -323,7 +323,11 @@ const RecipePage = (props) => {
   };
 
   if (loading) {
-    return <Loading />;
+    return (
+      <div className="min-h-[40vh] lg:min-h-[61vh]">
+        <Loading />
+      </div>
+    );
   }
 
   if (error) {

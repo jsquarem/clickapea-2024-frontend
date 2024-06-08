@@ -14,7 +14,11 @@ const withLoading = (Component) => {
     }, [setLoading]);
 
     if (loading) {
-      return <Loading />;
+      return (
+        <div className="min-h-[40vh] lg:min-h-[61vh]">
+          <Loading />
+        </div>
+      );
     }
 
     return <Component {...props} />;
