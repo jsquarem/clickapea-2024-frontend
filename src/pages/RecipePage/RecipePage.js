@@ -559,8 +559,8 @@ const RecipePage = (props) => {
             </div>
           </div>
           <div id="card2" className="bg-[#FFF4C1] p-4 rounded-lg lg:col-span-5">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-xl font-semibold mb-2 cursor-pointer">
+            <div className="mb-4 flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-between space-y-2 lg:space-y-0">
+              <h3 className="text-xl font-semibold mb-2 cursor-pointer self-start">
                 {isEditing ? (
                   <button className="text-blue-500" onClick={addIngredient}>
                     <i className="fas fa-plus"></i> Add Ingredient

@@ -91,19 +91,19 @@
   }
 
   #card2 {
-    top: 60px; /* Adjust this value to control the sticky position */
+    top: 50px; /* Adjust this value to control the sticky position */
   }
 
   #card3 {
-    top: 120px; /* Adjust this value to control the sticky position */
+    top: 100px; /* Adjust this value to control the sticky position */
   }
 
   #card4 {
-    top: 180px; /* Adjust this value to control the sticky position */
+    top: 150px; /* Adjust this value to control the sticky position */
   }
 
   #card5 {
-    top: 240px; /* Adjust this value to control the sticky position */
+    top: 200px; /* Adjust this value to control the sticky position */
   }
 }
 

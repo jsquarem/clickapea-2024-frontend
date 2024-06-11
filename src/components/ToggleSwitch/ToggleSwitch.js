@@ -14,8 +14,7 @@ const ToggleSwitch = ({ onToggle }) => {
         className={`lg:mr-2 ${!checked ? 'font-bold text-blue-500' : 'text-gray-500'}`}
         style={{ width: '60px', textAlign: 'right' }}
       >
-        <span className="hidden md:inline">Imperial</span>
-        <span className="inline md:hidden">Imp</span>
+        <span className="inline">Imperial</span>
       </span>
       <label className="toggle-switch relative inline-block w-14 h-8">
         <input
@@ -36,8 +35,7 @@ const ToggleSwitch = ({ onToggle }) => {
         className={`lg:ml-2 ${checked ? 'font-bold text-blue-500' : 'text-gray-500'}`}
         style={{ width: '60px', textAlign: 'left' }}
       >
-        <span className="hidden md:inline">Metric</span>
-        <span className="inline md:hidden">Met</span>
+        <span className="inline">Metric</span>
       </span>
     </div>
   );
