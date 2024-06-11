@@ -573,15 +573,21 @@ const RecipePage = (props) => {
             className="bg-[#FFF4C1] p-4 rounded-lg w-full lg:col-span-5 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
           >
             <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
-              <a
-                href="#card2"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToCard('card2');
-                }}
-              >
-                Ingredients
-              </a>
+              {isEditing ? (
+                <button className="text-blue-500" onClick={addIngredient}>
+                  <i className="fas fa-plus"></i> Add Ingredient
+                </button>
+              ) : (
+                <a
+                  href="#card2"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToCard('card2');
+                  }}
+                >
+                  Ingredients
+                </a>
+              )}
               <img
                 src="/assets/images/grocery.png"
                 alt="Gallery"
@@ -626,15 +632,24 @@ const RecipePage = (props) => {
             className="bg-[#E6E6FA] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
           >
             <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
-              <a
-                href="#card3"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToCard('card3');
-                }}
-              >
-                Instructions
-              </a>
+              {isEditing ? (
+                <button
+                  className="text-blue-500 hover:text-white hover:bg-blue-500 rounded-md p-2"
+                  onClick={addInstruction}
+                >
+                  <i className="fas fa-plus"></i> Add Instruction
+                </button>
+              ) : (
+                <a
+                  href="#card3"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToCard('card3');
+                  }}
+                >
+                  Instructions
+                </a>
+              )}
               <img
                 src="/assets/images/workflow.png"
                 alt="Gallery"
@@ -670,15 +685,21 @@ const RecipePage = (props) => {
               className="bg-[#FFDAB9] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
             >
               <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
-                <a
-                  href="#card4"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToCard('card4');
-                  }}
-                >
-                  Equipment
-                </a>
+                {isEditing ? (
+                  <button className="text-blue-500" onClick={addEquipment}>
+                    <i className="fas fa-plus"></i> Add Equipment
+                  </button>
+                ) : (
+                  <a
+                    href="#card4"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToCard('card4');
+                    }}
+                  >
+                    Equipment
+                  </a>
+                )}
                 <img
                   src="/assets/images/kitchen-tool.png"
                   alt="Gallery"
