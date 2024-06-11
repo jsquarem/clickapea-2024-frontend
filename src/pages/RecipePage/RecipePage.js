@@ -498,10 +498,10 @@ const RecipePage = (props) => {
                   <img
                     src={mainImage}
                     alt={recipe.title}
-                    className="rounded-lg cursor-pointer w-full h-[32rem] object-cover"
+                    className="rounded-lg cursor-pointer w-full max-h-[24rem] object-cover"
                   />
                 ) : (
-                  <div className="w-full h-[32rem] flex items-center justify-center">
+                  <div className="w-full max-h-[24rem] flex items-center justify-center">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 1024 1024"
