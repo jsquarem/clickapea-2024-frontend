@@ -7,7 +7,7 @@ import {
   addCategory,
 } from '../../utils/api';
 
-const AddToProfileButton = ({ recipeId, onUpdateRecipeId }) => {
+const AddToMyRecipesButton = ({ recipeId, onUpdateRecipeId }) => {
   const { isAuthenticated, login, user } = useContext(AuthContext);
   const [categories, setCategories] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -94,10 +94,10 @@ const AddToProfileButton = ({ recipeId, onUpdateRecipeId }) => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={handleButtonClick}
-        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full"
+        className="bg-[#26D192] hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full"
       >
         <i className="fas fa-user-plus mr-2"></i>
-        <span>Add to Profile</span>
+        <span>Add to My Recipes</span>
       </button>
       {showDropdown && (
         <div className="absolute top-full mt-2 bg-white border rounded shadow-lg p-4 z-10 w-64 right-0 lg:right-auto lg:left-0">
@@ -177,4 +177,4 @@ const AddToProfileButton = ({ recipeId, onUpdateRecipeId }) => {
   );
 };
 
-export default AddToProfileButton;
+export default AddToMyRecipesButton;

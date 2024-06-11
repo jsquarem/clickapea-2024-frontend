@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage/HomePage';
 import RecipePage from './pages/RecipePage/RecipePage';
 import ImagePreprocessingPage from './pages/ImagePreprocessingPage/ImagePreprocessingPage';
 import CreateRecipePage from './pages/CreateRecipePage/CreateRecipePage';
-import CategoriesPage from './pages/CategoriesPage/CategoriesPage';
+import MyRecipesPage from './pages/MyRecipesPage/MyRecipesPage';
 import RecipeListPage from './pages/RecipeListPage/RecipeListPage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import Protected from './Protected';
@@ -85,10 +85,10 @@ const App = () => {
               }
             />
             <Route
-              path="/categories"
+              path="/my-recipes"
               element={
                 <ProtectedRoute>
-                  <CategoriesPage />
+                  <MyRecipesPage />
                 </ProtectedRoute>
               }
             />
