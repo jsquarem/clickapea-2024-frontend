@@ -158,9 +158,15 @@ const Ingredients = ({
           <div key={index} className="flex items-center">
             <li
               key={index}
-              className={`flex items-center p-1 w-full ${
+              className={`flex items-center py-1 px-2 mb-2 w-full ${
                 !isEditing ? 'cursor-pointer' : ''
-              } ${completed[index] && !isEditing ? 'bg-green-100' : !isEditing ? 'hover:bg-gray-200' : ''}`}
+              } ${
+                completed[index] && !isEditing
+                  ? 'bg-[#E6D98C] text-[#B59D44] shadow-inner rounded'
+                  : !isEditing
+                    ? 'lg:hover:bg-gray-200'
+                    : ''
+              }`}
               onClick={() => !isEditing && handleItemClick(index)}
             >
               <div
@@ -173,7 +179,7 @@ const Ingredients = ({
               >
                 {completed[index] && !isEditing ? (
                   <i
-                    className="fas fa-check text-green-500"
+                    className="fas fa-check text-[#B59D44]"
                     style={{ fontSize: '1.5rem' }}
                   ></i>
                 ) : (
