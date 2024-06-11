@@ -164,7 +164,7 @@ const Ingredients = ({
                 completed[index] && !isEditing
                   ? 'bg-[#E6D98C] text-[#B59D44] shadow-inner rounded'
                   : !isEditing
-                    ? 'lg:hover:bg-gray-200'
+                    ? 'lg:hover:bg-[#dacb78de] rounded'
                     : ''
               }`}
               onClick={() => !isEditing && handleItemClick(index)}

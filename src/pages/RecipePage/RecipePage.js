@@ -479,9 +479,9 @@ const RecipePage = (props) => {
           {/* Row 2 */}
           <div
             id="card1"
-            className="bg-[#ffbeb5] p-4 rounded-lg w-full lg:col-span-7"
+            className="bg-[#ffbeb5] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
           >
-            <h3 className="text-xl font-semibold mb-2 cursor-pointer">
+            <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
               <a
                 href="#card1"
                 onClick={(e) => {
@@ -491,8 +491,18 @@ const RecipePage = (props) => {
               >
                 Images
               </a>
+              <img
+                src="/assets/images/gallery.png"
+                alt="Gallery"
+                className="w-20 h-20 ml-2 -mt-4 transition-transform duration-300 ease-in-out card-hover-transform"
+                style={{
+                  position: 'absolute',
+                  right: 0, // Adjust this value to control how far it pokes out
+                  top: -30, // Adjust this value to control how high it pokes out
+                }}
+              />
             </h3>
-            <div className="h-full rounded-lg text-gray-300 relative">
+            <div className="h-full rounded-lg text-gray-300 relative z-0">
               <div className="relative">
                 {mainImage ? (
                   <img
@@ -558,25 +568,32 @@ const RecipePage = (props) => {
               )}
             </div>
           </div>
-          <div id="card2" className="bg-[#FFF4C1] p-4 rounded-lg lg:col-span-5">
-            <div className="mb-4 flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-between space-y-2 lg:space-y-0">
-              <h3 className="text-xl font-semibold mb-2 cursor-pointer self-start">
-                {isEditing ? (
-                  <button className="text-blue-500" onClick={addIngredient}>
-                    <i className="fas fa-plus"></i> Add Ingredient
-                  </button>
-                ) : (
-                  <a
-                    href="#card2"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToCard('card2');
-                    }}
-                  >
-                    Ingredients
-                  </a>
-                )}
-              </h3>
+          <div
+            id="card2"
+            className="bg-[#FFF4C1] p-4 rounded-lg w-full lg:col-span-5 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
+          >
+            <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
+              <a
+                href="#card2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToCard('card2');
+                }}
+              >
+                Ingredients
+              </a>
+              <img
+                src="/assets/images/grocery.png"
+                alt="Gallery"
+                className="w-20 h-20 ml-2 -mt-4 transition-transform duration-300 ease-in-out card-hover-transform"
+                style={{
+                  position: 'absolute',
+                  right: 0, // Adjust this value to control how far it pokes out
+                  top: -30, // Adjust this value to control how high it pokes out
+                }}
+              />
+            </h3>
+            <div className="flex w-full justify-center">
               <ToggleSwitch onToggle={handleToggle} />
             </div>
             <Ingredients
@@ -604,29 +621,31 @@ const RecipePage = (props) => {
           </div>
 
           {/* Row 3 */}
-          <div id="card3" className="bg-[#E6E6FA] p-4 rounded-lg lg:col-span-7">
-            <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-xl font-semibold cursor-pointer">
-                {isEditing ? (
-                  <button
-                    className="text-blue-500 hover:text-white hover:bg-blue-500 rounded-md p-2"
-                    onClick={addInstruction}
-                  >
-                    <i className="fas fa-plus"></i> Add Instruction
-                  </button>
-                ) : (
-                  <a
-                    href="#card3"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToCard('card3');
-                    }}
-                  >
-                    Instructions
-                  </a>
-                )}
-              </h3>
-            </div>
+          <div
+            id="card3"
+            className="bg-[#E6E6FA] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
+          >
+            <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
+              <a
+                href="#card3"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToCard('card3');
+                }}
+              >
+                Instructions
+              </a>
+              <img
+                src="/assets/images/workflow.png"
+                alt="Gallery"
+                className="w-20 h-20 ml-2 -mt-4 transition-transform duration-300 ease-in-out card-hover-transform"
+                style={{
+                  position: 'absolute',
+                  right: 0, // Adjust this value to control how far it pokes out
+                  top: -30, // Adjust this value to control how high it pokes out
+                }}
+              />
+            </h3>
             <Instructions
               instructions={
                 isEditing ? editedRecipe.instructions : recipe.instructions
@@ -646,26 +665,31 @@ const RecipePage = (props) => {
             />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 lg:col-span-5">
-            <div id="card4" className="bg-[#FFDAB9] p-4 rounded-lg">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-xl font-semibold cursor-pointer">
-                  {isEditing ? (
-                    <button className="text-blue-500" onClick={addEquipment}>
-                      <i className="fas fa-plus"></i> Add Equipment
-                    </button>
-                  ) : (
-                    <a
-                      href="#card4"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        scrollToCard('card4');
-                      }}
-                    >
-                      Equipment
-                    </a>
-                  )}
-                </h3>
-              </div>
+            <div
+              id="card4"
+              className="bg-[#FFDAB9] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
+            >
+              <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
+                <a
+                  href="#card4"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToCard('card4');
+                  }}
+                >
+                  Equipment
+                </a>
+                <img
+                  src="/assets/images/kitchen-tool.png"
+                  alt="Gallery"
+                  className="w-20 h-20 ml-2 -mt-4 transition-transform duration-300 ease-in-out card-hover-transform"
+                  style={{
+                    position: 'absolute',
+                    right: 0, // Adjust this value to control how far it pokes out
+                    top: -30, // Adjust this value to control how high it pokes out
+                  }}
+                />
+              </h3>
               <Equipment
                 equipment={
                   isEditing ? editedRecipe.equipment : recipe.equipment
@@ -680,8 +704,11 @@ const RecipePage = (props) => {
                 colorClass=""
               />
             </div>
-            <div id="card5" className="bg-[#B0E0E6] p-4 rounded-lg">
-              <h3 className="text-xl font-semibold mb-2 cursor-pointer">
+            <div
+              id="card5"
+              className="bg-[#B0E0E6]  p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
+            >
+              <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
                 <a
                   href="#card5"
                   onClick={(e) => {
@@ -691,6 +718,16 @@ const RecipePage = (props) => {
                 >
                   Nutrition
                 </a>
+                <img
+                  src="/assets/images/nutritional-pyramid.png"
+                  alt="Gallery"
+                  className="w-20 h-20 ml-2 -mt-4 transition-transform duration-300 ease-in-out card-hover-transform"
+                  style={{
+                    position: 'absolute',
+                    right: 0, // Adjust this value to control how far it pokes out
+                    top: -30, // Adjust this value to control how high it pokes out
+                  }}
+                />
               </h3>
               <NutritionalInfo
                 nutrients={

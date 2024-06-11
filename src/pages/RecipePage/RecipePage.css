@@ -90,20 +90,24 @@
     z-index: 2;
   }
 
+  #card1 {
+    top: 30px;
+  }
+
   #card2 {
-    top: 50px; /* Adjust this value to control the sticky position */
+    top: 80px; /* Adjust this value to control the sticky position */
   }
 
   #card3 {
-    top: 100px; /* Adjust this value to control the sticky position */
+    top: 130px; /* Adjust this value to control the sticky position */
   }
 
   #card4 {
-    top: 150px; /* Adjust this value to control the sticky position */
+    top: 180px; /* Adjust this value to control the sticky position */
   }
 
   #card5 {
-    top: 200px; /* Adjust this value to control the sticky position */
+    top: 230px; /* Adjust this value to control the sticky position */
   }
 }
 
@@ -118,4 +122,24 @@
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
   background-size: cover; /* Ensure texture covers entire card */
   border-radius: 8px; /* Slight rounding of corners to enhance paper effect */
+}
+
+#card1:hover .card-hover-transform {
+  transform: translateY(-10px) rotate(15deg);
+}
+
+#card2:hover .card-hover-transform {
+  transform: translateY(-10px) rotate(-15deg);
+}
+
+#card3:hover .card-hover-transform {
+  transform: translateY(-10px) rotate(15deg);
+}
+
+#card4:hover .card-hover-transform {
+  transform: translateY(-10px) rotate(-15deg);
+}
+
+#card5:hover .card-hover-transform {
+  transform: translateY(-10px) rotate(15deg);
 }

@@ -25,7 +25,7 @@ const Instructions = ({ instructions, isEditing, onInputChange, onRemove }) => {
             completed[index] && !isEditing
               ? 'bg-[#D8D1F0] text-[#8B85C3] shadow-inner rounded'
               : !isEditing
-                ? 'lg:hover:bg-gray-200'
+                ? 'lg:hover:bg-[#c3b6ee] rounded'
                 : ''
           }`}
           onClick={() => handleRowClick(index)}
