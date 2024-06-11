@@ -68,6 +68,7 @@
   .grid-container {
     display: flex;
     flex-direction: column;
+    overflow-x: hidden; /* Hide horizontal overflow to prevent scrolling */
   }
 
   #card1,
@@ -104,18 +105,17 @@
   #card5 {
     top: 240px; /* Adjust this value to control the sticky position */
   }
-  /* Card tilt styles */
-  #card1,
-  #card2,
-  #card3,
-  #card4,
-  #card5 {
-    transition: transform 0.3s ease;
-    /* background-color: #f5f5dc; Light beige color to simulate paper */
-    border: 1px solid #d3d3d3; /* Light gray border to simulate paper edges */
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    /* background-image: url('path-to-paper-texture.png'); Optional: Add a paper texture background */
-    background-size: cover; /* Ensure texture covers entire card */
-    border-radius: 8px; /* Slight rounding of corners to enhance paper effect */
-  }
+}
+
+/* Card tilt styles */
+#card1,
+#card2,
+#card3,
+#card4,
+#card5 {
+  transition: transform 0.3s ease;
+  border: 1px solid #d3d3d3; /* Light gray border to simulate paper edges */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  background-size: cover; /* Ensure texture covers entire card */
+  border-radius: 8px; /* Slight rounding of corners to enhance paper effect */
 }
