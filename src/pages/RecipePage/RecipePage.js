@@ -347,7 +347,7 @@ const RecipePage = (props) => {
     const elementTop = cardPositions.current[cardId];
     if (elementTop !== undefined) {
       window.scrollTo({
-        top: elementTop - 60,
+        top: elementTop - 70,
         behavior: 'smooth',
       });
     }
@@ -363,8 +363,8 @@ const RecipePage = (props) => {
         const elementTop = cardPositions.current[cardId];
         const angle = cardTiltAngles.current[cardId];
         if (
-          scrollPosition >= elementTop - 40 &&
-          scrollPosition < elementTop + element.offsetHeight - 60
+          scrollPosition >= elementTop - 30 &&
+          scrollPosition < elementTop + element.offsetHeight - 30
         ) {
           element.style.transform = `rotate(${angle}deg)`;
         } else {
