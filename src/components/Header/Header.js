@@ -72,16 +72,16 @@ const Header = () => {
         </Link>
         <Link to="/recipes" className={getLinkClass('/recipes')}>
           <div className="flex items-center lg:flex-col lg:items-center">
-            <i className="fa-solid fa-book lg:mb-1 lg:text-lg"></i>
+            <i className="fa-solid fa-image lg:mb-1 lg:text-lg"></i>
             <span className="ml-2 lg:ml-0">All Recipes</span>
           </div>
         </Link>
         {isAuthenticated && user && (
           <>
-            <Link to="/categories" className={getLinkClass('/categories')}>
+            <Link to="/my-recipes" className={getLinkClass('/categories')}>
               <div className="flex items-center lg:flex-col lg:items-center">
-                <i className="fa-solid fa-folder lg:mb-1 lg:text-lg"></i>
-                <span className="ml-2 lg:ml-0">Categories</span>
+                <i className="fa-solid fa-book lg:mb-1 lg:text-lg"></i>
+                <span className="ml-2 lg:ml-0">My Recipes</span>
               </div>
             </Link>
           </>

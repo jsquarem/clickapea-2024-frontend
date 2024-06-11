@@ -6,7 +6,7 @@ import Ingredients from '../../components/Ingredients/Ingredients';
 import Equipment from '../../components/Equipment/Equipment';
 import Instructions from '../../components/Instructions/Instructions';
 import NutritionalInfo from '../../components/NutritionalInfo/NutritionalInfo';
-import AddToProfileButton from '../../components/AddToProfileButton/AddToProfileButton';
+import AddToMyRecipesButton from '../../components/AddToMyRecipesButton/AddToMyRecipesButton';
 import AddToCartButton from '../../components/AddToCartButton/AddToCartButton';
 import AuthContext from '../../AuthContext';
 import ImageUploadModal from '../../components/ImageUploadModal/ImageUploadModal';
@@ -432,7 +432,7 @@ const RecipePage = (props) => {
           </div>
           <div className="bg-white p-4 rounded-lg lg:col-span-6">
             <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2">
-              <AddToProfileButton
+              <AddToMyRecipesButton
                 recipeId={recipe._id}
                 onUpdateRecipeId={handleUpdateRecipeId}
               />
@@ -457,7 +457,7 @@ const RecipePage = (props) => {
                 <div className="relative group">
                   <button
                     onClick={handleEditClick}
-                    className={`font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto text-white ${isAuthenticated ? 'bg-blue-500 hover:bg-blue-700' : 'bg-gray-500 cursor-not-allowed'}`}
+                    className={`font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto text-white ${isAuthenticated ? 'bg-[#37A0C5] hover:bg-blue-700' : 'bg-gray-500 cursor-not-allowed'}`}
                   >
                     <span>
                       <i className="fas fa-edit mr-2"></i>Edit
@@ -546,13 +546,13 @@ const RecipePage = (props) => {
                       .map((image, index, arr) => (
                         <div
                           key={index}
-                          className={`w-20 h-20 transform transition duration-300 ease-in-out hover:scale-105 cursor-pointer ${index === 0 ? 'rounded-l-lg' : ''} ${index === arr.length - 1 ? 'rounded-r-lg' : ''}`}
+                          className={`w-20 h-20 transform transition duration-300 ease-in-out hover:scale-110 cursor-pointer ${index === 0 ? 'rounded-l-lg' : ''} ${index === arr.length - 1 ? 'rounded-r-lg' : ''}`}
                           onClick={() => handleImageSelect(image)}
                         >
                           <img
                             src={image}
                             alt={`Additional ${index}`}
-                            className={`w-full h-full object-cover rounded-lg ${mainImage === image ? 'border-4 border-blue-500' : ''}`}
+                            className={`w-full h-full object-cover rounded-lg ${mainImage === image ? 'border-4 border-[#fd7563]' : ''}`}
                           />
                         </div>
                       ))}

@@ -15,7 +15,7 @@ import {
   deleteUserRecipe,
 } from '../../utils/api';
 import DeleteModal from '../../components/DeleteModal/DeleteModal'; // Import DeleteModal
-import './CategoriesPage.css';
+import './MyRecipesPage.css';
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -256,7 +256,7 @@ const CategoriesPage = () => {
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="p-6 max-w-6xl mx-auto">
         <div className="flex flex-row justify-center items-start">
-          <h1 className="text-4xl font-bold text-center pb-4">Your Recipes</h1>
+          <h1 className="text-4xl font-bold text-center pb-4">My Recipes</h1>
           <div className="relative group ml-2 mt-1">
             <i className="fas fa-question-circle text-xl cursor-pointer"></i>
             <div className="absolute top-full right-0 transform mt-2 w-48 bg-black text-white text-center rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
