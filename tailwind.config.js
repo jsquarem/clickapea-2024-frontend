@@ -2,7 +2,12 @@
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        heading: ['Gambarino', 'sans-serif'],
+        body: ['Switzer', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
-}
+};

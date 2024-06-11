@@ -3,5 +3,19 @@
 @tailwind utilities;
 
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Switzer', sans-serif;
+}
+
+p,
+span {
+  font-family: 'Switzer', sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Gambarino', sans-serif;
 }

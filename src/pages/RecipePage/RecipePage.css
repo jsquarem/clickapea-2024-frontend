@@ -5,7 +5,6 @@
   padding: 8px;
   border-radius: 4px;
   box-sizing: border-box;
-  /* margin-bottom: 8px; */
   font-size: 1rem;
   color: #333;
   background-color: #f9f9f9;
@@ -62,4 +61,61 @@
   left: 0;
   font-size: 1.2em; /* Adjust marker size if needed */
   color: #333;
+}
+
+/* Mobile layout adjustments */
+@media (max-width: 768px) {
+  .grid-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #card1,
+  #card2,
+  #card3,
+  #card4,
+  #card5 {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .grid-item h3 {
+    background: white; /* Ensure the header is visible */
+    padding: 0.5rem;
+    margin: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem 0.5rem 0 0;
+    z-index: 2;
+  }
+
+  #card2 {
+    top: 60px; /* Adjust this value to control the sticky position */
+  }
+
+  #card3 {
+    top: 120px; /* Adjust this value to control the sticky position */
+  }
+
+  #card4 {
+    top: 180px; /* Adjust this value to control the sticky position */
+  }
+
+  #card5 {
+    top: 240px; /* Adjust this value to control the sticky position */
+  }
+  /* Card tilt styles */
+  #card1,
+  #card2,
+  #card3,
+  #card4,
+  #card5 {
+    transition: transform 0.3s ease;
+    /* background-color: #f5f5dc; Light beige color to simulate paper */
+    border: 1px solid #d3d3d3; /* Light gray border to simulate paper edges */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    /* background-image: url('path-to-paper-texture.png'); Optional: Add a paper texture background */
+    background-size: cover; /* Ensure texture covers entire card */
+    border-radius: 8px; /* Slight rounding of corners to enhance paper effect */
+  }
 }
