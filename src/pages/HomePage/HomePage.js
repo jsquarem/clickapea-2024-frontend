@@ -177,7 +177,7 @@ const Section = ({ feature }) => {
 
   return (
     <motion.div
-      className="flex flex-col w-full h-[100vh] justify-center items-center px-8 lg:px-10 pt-48 lg:pt-20 overflow-x-hidden"
+      className="flex flex-col w-full min-h-[100vh] justify-center items-center px-8 lg:px-10 pt-20 overflow-x-hidden"
       ref={ref}
       initial="hidden"
       animate={controls}
@@ -186,7 +186,7 @@ const Section = ({ feature }) => {
       transition={{ duration: 0.8 }}
     >
       <motion.h3
-        className="text-3xl md:text-4xl lg:text-6xl font-semibold mb-4 text-orange-800"
+        className="text-3xl md:text-4xl lg:text-6xl font-semibold mb-4 text-orange-800 text-center"
         variants={variants}
       >
         {feature.title}
