@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import './HomePage.css';
@@ -69,14 +63,14 @@ const HomePage = () => {
       className="relative"
       style={{ background: bgColor, transition: 'background-color 0.5s ease' }}
     >
-      <div className="text-center py-8">
-        <h1 className="text-4xl lg:text-6xl font-bold text-orange-800">
+      <div className="text-center flex flex-col gap-8 justify-center items-center py-8">
+        <h1 className="text-4xl lg:text-8xl font-bold text-[#C16855]">
           Welcome to Clickapea!
         </h1>
-        <p className="text-xl text-orange-600 pb-10 lg:pb-0">
+        <p className="text-4xl text-[#C16855] pb-10">
           Your ultimate sous chef bestie
         </p>
-        <div className="text-center text-xl flex flex-col gap-4 w-full px-10 lg:px-30 tracking-tight">
+        <div className="text-center text-xl px-10 lg:px-30 lg:w-2/3 tracking-tight">
           <div>
             Whether you're a seasoned chef or just starting, Clickapea helps you
             manage recipes, convert ingredients, follow step-by-step
@@ -148,7 +142,7 @@ const Section = ({ feature }) => {
 
   return (
     <motion.div
-      className="flex flex-col w-full min-h-[100vh] justify-center items-center px-8 lg:px-10 pt-20 overflow-x-hidden"
+      className="flex flex-col w-full h-[48rem] justify-start items-center pt-20 px-8 lg:px-10 overflow-x-hidden"
       ref={ref}
       initial="hidden"
       animate={controls}
@@ -157,7 +151,7 @@ const Section = ({ feature }) => {
       transition={{ duration: 0.8 }}
     >
       <motion.h3
-        className="text-3xl md:text-4xl lg:text-6xl font-semibold mb-4 text-orange-800 text-center"
+        className="text-3xl md:text-4xl lg:text-6xl font-semibold mb-4 text-[#C16855] text-center"
         variants={variants}
       >
         {feature.title}

@@ -1,21 +1,27 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import AuthContext from '../../AuthContext';
+import AddRecipeModal from '../../components/AddRecipeModal/AddRecipeModal'; // Import the AddRecipeModal component
 import './Header.css';
 
 const Header = () => {
   const { isAuthenticated, user, login, logout } = useContext(AuthContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false); // State to manage AddRecipeModal visibility
   const [headerSticky, setHeaderSticky] = useState(false);
   const [isMobile] = useState(window.innerWidth <= 768);
   const dropdownRef = useRef(null);
   const menuRef = useRef(null);
-  const hamburgerRef = useRef(null); // Add a reference for the hamburger icon
+  const hamburgerRef = useRef(null);
   const location = useLocation();
 
   const handleProfileClick = () => {
     setShowDropdown(!showDropdown);
+  };
+
+  const toggleModal = () => {
+    setShowModal(!showModal);
   };
 
   useEffect(() => {
@@ -70,10 +76,10 @@ const Header = () => {
 
   const getLinkClass = (path) => {
     const baseClass =
-      'block text-green-500 font-bold text-left lg:text-center p-2 lg:border-0 rounded transition-all';
-    const hoverClass = 'hover:bg-green-600 hover:text-green-200';
-    const activeClass = 'active:bg-green-800';
-    const activePageClass = 'bg-green-800 inset';
+      'block text-[#387961] font-bold text-left lg:text-center p-2 lg:border-0 rounded transition-all';
+    const hoverClass = 'hover:bg-[#387961] hover:text-[#76cfae]';
+    const activeClass = 'active:bg-[#387961] active:text-[#76cfae]';
+    const activePageClass = 'bg-[#387961] text-[#76cfae] inset';
 
     return location.pathname === path
       ? `${baseClass} ${hoverClass} ${activeClass} ${activePageClass}`
@@ -82,7 +88,7 @@ const Header = () => {
 
   return (
     <header
-      className={`site-nav ${headerSticky && !menuOpen ? 'bg-opacity' : 'bg-green-100'} p-4 flex items-center justify-between sticky top-0 z-30`}
+      className={`site-nav ${headerSticky && !menuOpen ? 'bg-opacity' : 'bg-[#76cfae]'} p-4 flex items-center justify-between sticky top-0 z-30`}
     >
       <Link to="/">
         <div className="flex flex-row justify-start items-center">
@@ -93,7 +99,7 @@ const Header = () => {
           />
           {!isMobile ? (
             <div className="p-4">
-              <h1 className="text-5xl lg:text-6xl font-bold tracking-wide text-green-800">
+              <h1 className="text-5xl lg:text-6xl font-bold tracking-wide text-[#387961]">
                 Clickapea
               </h1>
             </div>
@@ -103,7 +109,13 @@ const Header = () => {
         </div>
       </Link>
       <button
-        className="block lg:hidden text-green-500 hover:text-green-700 focus:outline-none"
+        onClick={toggleModal} // Add button to open AddRecipeModal
+        className="hover:bg-[#c4985b] lg:mx-auto bg-yellow-500 text-white hover:text-[#db9585] font-bold py-5 px-10 rounded-lg"
+      >
+        Add Recipe
+      </button>
+      <button
+        className="block lg:hidden text-[#387961] hover:text-[#76cfae] focus:outline-none"
         onClick={toggleMenu}
         ref={hamburgerRef} // Attach the ref to the hamburger icon
       >
@@ -206,6 +218,9 @@ const Header = () => {
           </div>
         )}
       </nav>
+      {showModal && (
+        <AddRecipeModal isOpen={showModal} onClose={toggleModal} /> // Add AddRecipeModal component
+      )}
     </header>
   );
 };
