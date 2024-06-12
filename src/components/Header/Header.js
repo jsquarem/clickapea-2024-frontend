@@ -8,7 +8,7 @@ const Header = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [headerSticky, setHeaderSticky] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, _] = useState(window.innerWidth <= 768);
   const dropdownRef = useRef(null);
   const location = useLocation();
 
@@ -76,11 +76,15 @@ const Header = () => {
             alt="Clickapea Logo"
             className="h-24 lg:h-32"
           />
-          <div className="p-4">
-            <h1 className="text-5xl lg:text-6xl font-bold tracking-wide text-green-800">
-              Clickapea
-            </h1>
-          </div>
+          {!isMobile ? (
+            <div className="p-4">
+              <h1 className="text-5xl lg:text-6xl font-bold tracking-wide text-green-800">
+                Clickapea
+              </h1>
+            </div>
+          ) : (
+            ''
+          )}
         </div>
       </Link>
       <button
