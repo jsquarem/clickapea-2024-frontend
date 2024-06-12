@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
 import {
   Animator,
@@ -185,14 +184,6 @@ const HomePage = () => {
           </ScrollPage>
         ))}
       </ScrollContainer>
-      <footer className="py-12 bg-orange-800 text-white text-center">
-        <Link
-          to="/signup"
-          className="inline-block bg-yellow-500 text-white text-lg font-semibold py-3 px-6 rounded hover:bg-yellow-600 transition"
-        >
-          Join Clickapea Today!
-        </Link>
-      </footer>
     </div>
   );
 };
