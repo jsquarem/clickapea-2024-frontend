@@ -26,12 +26,25 @@ const HomePage = () => {
   const formRef = useRef(null);
   const initialFormTop = useRef(null); // To store the initial top position of the form
   const [formSticky, setFormSticky] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [breakpoints, setBreakpoints] = useState({
+    isXSmall: window.innerWidth <= 400,
+    isSmall: window.innerWidth > 400 && window.innerWidth <= 768,
+    isMedium: window.innerWidth > 768 && window.innerWidth <= 1024,
+    isLarge: window.innerWidth > 1024 && window.innerWidth <= 1280,
+    isXLarge: window.innerWidth > 1280,
+  });
   const sectionsRefs = useRef([]);
   const [currentSection, setCurrentSection] = useState(0);
 
   const handleResize = () => {
-    setIsMobile(window.innerWidth <= 768);
+    setBreakpoints({
+      isXSmall: window.innerWidth <= 400,
+      isSmall: window.innerWidth > 400 && window.innerWidth <= 768,
+      isMedium: window.innerWidth > 768 && window.innerWidth <= 1024,
+      isLarge: window.innerWidth > 1024 && window.innerWidth <= 1280,
+      isXLarge: window.innerWidth > 1280,
+    });
+    console.log(breakpoints, '<-breakpoints');
   };
 
   const handleScroll = () => {
@@ -110,15 +123,22 @@ const HomePage = () => {
           <ScrollPage key={index}>
             <div
               style={{
-                height: isMobile ? '80vh' : '80vh',
+                height: breakpoints.isXSmall
+                  ? '65vh'
+                  : breakpoints.isSmall
+                    ? '60vh'
+                    : breakpoints.isMedium
+                      ? '70vh'
+                      : breakpoints.isLarge
+                        ? '80vh'
+                        : '100vh',
                 position: 'relative',
                 zIndex: 1,
-                marginTop: isMobile ? -125 : '-5vh',
               }}
-              className="flex flex-col w-full justify-center items-center px-2 lg:px-10"
+              className="flex flex-col w-full justify-center items-center px-8 lg:px-10"
             >
               <Animator animation={batch(Move(0, 0, 0, 0), Fade(0, 1))}>
-                <h3 className="text-4xl lg:text-6xl font-semibold mb-4 text-orange-800">
+                <h3 className="text-3xl md:text-4xl lg:text-6xl font-semibold mb-4 text-orange-800">
                   {feature.title}
                 </h3>
               </Animator>
@@ -126,9 +146,15 @@ const HomePage = () => {
                 <div className="w-5/12 text-right">
                   <Animator
                     animation={
-                      isMobile
-                        ? batch(Move(-100, 0, -100, 100), Fade(0, 1))
-                        : batch(Move(-1000, 1000, -1000, -500), Fade(0, 1))
+                      breakpoints.isXSmall
+                        ? batch(Move(-50, 0, -50, 0))
+                        : breakpoints.isSmall
+                          ? batch(Move(-500, 0, -500, 0))
+                          : breakpoints.isMedium
+                            ? batch(Move(-800, 0, -800, 0))
+                            : breakpoints.isLarge
+                              ? batch(Move(-1000, 0, -1000, 0))
+                              : batch(Move(-1200, 0, -1200, 0))
                     }
                   >
                     <img
@@ -139,12 +165,18 @@ const HomePage = () => {
                   </Animator>
                 </div>
 
-                <div className="feature-content w-7/12 pl-2 text-left text-3xl lg:text-4xl tracking-tight">
+                <div className="feature-content w-7/12 pl-2 text-left text-2xl md:text-3xl lg:text-4xl tracking-tight">
                   <Animator
                     animation={
-                      isMobile
-                        ? batch(Move(30, 100, 30, 0), Fade(0, 1))
-                        : batch(Move(1000, 0, 1000, 0), Fade(0, 1))
+                      breakpoints.isXSmall
+                        ? batch(Move(50, 0, 50, 0))
+                        : breakpoints.isSmall
+                          ? batch(Move(500, 0, 500, 0))
+                          : breakpoints.isMedium
+                            ? batch(Move(800, 0, 800, 0))
+                            : breakpoints.isLarge
+                              ? batch(Move(1000, 0, 1000, 0))
+                              : batch(Move(1200, 0, 1200, 0))
                     }
                   >
                     <p className="text-gray-600">{feature.description}</p>
