@@ -206,7 +206,7 @@ const features = [
   {
     title: 'Save Recipes',
     description:
-      'Easily save recipes from all over the internet with just a web address. Clickapea fetches and processes all the details for you, making it simple to keep all your favorite recipes in one place.',
+      'Easily save recipes from all over the internet with just a web address. Clickapea fetches and processes all the details for you.',
     image: '/assets/images/homepage/save.png',
   },
   {
