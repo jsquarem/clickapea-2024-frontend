@@ -11,30 +11,62 @@ const HomePage = () => {
       '#FCC474',
       '#1EB17C',
       '#D8CDC3',
-      '#FFD699 ',
-      '#374151 ',
+      '#FFD699',
+      '#374151',
+    ],
+    []
+  );
+
+  const contrastColors = useMemo(
+    () => [
+      '#C16855', // Contrast color for '#FFFFFF'
+      '#FCC474', // Contrast color for '#C16855'
+      '#051F16', // Contrast color for '#FCC474'
+      '#051F16', // Contrast color for '#1EB17C'
+      '#C16855', // Contrast color for '#D8CDC3'
+      '#C16855', // Contrast color for '#FFD699'
+      '#1EB17C', // Contrast color for '#374151'
     ],
     []
   );
 
   const [bgColor, setBgColor] = useState(colors[0]);
+  const [titleColor, setTitleColor] = useState(contrastColors[0]);
 
   const handleScroll = useCallback(() => {
     const scrollTop = window.scrollY;
     const sectionHeight = window.innerHeight;
+    const viewportMiddle = scrollTop + window.innerHeight / 2;
 
-    // Calculate the background color based on the scroll position
-    const sectionIndex = Math.floor(scrollTop / sectionHeight);
-    const sectionProgress = (scrollTop % sectionHeight) / sectionHeight;
-    const startColor = colors[sectionIndex];
-    const endColor = colors[sectionIndex + 1] || colors[sectionIndex];
-    const interpolatedColor = interpolateColor(
-      startColor,
-      endColor,
+    const sectionIndex = Math.floor(viewportMiddle / sectionHeight);
+    const sectionProgress = (viewportMiddle % sectionHeight) / sectionHeight;
+
+    if (scrollTop === 0) {
+      setBgColor(colors[0]);
+      setTitleColor(contrastColors[0]);
+      return;
+    }
+
+    const startBgColor = colors[sectionIndex];
+    const endBgColor = colors[sectionIndex + 1] || colors[sectionIndex];
+    const interpolatedBgColor = interpolateColor(
+      startBgColor,
+      endBgColor,
       sectionProgress
     );
-    setBgColor(interpolatedColor);
-  }, [colors]);
+
+    const startTitleColor = contrastColors[sectionIndex];
+    const endTitleColor =
+      contrastColors[sectionIndex + 1] || contrastColors[sectionIndex];
+    const interpolatedTitleColor = interpolateColor(
+      startTitleColor,
+      endTitleColor,
+      sectionProgress
+    );
+
+    setBgColor(interpolatedBgColor);
+    setTitleColor(interpolatedTitleColor);
+  }, [colors, contrastColors]);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -66,10 +98,13 @@ const HomePage = () => {
       style={{ background: bgColor, transition: 'background-color 0.5s ease' }}
     >
       <div className="text-center flex flex-col gap-8 justify-center items-center py-8">
-        <h1 className="text-4xl lg:text-8xl font-bold text-[#C16855]">
+        <h1
+          className="text-4xl lg:text-8xl font-bold"
+          style={{ color: titleColor }}
+        >
           Welcome to Clickapea!
         </h1>
-        <p className="text-4xl text-[#C16855] pb-10">
+        <p className="text-4xl pb-10" style={{ color: titleColor }}>
           Your ultimate sous chef bestie
         </p>
         <div className="text-center text-xl px-10 lg:px-30 lg:w-2/3 tracking-tight">
@@ -84,13 +119,13 @@ const HomePage = () => {
       </div>
 
       {features.map((feature, index) => (
-        <Section key={index} feature={feature} />
+        <Section key={index} feature={feature} titleColor={titleColor} />
       ))}
     </motion.div>
   );
 };
 
-const Section = ({ feature }) => {
+const Section = ({ feature, titleColor }) => {
   const controls = useAnimation();
   const [ref, inView] = useInView({
     threshold: 0.5,
@@ -153,7 +188,8 @@ const Section = ({ feature }) => {
       transition={{ duration: 0.8 }}
     >
       <motion.h3
-        className="text-3xl md:text-4xl lg:text-6xl font-semibold mb-4 text-[#C16855] text-center"
+        className="text-3xl md:text-4xl lg:text-6xl font-semibold mb-4 text-center"
+        style={{ color: titleColor }}
         variants={variants}
       >
         {feature.title}
