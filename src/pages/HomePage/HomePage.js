@@ -44,6 +44,8 @@ const HomePage = () => {
   }, [handleScroll]);
 
   const interpolateColor = (color1, color2, factor) => {
+    if (!color1 || !color2) return color1 || '#FFFFFF';
+
     const result = color1
       .slice(1)
       .match(/.{2}/g)
@@ -107,11 +109,11 @@ const Section = ({ feature }) => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { duration: 0.5, ease: [0.42, 0, 0.58, 1] },
+      transition: { duration: 0.4, ease: [0.42, 0, 0.58, 1] },
     },
     exit: {
       opacity: 0,
-      transition: { duration: 0.5, ease: [0.42, 0, 0.58, 1] },
+      transition: { duration: 0.4, ease: [0.42, 0, 0.58, 1] },
     },
   };
 
@@ -119,11 +121,11 @@ const Section = ({ feature }) => {
     hidden: { x: '100%' },
     visible: {
       x: 0,
-      transition: { duration: 0.8, ease: [0.42, 0.3, 0.58, 1] },
+      transition: { duration: 0.4, ease: [0.42, 0.3, 0.58, 1] },
     },
     exit: {
       x: '100%',
-      transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] },
+      transition: { duration: 0.4, ease: [0.42, 0, 0.58, 1] },
     },
   };
 
@@ -132,11 +134,11 @@ const Section = ({ feature }) => {
     visible: {
       x: 0,
       y: 0,
-      transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] },
+      transition: { duration: 0.4, ease: [0.42, 0, 0.58, 1] },
     },
     exit: {
       x: '-100%',
-      transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] },
+      transition: { duration: 0.4, ease: [0.42, 0, 0.58, 1] },
     },
   };
 
