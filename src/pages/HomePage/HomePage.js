@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
 import {
@@ -33,10 +33,8 @@ const HomePage = () => {
     isLarge: window.innerWidth > 1024 && window.innerWidth <= 1280,
     isXLarge: window.innerWidth > 1280,
   });
-  const sectionsRefs = useRef([]);
-  const [currentSection, setCurrentSection] = useState(0);
 
-  const handleResize = () => {
+  const handleResize = useCallback(() => {
     setBreakpoints({
       isXSmall: window.innerWidth <= 400,
       isSmall: window.innerWidth > 400 && window.innerWidth <= 768,
@@ -44,10 +42,9 @@ const HomePage = () => {
       isLarge: window.innerWidth > 1024 && window.innerWidth <= 1280,
       isXLarge: window.innerWidth > 1280,
     });
-    console.log(breakpoints, '<-breakpoints');
-  };
+  }, []);
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     const scrollTop = window.scrollY;
     const scrollHeight =
       document.documentElement.scrollHeight - window.innerHeight;
@@ -69,17 +66,7 @@ const HomePage = () => {
       // Reset to initial state when scrolled to the top
       setFormSticky(false);
     }
-
-    // Update current section based on scroll position
-    const currentIndex = sectionsRefs.current.findIndex(
-      (section) =>
-        section.current.getBoundingClientRect().top >= 0 &&
-        section.current.getBoundingClientRect().top < window.innerHeight / 2
-    );
-    setCurrentSection(
-      currentIndex >= 0 ? currentIndex : sectionsRefs.current.length - 1
-    );
-  };
+  }, []);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -88,7 +75,7 @@ const HomePage = () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
     };
-  }, [currentSection]);
+  }, [handleScroll, handleResize]);
 
   return (
     <div className="relative">
@@ -126,11 +113,11 @@ const HomePage = () => {
                 height: breakpoints.isXSmall
                   ? '65vh'
                   : breakpoints.isSmall
-                    ? '60vh'
+                    ? '30vh'
                     : breakpoints.isMedium
-                      ? '70vh'
+                      ? '30vh'
                       : breakpoints.isLarge
-                        ? '80vh'
+                        ? '60vh'
                         : '100vh',
                 position: 'relative',
                 zIndex: 1,

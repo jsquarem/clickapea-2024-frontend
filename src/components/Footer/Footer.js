@@ -4,11 +4,17 @@ import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <footer className="bg-gray-700 text-white py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center gap-4">
+        <Link
+          to="/signup"
+          className="inline-block bg-yellow-500 text-white text-lg font-semibold py-3 px-6 rounded hover:bg-yellow-600 transition"
+        >
+          Join Clickapea Today!
+        </Link>
         <div className="flex flex-wrap justify-between">
           <div className="w-full md:w-1/3 mb-8 md:mb-0">
             <h4 className="text-xl font-semibold mb-4">About Clickapea</h4>
-            <p className="text-gray-400">
+            <p className="text-gray-400 pr-4">
               Clickapea is your ultimate sous chef bestie, helping you manage
               and edit recipes from all over the internet, convert ingredients,
               and create shopping lists with ease.
