@@ -93,14 +93,13 @@ const HomePage = () => {
             <AddRecipeForm />
           </div>
         </div>
-        <div className="text-center text-2xl flex flex-col gap-4 w-full px-10 lg:px-30 tracking-tight">
+        <div className="text-center text-xl flex flex-col gap-4 w-full px-10 lg:px-30 tracking-tight">
           <div>
-            Welcome to Clickapea, your ultimate sous chef bestie! Discover a
-            world of culinary delights with our user-friendly platform. Whether
-            you're a seasoned chef or just starting, Clickapea helps you manage
-            recipes, convert ingredients, follow step-by-step instructions, and
-            create organized shopping lists, digitize your collection! Join us
-            and make your cooking experience seamless and enjoyable.
+            Whether you're a seasoned chef or just starting, Clickapea helps you
+            manage recipes, convert ingredients, follow step-by-step
+            instructions, and create organized shopping lists, digitize your
+            collection! Join us and make your cooking experience seamless and
+            enjoyable.
           </div>
         </div>
       </div>
@@ -113,7 +112,7 @@ const HomePage = () => {
                 height: isMobile ? '80vh' : '80vh',
                 position: 'relative',
                 zIndex: 1,
-                marginTop: isMobile ? -125 : '-5vh',
+                marginTop: isMobile ? -175 : '-5vh',
               }}
               className="flex flex-col w-full justify-center items-center px-2 lg:px-10"
             >
@@ -207,7 +206,7 @@ const features = [
   {
     title: 'Save Recipes',
     description:
-      'Easily save recipes from all over the internet with just a web address. Clickapea fetches and processes all the details for you, making it simple to keep all your favorite recipes in one place.',
+      'Easily save recipes from all over the internet with just a web address. Clickapea fetches and processes all the details for you.',
     image: '/assets/images/homepage/save.png',
   },
   {
