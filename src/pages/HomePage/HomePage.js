@@ -12,7 +12,12 @@ const HomePage = () => {
       '#1EB17C',
       '#D8CDC3',
       '#FFD699',
-      '#374151',
+      '#FFFFFF', // 2nd loop
+      '#C16855',
+      '#FCC474',
+      '#1EB17C',
+      '#D8CDC3',
+      '#FFD699',
     ],
     []
   );
@@ -25,7 +30,12 @@ const HomePage = () => {
       '#051F16', // Contrast color for '#1EB17C'
       '#C16855', // Contrast color for '#D8CDC3'
       '#C16855', // Contrast color for '#FFD699'
-      '#1EB17C', // Contrast color for '#374151'
+      '#C16855', // 2nd loop
+      '#FCC474',
+      '#051F16',
+      '#051F16',
+      '#C16855',
+      '#C16855',
     ],
     []
   );
@@ -111,7 +121,7 @@ const HomePage = () => {
           <div>
             Whether you're a seasoned chef or just starting, Clickapea helps you
             manage recipes, convert ingredients, follow step-by-step
-            instructions, and create organized shopping lists, digitize your
+            instructions, create organized shopping lists, and digitize your
             collection! Join us and make your cooking experience seamless and
             enjoyable.
           </div>
