@@ -5,6 +5,12 @@
   transition: background-color 0.5s ease-in-out;
 }
 
-.bg-transparent {
-  background-color: transparent !important;
+.bg-opacity {
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.05),
+    /* Green color with opacity 0 */ rgb(255, 255, 255, 1)
+      /* Green color with opacity 1 */
+  );
+  transition: background-color 0.5s;
 }

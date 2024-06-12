@@ -67,7 +67,7 @@ const Header = () => {
 
   return (
     <header
-      className={`site-nav ${headerSticky ? 'bg-transparent' : 'bg-green-100'} p-4 flex items-center justify-between sticky top-0 z-30`}
+      className={`site-nav ${headerSticky ? 'bg-opacity' : 'bg-green-100'} p-4 flex items-center justify-between sticky top-0 z-30`}
     >
       <Link to="/">
         <div className="flex flex-row justify-start items-center">

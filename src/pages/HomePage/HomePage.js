@@ -6,6 +6,7 @@ import {
   ScrollContainer,
   ScrollPage,
   Move,
+  Fade,
   batch,
 } from 'react-scroll-motion';
 import './HomePage.css';
@@ -116,7 +117,7 @@ const HomePage = () => {
               }}
               className="flex flex-col w-full justify-center items-center px-2 lg:px-10"
             >
-              <Animator animation={batch(Move(0, 0, 0, 0))}>
+              <Animator animation={batch(Move(0, 0, 0, 0), Fade(0, 1))}>
                 <h3 className="text-4xl lg:text-6xl font-semibold mb-4 text-orange-800">
                   {feature.title}
                 </h3>
@@ -126,8 +127,8 @@ const HomePage = () => {
                   <Animator
                     animation={
                       isMobile
-                        ? batch(Move(-100, 0, -100, 100))
-                        : batch(Move(-1000, 1000, -1000, -500))
+                        ? batch(Move(-100, 0, -100, 100), Fade(0, 1))
+                        : batch(Move(-1000, 1000, -1000, -500), Fade(0, 1))
                     }
                   >
                     <img
@@ -142,8 +143,8 @@ const HomePage = () => {
                   <Animator
                     animation={
                       isMobile
-                        ? batch(Move(30, 100, 30, 0))
-                        : batch(Move(1000, 0, 1000, 0))
+                        ? batch(Move(30, 100, 30, 0), Fade(0, 1))
+                        : batch(Move(1000, 0, 1000, 0), Fade(0, 1))
                     }
                   >
                     <p className="text-gray-600">{feature.description}</p>
@@ -165,7 +166,6 @@ const HomePage = () => {
           </ScrollPage>
         ))}
       </ScrollContainer>
-
       <footer className="py-12 bg-orange-800 text-white text-center">
         <Link
           to="/signup"
