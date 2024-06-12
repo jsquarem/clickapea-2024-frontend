@@ -24,16 +24,16 @@ const HomePage = () => {
 
   const contrastColors = useMemo(
     () => [
-      '#C16855', // Contrast color for '#FFFFFF'
-      '#FCC474', // Contrast color for '#C16855'
+      '#051F16', // Contrast color for '#FFFFFF'
+      '#051F16', // Contrast color for '#C16855'
       '#051F16', // Contrast color for '#FCC474'
-      '#051F16', // Contrast color for '#1EB17C'
+      '#C16855', // Contrast color for '#1EB17C'
       '#C16855', // Contrast color for '#D8CDC3'
       '#C16855', // Contrast color for '#FFD699'
-      '#C16855', // 2nd loop
-      '#FCC474',
       '#051F16',
       '#051F16',
+      '#051F16',
+      '#C16855',
       '#C16855',
       '#C16855',
     ],
@@ -108,13 +108,10 @@ const HomePage = () => {
       style={{ background: bgColor, transition: 'background-color 0.5s ease' }}
     >
       <div className="text-center flex flex-col gap-8 justify-center items-center py-8">
-        <h1
-          className="text-4xl lg:text-8xl font-bold"
-          style={{ color: titleColor }}
-        >
+        <h1 className="text-4xl lg:text-8xl font-bold text-[#C16855]">
           Welcome to Clickapea!
         </h1>
-        <p className="text-4xl pb-10" style={{ color: titleColor }}>
+        <p className="text-4xl pb-10 text-[#C16855]">
           Your ultimate sous chef bestie
         </p>
         <div className="text-center text-xl px-10 lg:px-30 lg:w-2/3 tracking-tight">
