@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -25,30 +24,10 @@ const HomePage = () => {
   );
 
   const [bgColor, setBgColor] = useState(colors[0]);
-  const formRef = useRef(null);
-  const initialFormTop = useRef(null); // To store the initial top position of the form
-  const [formSticky, setFormSticky] = useState(false);
 
   const handleScroll = useCallback(() => {
     const scrollTop = window.scrollY;
     const sectionHeight = window.innerHeight;
-
-    if (initialFormTop.current === null) {
-      initialFormTop.current = formRef.current.offsetTop;
-    }
-
-    const formTop = formRef.current.getBoundingClientRect().top;
-
-    if (formTop <= 150) {
-      setFormSticky(true);
-    } else if (scrollTop <= initialFormTop.current - 150) {
-      setFormSticky(false);
-    }
-
-    if (scrollTop === 0) {
-      // Reset to initial state when scrolled to the top
-      setFormSticky(false);
-    }
 
     // Calculate the background color based on the scroll position
     const sectionIndex = Math.floor(scrollTop / sectionHeight);
@@ -97,14 +76,6 @@ const HomePage = () => {
         <p className="text-xl text-orange-600 pb-10 lg:pb-0">
           Your ultimate sous chef bestie
         </p>
-        <div
-          className={`${formSticky ? 'form-sticky z-10' : 'initial-form-position p-6'} transition-all flex justify-center`}
-          ref={formRef}
-        >
-          <div className="w-11/12 lg:w-2/3 mt-[-30px] lg:mt-0">
-            <AddRecipeForm />
-          </div>
-        </div>
         <div className="text-center text-xl flex flex-col gap-4 w-full px-10 lg:px-30 tracking-tight">
           <div>
             Whether you're a seasoned chef or just starting, Clickapea helps you

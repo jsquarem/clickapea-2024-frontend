@@ -12,17 +12,6 @@
   transition: all 0.5s ease-in-out;
 }
 
-.form-sticky {
-  position: fixed;
-  top: 150px;
-  left: 0;
-  right: 0;
-  background-color: transparent !important;
-  box-shadow: none !important;
-  padding: 20px 0 0 0 !important;
-  transition: all 0.5s ease-in-out;
-}
-
 .bg-opacity {
   background: linear-gradient(
     to top,
@@ -30,8 +19,4 @@
     rgb(255, 255, 255, 1)
   );
   transition: background-color 0.5s;
-}
-
-.initial-form-position {
-  transition: all 0.5s ease-in-out;
 }
