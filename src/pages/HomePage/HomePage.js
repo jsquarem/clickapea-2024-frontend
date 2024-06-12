@@ -1,50 +1,37 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
 import './HomePage.css';
 
 const HomePage = () => {
-  const colors = [
-    '#FFFFFF',
-    '#FF6347', // Tomato for 'Recipe Management'
-    '#FFD700', // Gold for 'Ingredient Conversion'
-    '#ADFF2F', // GreenYellow for 'Interactive Instructions'
-    '#20B2AA', // LightSeaGreen for 'Shopping List'
-    '#F5F5DC', // Beige for 'Save Recipes'
-    '#E0FFFF', // LightCyan for 'Nutritional Information'
-  ];
+  const colors = useMemo(
+    () => [
+      '#FFFFFF',
+      '#FF6347', // Tomato for 'Recipe Management'
+      '#FFD700', // Gold for 'Ingredient Conversion'
+      '#ADFF2F', // GreenYellow for 'Interactive Instructions'
+      '#20B2AA', // LightSeaGreen for 'Shopping List'
+      '#F5F5DC', // Beige for 'Save Recipes'
+      '#E0FFFF', // LightCyan for 'Nutritional Information'
+    ],
+    []
+  );
 
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [currentSection, setCurrentSection] = useState(0);
   const [bgColor, setBgColor] = useState(colors[0]);
   const formRef = useRef(null);
   const initialFormTop = useRef(null); // To store the initial top position of the form
   const [formSticky, setFormSticky] = useState(false);
-  const [breakpoints, setBreakpoints] = useState({
-    isXSmall: window.innerWidth <= 400,
-    isSmall: window.innerWidth > 400 && window.innerWidth <= 768,
-    isMedium: window.innerWidth > 768 && window.innerWidth <= 1024,
-    isLarge: window.innerWidth > 1024 && window.innerWidth <= 1280,
-    isXLarge: window.innerWidth > 1280,
-  });
-
-  const handleResize = useCallback(() => {
-    setBreakpoints({
-      isXSmall: window.innerWidth <= 400,
-      isSmall: window.innerWidth > 400 && window.innerWidth <= 768,
-      isMedium: window.innerWidth > 768 && window.innerWidth <= 1024,
-      isLarge: window.innerWidth > 1024 && window.innerWidth <= 1280,
-      isXLarge: window.innerWidth > 1280,
-    });
-  }, []);
 
   const handleScroll = useCallback(() => {
     const scrollTop = window.scrollY;
     const sectionHeight = window.innerHeight;
-    const totalSections = colors.length;
-    const scrollProgress = scrollTop / (sectionHeight * (totalSections - 1));
-    setScrollProgress(scrollProgress);
 
     if (initialFormTop.current === null) {
       initialFormTop.current = formRef.current.offsetTop;
@@ -63,11 +50,8 @@ const HomePage = () => {
       setFormSticky(false);
     }
 
-    // Update current section based on scroll position
-    const sectionIndex = Math.floor(scrollTop / sectionHeight);
-    setCurrentSection(sectionIndex);
-
     // Calculate the background color based on the scroll position
+    const sectionIndex = Math.floor(scrollTop / sectionHeight);
     const sectionProgress = (scrollTop % sectionHeight) / sectionHeight;
     const startColor = colors[sectionIndex];
     const endColor = colors[sectionIndex + 1] || colors[sectionIndex];
@@ -81,12 +65,10 @@ const HomePage = () => {
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
     };
-  }, [handleScroll, handleResize]);
+  }, [handleScroll]);
 
   const interpolateColor = (color1, color2, factor) => {
     const result = color1
@@ -160,17 +142,20 @@ const Section = ({ feature }) => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] },
+      transition: { duration: 0.5, ease: [0.42, 0, 0.58, 1] },
     },
     exit: {
       opacity: 0,
-      transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] },
+      transition: { duration: 0.5, ease: [0.42, 0, 0.58, 1] },
     },
   };
 
   const enterFromRight = {
     hidden: { x: '100%' },
-    visible: { x: 0, transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] } },
+    visible: {
+      x: 0,
+      transition: { duration: 0.8, ease: [0.42, 0.3, 0.58, 1] },
+    },
     exit: {
       x: '100%',
       transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] },
