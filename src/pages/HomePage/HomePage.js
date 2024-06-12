@@ -173,7 +173,7 @@ const Section = ({ feature }) => {
 
   return (
     <motion.div
-      className="flex flex-col w-full justify-center items-center px-8 lg:px-10 pb-10 overflow-hidden pt-40"
+      className="flex flex-col w-full h-[100vh] justify-center items-center px-8 lg:px-10 pb-10 overflow-x-hidden"
       ref={ref}
       initial="hidden"
       animate={controls}
