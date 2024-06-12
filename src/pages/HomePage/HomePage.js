@@ -113,7 +113,7 @@ const HomePage = () => {
                 height: isMobile ? '80vh' : '80vh',
                 position: 'relative',
                 zIndex: 1,
-                marginTop: isMobile ? -110 : -200,
+                marginTop: isMobile ? -125 : '-5vh',
               }}
               className="flex flex-col w-full justify-center items-center px-2 lg:px-10"
             >
