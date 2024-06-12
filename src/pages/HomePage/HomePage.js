@@ -120,6 +120,7 @@ const HomePage = () => {
                         : '100vh',
                 position: 'relative',
                 zIndex: 1,
+                marginTop: breakpoints.isXSmall ? -150 : 0,
               }}
               className="flex flex-col w-full justify-center items-center px-8 lg:px-10"
             >
@@ -133,7 +134,7 @@ const HomePage = () => {
                   <Animator
                     animation={
                       breakpoints.isXSmall
-                        ? batch(Move(-50, 0, -50, 0))
+                        ? batch(Move(-100, 0, -100, 0))
                         : breakpoints.isSmall
                           ? batch(Move(-500, 0, -500, 0))
                           : breakpoints.isMedium
