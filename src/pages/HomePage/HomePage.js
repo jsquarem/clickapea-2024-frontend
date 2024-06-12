@@ -14,12 +14,12 @@ const HomePage = () => {
   const colors = useMemo(
     () => [
       '#FFFFFF',
-      '#FF6347', // Tomato for 'Recipe Management'
-      '#FFD700', // Gold for 'Ingredient Conversion'
-      '#ADFF2F', // GreenYellow for 'Interactive Instructions'
-      '#20B2AA', // LightSeaGreen for 'Shopping List'
-      '#F5F5DC', // Beige for 'Save Recipes'
-      '#E0FFFF', // LightCyan for 'Nutritional Information'
+      '#C16855',
+      '#FCC474',
+      '#1EB17C',
+      '#D8CDC3',
+      '#FFD699 ',
+      '#051F16 ',
     ],
     []
   );
@@ -163,7 +163,7 @@ const Section = ({ feature }) => {
   };
 
   const enterFromLeft = {
-    hidden: { x: '-100%' },
+    hidden: { x: '-100%', y: '0%' },
     visible: { x: 0, transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] } },
     exit: {
       x: '-100%',
@@ -173,7 +173,7 @@ const Section = ({ feature }) => {
 
   return (
     <motion.div
-      className="flex flex-col w-full justify-center items-center px-8 lg:px-10 pb-10"
+      className="flex flex-col w-full justify-center items-center px-8 lg:px-10 pb-10 overflow-hidden"
       ref={ref}
       initial="hidden"
       animate={controls}
