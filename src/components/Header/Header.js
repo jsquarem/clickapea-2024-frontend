@@ -1,12 +1,13 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import AuthContext from '../../AuthContext';
-import logoSrc from '../../assets/clickapea_logo_800_2400.png';
+import './Header.css';
 
 const Header = () => {
   const { isAuthenticated, user, login, logout } = useContext(AuthContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [headerSticky, setHeaderSticky] = useState(false);
   const dropdownRef = useRef(null);
   const location = useLocation();
 
@@ -36,9 +37,24 @@ const Header = () => {
     setMenuOpen(!menuOpen);
   };
 
+  const handleScroll = () => {
+    if (window.pageYOffset > 0) {
+      setHeaderSticky(true);
+    } else {
+      setHeaderSticky(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const getLinkClass = (path) => {
     const baseClass =
-      'block text-green-500 font-bold text-left lg:text-center p-2 border-b border-green-300 lg:border-0 rounded transition-all';
+      'block text-green-500 font-bold text-left lg:text-center p-2 lg:border-0 rounded transition-all';
     const hoverClass = 'hover:bg-green-600 hover:text-green-200';
     const activeClass = 'active:bg-green-800';
     const activePageClass = 'bg-green-800 inset';
@@ -49,9 +65,22 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-green-200 p-4 flex items-center justify-between relative">
+    <header
+      className={`site-nav ${headerSticky ? 'bg-transparent' : 'bg-green-100'} p-4 flex items-center justify-between sticky top-0 z-30`}
+    >
       <Link to="/">
-        <img src={logoSrc} alt="Clickapea Logo" className="h-24 lg:h-32" />
+        <div className="flex flex-row justify-start items-center">
+          <img
+            src="/assets/images/clickapea_logo_725_550.png"
+            alt="Clickapea Logo"
+            className="h-24 lg:h-32"
+          />
+          <div className="p-4">
+            <h1 className="text-5xl lg:text-6xl font-bold tracking-wide text-green-800">
+              Clickapea
+            </h1>
+          </div>
+        </div>
       </Link>
       <button
         className="block lg:hidden text-green-500 hover:text-green-700 focus:outline-none"
@@ -78,7 +107,7 @@ const Header = () => {
         </Link>
         {isAuthenticated && user && (
           <>
-            <Link to="/my-recipes" className={getLinkClass('/categories')}>
+            <Link to="/my-recipes" className={getLinkClass('/my-recipes')}>
               <div className="flex items-center lg:flex-col lg:items-center">
                 <i className="fa-solid fa-book lg:mb-1 lg:text-lg"></i>
                 <span className="ml-2 lg:ml-0">My Recipes</span>

@@ -60,7 +60,7 @@ const App = () => {
 
   return (
     <Router>
-      <div className="App flex flex-col min-h-screen bg-white">
+      <div className="App flex flex-col min-h-screen bg-white text-gray-600">
         <Header
           isAuthenticated={isAuthenticated}
           user={user}

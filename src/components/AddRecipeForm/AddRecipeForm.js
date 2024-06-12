@@ -40,7 +40,7 @@ const AddRecipeForm = () => {
         />
         <button
           type="submit"
-          className="bg-blue-500 text-white p-2 rounded w-5/12 lg:w-1/4"
+          className="bg-[#37A0C5] hover:bg-[#62d5ff] text-white p-2 rounded w-5/12 lg:w-1/4"
         >
           Add Recipe
         </button>
