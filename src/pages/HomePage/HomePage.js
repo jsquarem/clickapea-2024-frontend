@@ -110,7 +110,7 @@ const HomePage = () => {
             <div
               style={{
                 height: breakpoints.isXSmall
-                  ? '65vh'
+                  ? '100vh'
                   : breakpoints.isSmall
                     ? '30vh'
                     : breakpoints.isMedium
