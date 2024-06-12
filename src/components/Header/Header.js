@@ -10,6 +10,8 @@ const Header = () => {
   const [headerSticky, setHeaderSticky] = useState(false);
   const [isMobile] = useState(window.innerWidth <= 768);
   const dropdownRef = useRef(null);
+  const menuRef = useRef(null);
+  const hamburgerRef = useRef(null); // Add a reference for the hamburger icon
   const location = useLocation();
 
   const handleProfileClick = () => {
@@ -21,18 +23,31 @@ const Header = () => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        !hamburgerRef.current.contains(event.target)
+      ) {
+        setMenuOpen(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, [dropdownRef, menuRef, hamburgerRef]);
 
   useEffect(() => {
     // Close the mobile menu when navigating to a new page
     setMenuOpen(false);
   }, [location]);
+
+  useEffect(() => {
+    // Close dropdown and menu when user logs in
+    setShowDropdown(false);
+    setMenuOpen(false);
+  }, [isAuthenticated]);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -67,7 +82,7 @@ const Header = () => {
 
   return (
     <header
-      className={`site-nav ${headerSticky ? 'bg-opacity' : 'bg-green-100'} p-4 flex items-center justify-between sticky top-0 z-30`}
+      className={`site-nav ${headerSticky && !menuOpen ? 'bg-opacity' : 'bg-green-100'} p-4 flex items-center justify-between sticky top-0 z-30`}
     >
       <Link to="/">
         <div className="flex flex-row justify-start items-center">
@@ -90,10 +105,12 @@ const Header = () => {
       <button
         className="block lg:hidden text-green-500 hover:text-green-700 focus:outline-none"
         onClick={toggleMenu}
+        ref={hamburgerRef} // Attach the ref to the hamburger icon
       >
         <i className="fas fa-bars fa-2x"></i>
       </button>
       <nav
+        ref={menuRef}
         className={`${
           menuOpen ? 'block' : 'hidden'
         } lg:flex lg:items-center lg:space-x-4 lg:ml-auto absolute lg:static top-full left-0 w-full lg:w-auto bg-green-200 lg:bg-transparent z-30 border-t-4 border-green-400 lg:border-0 drop-shadow-md`}

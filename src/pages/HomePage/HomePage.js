@@ -173,7 +173,7 @@ const Section = ({ feature }) => {
 
   return (
     <motion.div
-      className="flex flex-col w-full justify-center items-center px-8 lg:px-10 pb-10 overflow-hidden"
+      className="flex flex-col w-full justify-center items-center px-8 lg:px-10 pb-10 overflow-hidden h-[80vh]"
       ref={ref}
       initial="hidden"
       animate={controls}
@@ -187,9 +187,9 @@ const Section = ({ feature }) => {
       >
         {feature.title}
       </motion.h3>
-      <div className="flex flex-row justify-center items-center">
+      <div className="flex flex-col lg:flex-row justify-center items-center">
         <motion.div
-          className="w-5/12 text-right"
+          className="w-full lg:w-5/12 text-right"
           initial="hidden"
           animate={controls}
           exit="hidden"
@@ -199,18 +199,18 @@ const Section = ({ feature }) => {
           <img
             src={feature.image}
             alt={feature.title}
-            className="object-cover w-full h-full"
+            className="object-cover w-full h-full lg:h-[34rem] lg:w-[34rem]"
           />
         </motion.div>
 
         <motion.div
-          className="feature-content w-7/12 pl-2 text-left text-2xl md:text-3xl lg:text-4xl tracking-tight"
+          className="feature-content w-full lg:w-7/12 pl-2 text-left text-2xl md:text-3xl lg:text-4xl tracking-tight"
           initial="hidden"
           animate={controls}
           exit="hidden"
           variants={enterFromRight}
         >
-          <p className="text-gray-600">{feature.description}</p>
+          <p className="text-gray-600 w-2/3 pl-10">{feature.description}</p>
         </motion.div>
       </div>
     </motion.div>
