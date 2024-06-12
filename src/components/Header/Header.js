@@ -110,7 +110,7 @@ const Header = () => {
       </Link>
       <button
         onClick={toggleModal} // Add button to open AddRecipeModal
-        className="hover:bg-[#c4985b] lg:mx-auto bg-yellow-500 text-white hover:text-[#db9585] font-bold w-1/5 lg:w-1/6 py-1 px-1 lg:py-5 lg:px-10 rounded-lg"
+        className="hover:bg-[#c4985b] lg:mx-auto bg-yellow-500 text-white hover:text-[#db9585] font-bold w-1/4 lg:w-1/6 py-1 px-1 lg:py-5 lg:px-10 rounded-lg"
       >
         Add Recipe
       </button>

@@ -109,11 +109,11 @@ const Section = ({ feature }) => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { duration: 0.4, ease: [0.42, 0, 0.58, 1] },
+      transition: { duration: 0.3, ease: [0.42, 0, 0.58, 1] },
     },
     exit: {
       opacity: 0,
-      transition: { duration: 0.4, ease: [0.42, 0, 0.58, 1] },
+      transition: { duration: 0.3, ease: [0.42, 0, 0.58, 1] },
     },
   };
 
@@ -144,7 +144,7 @@ const Section = ({ feature }) => {
 
   return (
     <motion.div
-      className="flex flex-col w-full h-[48rem] justify-start items-center pt-20 px-8 lg:px-10 overflow-x-hidden"
+      className="flex flex-col w-full h-[48rem] justify-start items-center pt-32 px-8 lg:px-10 overflow-x-hidden"
       ref={ref}
       initial="hidden"
       animate={controls}
