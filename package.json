@@ -25,6 +25,7 @@
     "react-multi-carousel": "^2.8.5",
     "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
+    "react-scroll-motion": "^0.3.3",
     "react-select": "^5.8.0",
     "serve": "^14.0.1",
     "uuid": "^9.0.1",
