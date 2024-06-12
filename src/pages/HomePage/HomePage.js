@@ -1,13 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { motion, useAnimation } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
-import {
-  Animator,
-  ScrollContainer,
-  ScrollPage,
-  Move,
-  Fade,
-  batch,
-} from 'react-scroll-motion';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -22,6 +16,8 @@ const HomePage = () => {
   ];
 
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [currentSection, setCurrentSection] = useState(0);
+  const [bgColor, setBgColor] = useState(colors[0]);
   const formRef = useRef(null);
   const initialFormTop = useRef(null); // To store the initial top position of the form
   const [formSticky, setFormSticky] = useState(false);
@@ -45,9 +41,10 @@ const HomePage = () => {
 
   const handleScroll = useCallback(() => {
     const scrollTop = window.scrollY;
-    const scrollHeight =
-      document.documentElement.scrollHeight - window.innerHeight;
-    setScrollProgress(scrollTop / scrollHeight);
+    const sectionHeight = window.innerHeight;
+    const totalSections = colors.length;
+    const scrollProgress = scrollTop / (sectionHeight * (totalSections - 1));
+    setScrollProgress(scrollProgress);
 
     if (initialFormTop.current === null) {
       initialFormTop.current = formRef.current.offsetTop;
@@ -65,7 +62,22 @@ const HomePage = () => {
       // Reset to initial state when scrolled to the top
       setFormSticky(false);
     }
-  }, []);
+
+    // Update current section based on scroll position
+    const sectionIndex = Math.floor(scrollTop / sectionHeight);
+    setCurrentSection(sectionIndex);
+
+    // Calculate the background color based on the scroll position
+    const sectionProgress = (scrollTop % sectionHeight) / sectionHeight;
+    const startColor = colors[sectionIndex];
+    const endColor = colors[sectionIndex + 1] || colors[sectionIndex];
+    const interpolatedColor = interpolateColor(
+      startColor,
+      endColor,
+      sectionProgress
+    );
+    setBgColor(interpolatedColor);
+  }, [colors]);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -76,9 +88,27 @@ const HomePage = () => {
     };
   }, [handleScroll, handleResize]);
 
+  const interpolateColor = (color1, color2, factor) => {
+    const result = color1
+      .slice(1)
+      .match(/.{2}/g)
+      .map((hex, index) => {
+        const value1 = parseInt(hex, 16);
+        const value2 = parseInt(color2.slice(1).match(/.{2}/g)[index], 16);
+        const value = Math.round(value1 + (value2 - value1) * factor).toString(
+          16
+        );
+        return value.padStart(2, '0');
+      });
+    return `#${result.join('')}`;
+  };
+
   return (
-    <div className="relative">
-      <div className="text-center py-8 bg-white">
+    <motion.div
+      className="relative"
+      style={{ background: bgColor, transition: 'background-color 0.5s ease' }}
+    >
+      <div className="text-center py-8">
         <h1 className="text-4xl lg:text-6xl font-bold text-orange-800">
           Welcome to Clickapea!
         </h1>
@@ -86,7 +116,7 @@ const HomePage = () => {
           Your ultimate sous chef bestie
         </p>
         <div
-          className={`${formSticky ? 'form-sticky z-10' : 'initial-form-position bg-white p-6'} transition-all flex justify-center`}
+          className={`${formSticky ? 'form-sticky z-10' : 'initial-form-position p-6'} transition-all flex justify-center`}
           ref={formRef}
         >
           <div className="w-11/12 lg:w-2/3 mt-[-30px] lg:mt-0">
@@ -104,87 +134,101 @@ const HomePage = () => {
         </div>
       </div>
 
-      <ScrollContainer>
-        {features.map((feature, index) => (
-          <ScrollPage key={index}>
-            <div
-              style={{
-                height: breakpoints.isXSmall
-                  ? '100vh'
-                  : breakpoints.isSmall
-                    ? '30vh'
-                    : breakpoints.isMedium
-                      ? '30vh'
-                      : breakpoints.isLarge
-                        ? '60vh'
-                        : '100vh',
-                position: 'relative',
-                zIndex: 1,
-              }}
-              className="flex flex-col w-full justify-center items-center px-8 lg:px-10"
-            >
-              <Animator animation={batch(Move(0, 0, 0, 0), Fade(0, 1))}>
-                <h3 className="text-3xl md:text-4xl lg:text-6xl font-semibold mb-4 text-orange-800">
-                  {feature.title}
-                </h3>
-              </Animator>
-              <div className="flex flex-row justify-center items-center">
-                <div className="w-5/12 text-right">
-                  <Animator
-                    animation={
-                      breakpoints.isXSmall
-                        ? batch(Move(-100, 0, -100, 0))
-                        : breakpoints.isSmall
-                          ? batch(Move(-500, 0, -500, 0))
-                          : breakpoints.isMedium
-                            ? batch(Move(-800, 0, -800, 0))
-                            : breakpoints.isLarge
-                              ? batch(Move(-1000, 0, -1000, 0))
-                              : batch(Move(-1200, 0, -1200, 0))
-                    }
-                  >
-                    <img
-                      src={feature.image}
-                      alt={feature.title}
-                      className="object-cover w-full h-full"
-                    />
-                  </Animator>
-                </div>
+      {features.map((feature, index) => (
+        <Section key={index} feature={feature} />
+      ))}
+    </motion.div>
+  );
+};
 
-                <div className="feature-content w-7/12 pl-2 text-left text-2xl md:text-3xl lg:text-4xl tracking-tight">
-                  <Animator
-                    animation={
-                      breakpoints.isXSmall
-                        ? batch(Move(50, 0, 50, 0))
-                        : breakpoints.isSmall
-                          ? batch(Move(500, 0, 500, 0))
-                          : breakpoints.isMedium
-                            ? batch(Move(800, 0, 800, 0))
-                            : breakpoints.isLarge
-                              ? batch(Move(1000, 0, 1000, 0))
-                              : batch(Move(1200, 0, 1200, 0))
-                    }
-                  >
-                    <p className="text-gray-600">{feature.description}</p>
-                  </Animator>
-                </div>
-              </div>
-            </div>
-            <div
-              className="absolute top-0 left-0 w-full h-full"
-              style={{
-                background: `linear-gradient(to bottom, ${colors[index]}, ${
-                  colors[index + 1] || colors[index]
-                })`,
-                opacity: scrollProgress,
-                transition: 'opacity 0.5s',
-                zIndex: 0,
-              }}
-            ></div>
-          </ScrollPage>
-        ))}
-      </ScrollContainer>
-    </div>
+const Section = ({ feature }) => {
+  const controls = useAnimation();
+  const [ref, inView] = useInView({
+    threshold: 0.5,
+    triggerOnce: false,
+  });
+
+  useEffect(() => {
+    if (inView) {
+      controls.start('visible');
+    } else {
+      controls.start('hidden');
+    }
+  }, [controls, inView]);
+
+  const variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] },
+    },
+    exit: {
+      opacity: 0,
+      transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] },
+    },
+  };
+
+  const enterFromRight = {
+    hidden: { x: '100%' },
+    visible: { x: 0, transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] } },
+    exit: {
+      x: '100%',
+      transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] },
+    },
+  };
+
+  const enterFromLeft = {
+    hidden: { x: '-100%' },
+    visible: { x: 0, transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] } },
+    exit: {
+      x: '-100%',
+      transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] },
+    },
+  };
+
+  return (
+    <motion.div
+      className="flex flex-col w-full justify-center items-center px-8 lg:px-10 pb-10"
+      ref={ref}
+      initial="hidden"
+      animate={controls}
+      exit="hidden"
+      variants={variants}
+      transition={{ duration: 0.8 }}
+    >
+      <motion.h3
+        className="text-3xl md:text-4xl lg:text-6xl font-semibold mb-4 text-orange-800"
+        variants={variants}
+      >
+        {feature.title}
+      </motion.h3>
+      <div className="flex flex-row justify-center items-center">
+        <motion.div
+          className="w-5/12 text-right"
+          initial="hidden"
+          animate={controls}
+          exit="hidden"
+          variants={enterFromLeft}
+          style={{ display: 'flex', justifyContent: 'flex-end' }}
+        >
+          <img
+            src={feature.image}
+            alt={feature.title}
+            className="object-cover w-full h-full"
+          />
+        </motion.div>
+
+        <motion.div
+          className="feature-content w-7/12 pl-2 text-left text-2xl md:text-3xl lg:text-4xl tracking-tight"
+          initial="hidden"
+          animate={controls}
+          exit="hidden"
+          variants={enterFromRight}
+        >
+          <p className="text-gray-600">{feature.description}</p>
+        </motion.div>
+      </div>
+    </motion.div>
   );
 };
 
