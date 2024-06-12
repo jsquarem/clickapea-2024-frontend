@@ -76,7 +76,7 @@ const Header = () => {
 
   const getLinkClass = (path) => {
     const baseClass =
-      'block text-[#387961] font-bold text-left lg:text-center p-2 lg:border-0 rounded transition-all';
+      'flex text-[#387961] font-bold text-left lg:text-center p-2 lg:border-0 lg:rounded';
     const hoverClass = 'hover:bg-[#387961] hover:text-[#76cfae]';
     const activeClass = 'active:bg-[#387961] active:text-[#76cfae]';
     const activePageClass = 'bg-[#387961] text-[#76cfae] inset';
@@ -115,7 +115,7 @@ const Header = () => {
         Add Recipe
       </button>
       <button
-        className="block lg:hidden text-[#387961] hover:text-[#76cfae] focus:outline-none"
+        className="block lg:hidden text-[#387961] focus:outline-none"
         onClick={toggleMenu}
         ref={hamburgerRef} // Attach the ref to the hamburger icon
       >
@@ -125,10 +125,10 @@ const Header = () => {
         ref={menuRef}
         className={`${
           menuOpen ? 'block' : 'hidden'
-        } lg:flex lg:items-center lg:space-x-4 lg:ml-auto absolute lg:static top-full left-0 w-full lg:w-auto bg-green-200 lg:bg-transparent z-30 border-t-4 border-green-400 lg:border-0 drop-shadow-md`}
+        } lg:flex lg:items-center lg:space-x-4 lg:ml-auto absolute lg:static top-full left-0 w-full lg:w-auto bg-[#76cfae] lg:bg-transparent z-30 border-t-1 border-[#387961] lg:border-0 drop-shadow-md`}
       >
         <Link to="/" className={getLinkClass('/')}>
-          <div className="flex items-center lg:flex-col lg:items-center">
+          <div className="flex flex-row items-center lg:flex-col lg:items-center">
             <i className="fa-solid fa-house lg:mb-1 lg:text-lg"></i>
             <span className="ml-2 lg:ml-0">Home</span>
           </div>
