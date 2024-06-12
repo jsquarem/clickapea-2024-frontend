@@ -19,7 +19,7 @@ const HomePage = () => {
       '#1EB17C',
       '#D8CDC3',
       '#FFD699 ',
-      '#051F16 ',
+      '#374151 ',
     ],
     []
   );
@@ -164,7 +164,11 @@ const Section = ({ feature }) => {
 
   const enterFromLeft = {
     hidden: { x: '-100%', y: '0%' },
-    visible: { x: 0, transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] } },
+    visible: {
+      x: 0,
+      y: 0,
+      transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] },
+    },
     exit: {
       x: '-100%',
       transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] },
@@ -173,7 +177,7 @@ const Section = ({ feature }) => {
 
   return (
     <motion.div
-      className="flex flex-col w-full h-[100vh] justify-center items-center px-8 lg:px-10 pb-10 overflow-x-hidden"
+      className="flex flex-col w-full h-[100vh] justify-center items-center px-8 lg:px-10 pt-48 lg:pt-20 overflow-x-hidden"
       ref={ref}
       initial="hidden"
       animate={controls}
@@ -204,13 +208,15 @@ const Section = ({ feature }) => {
         </motion.div>
 
         <motion.div
-          className="feature-content w-full lg:w-7/12 pl-2 text-left text-2xl md:text-3xl lg:text-4xl tracking-tight"
+          className="feature-content w-full lg:w-7/12 lg:pl-2 text-center lg:text-left text-2xl md:text-3xl lg:text-4xl tracking-tight"
           initial="hidden"
           animate={controls}
           exit="hidden"
           variants={enterFromRight}
         >
-          <p className="text-gray-600 w-2/3 pl-10">{feature.description}</p>
+          <p className="text-gray-600 lg:w-2/3 lg:pl-10">
+            {feature.description}
+          </p>
         </motion.div>
       </div>
     </motion.div>
