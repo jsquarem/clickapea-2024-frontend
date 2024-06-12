@@ -479,7 +479,7 @@ const RecipePage = (props) => {
           {/* Row 2 */}
           <div
             id="card1"
-            className="bg-[#ffbeb5] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
+            className="bg-[#ffbeb5] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out"
           >
             <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
               <a
@@ -570,7 +570,7 @@ const RecipePage = (props) => {
           </div>
           <div
             id="card2"
-            className="bg-[#FFF4C1] p-4 rounded-lg w-full lg:col-span-5 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
+            className="bg-[#FFF4C1] p-4 rounded-lg w-full lg:col-span-5 relative transform transition-transform duration-300 ease-in-out"
           >
             <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
               {isEditing ? (
@@ -629,7 +629,7 @@ const RecipePage = (props) => {
           {/* Row 3 */}
           <div
             id="card3"
-            className="bg-[#E6E6FA] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
+            className="bg-[#E6E6FA] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out"
           >
             <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
               {isEditing ? (
@@ -682,7 +682,7 @@ const RecipePage = (props) => {
           <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 lg:col-span-5">
             <div
               id="card4"
-              className="bg-[#FFDAB9] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
+              className="bg-[#FFDAB9] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out"
             >
               <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
                 {isEditing ? (
@@ -727,7 +727,7 @@ const RecipePage = (props) => {
             </div>
             <div
               id="card5"
-              className="bg-[#B0E0E6]  p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out hover:scale-105"
+              className="bg-[#B0E0E6]  p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out"
             >
               <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
                 <a
