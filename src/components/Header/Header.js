@@ -8,6 +8,7 @@ const Header = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [headerSticky, setHeaderSticky] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const dropdownRef = useRef(null);
   const location = useLocation();
 

@@ -112,7 +112,7 @@ const HomePage = () => {
                 height: isMobile ? '80vh' : '80vh',
                 position: 'relative',
                 zIndex: 1,
-                marginTop: isMobile ? -175 : '-5vh',
+                marginTop: isMobile ? -125 : '-5vh',
               }}
               className="flex flex-col w-full justify-center items-center px-2 lg:px-10"
             >
@@ -206,7 +206,7 @@ const features = [
   {
     title: 'Save Recipes',
     description:
-      'Easily save recipes from all over the internet with just a web address. Clickapea fetches and processes all the details for you.',
+      'Easily save recipes from all over the internet with just a web address. Clickapea fetches and processes all the details for you, making it simple to keep all your favorite recipes in one place.',
     image: '/assets/images/homepage/save.png',
   },
   {
