@@ -120,7 +120,6 @@ const HomePage = () => {
                         : '100vh',
                 position: 'relative',
                 zIndex: 1,
-                marginTop: breakpoints.isXSmall ? -50 : 0,
               }}
               className="flex flex-col w-full justify-center items-center px-8 lg:px-10"
             >
