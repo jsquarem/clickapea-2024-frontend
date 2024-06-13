@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage/HomePage';
 import RecipePage from './pages/RecipePage/RecipePage';
 import ImagePreprocessingPage from './pages/ImagePreprocessingPage/ImagePreprocessingPage';
 import CreateRecipePage from './pages/CreateRecipePage/CreateRecipePage';
+import AddRecipePage from './pages/AddRecipePage/AddRecipePage';
 import MyRecipesPage from './pages/MyRecipesPage/MyRecipesPage';
 import RecipeListPage from './pages/RecipeListPage/RecipeListPage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
@@ -74,6 +75,7 @@ const App = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/recipe-scan" element={<ImagePreprocessingPage />} />
             <Route path="/recipe/:id" element={<RecipePage />} />
+            <Route path="/add-recipe" element={<AddRecipePage />} />
             <Route path="/create-recipe" element={<CreateRecipePage />} />
             <Route path="/recipes" element={<RecipeListPage />} />
             <Route

@@ -113,9 +113,22 @@ export const fetchAllRecipes = async () => {
   return response.data;
 };
 
-export const uploadMainImage = async (recipeId, formData) => {
+// export const uploadMainImage = async (recipeId, formData) => {
+//   const response = await api.post(
+//     `/api/recipes/${recipeId}/uploadMainImage`,
+//     formData,
+//     {
+//       headers: {
+//         'Content-Type': 'multipart/form-data',
+//       },
+//     }
+//   );
+//   return response.data;
+// };
+
+export const uploadRecipeImages = async (recipeId, formData) => {
   const response = await api.post(
-    `/api/recipes/${recipeId}/uploadMainImage`,
+    `/api/recipes/user/${recipeId}/images`,
     formData,
     {
       headers: {

@@ -1,56 +1,41 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import RecipeInfo from '../../components/RecipeInfo/RecipeInfo';
-import ToggleSwitch from '../../components/ToggleSwitch/ToggleSwitch';
-import Ingredients from '../../components/Ingredients/Ingredients';
-import Equipment from '../../components/Equipment/Equipment';
-import Instructions from '../../components/Instructions/Instructions';
-import NutritionalInfo from '../../components/NutritionalInfo/NutritionalInfo';
 import AddToMyRecipesButton from '../../components/AddToMyRecipesButton/AddToMyRecipesButton';
 import AddToCartButton from '../../components/AddToCartButton/AddToCartButton';
 import AuthContext from '../../AuthContext';
-import ImageUploadModal from '../../components/ImageUploadModal/ImageUploadModal';
 import Loading from '../../components/Loading/Loading';
 import {
   fetchRecipeById,
   fetchUserRecipeById,
   updateUserRecipeById,
-  uploadAdditionalImage,
-  uploadMainImage,
 } from '../../utils/api';
-import { PLACEHOLDER_SVG } from '../../utils/constants';
 import './RecipePage.css';
+import RecipeImageContainer from '../../components/RecipeImageContainer/RecipeImageContainer';
+import IngredientsContainer from '../../components/IngredientsContainer/IngredientsContainer';
+import InstructionsContainer from '../../components/InstructionsContainer/InstructionsContainer';
+import EquipmentContainer from '../../components/EquipmentContainer/EquipmentContainer';
+import NutritionalInfoContainer from '../../components/NutritionalInfoContainer/NutritionalInfoContainer';
 
 const RecipePage = (props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, login } = useContext(AuthContext);
   const [recipe, setRecipe] = useState(null);
-  const [isMetric, setIsMetric] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedRecipe, setEditedRecipe] = useState(null);
   const [validationError, setValidationError] = useState(null);
-  const [saveMessage, setSaveMessage] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [visibleImageCount, setVisibleImageCount] = useState(5);
-  const [mainImage, setMainImage] = useState('');
-  const [displayImages, setDisplayImages] = useState([]);
   const [completedIngredients, setCompletedIngredients] = useState([]);
   const [completedInstructions, setCompletedInstructions] = useState([]);
+  const [saveMessage, setSaveMessage] = useState('');
   const cardPositions = useRef({});
   const cardTiltAngles = useRef({});
 
   useEffect(() => {
     if (props.recipe) {
-      console.log('props.recipe:', props.recipe);
       setRecipe(props.recipe);
-      const image = props.recipe.image ? props.recipe.image : '';
-      setMainImage(image);
-      const imagesArray = [image, ...(props.recipe.additional_images || [])];
-      setDisplayImages(imagesArray);
       setLoading(false);
     } else {
       if (window.location.pathname.includes('/user/')) {
@@ -59,15 +44,6 @@ const RecipePage = (props) => {
         loadRecipeById(id);
       }
     }
-
-    const handleResize = () => {
-      setVisibleImageCount(window.innerWidth < 768 ? 2 : 5);
-    };
-
-    window.addEventListener('resize', handleResize);
-    handleResize();
-
-    return () => window.removeEventListener('resize', handleResize);
   }, [id, props.recipe]);
 
   useEffect(() => {
@@ -93,13 +69,6 @@ const RecipePage = (props) => {
     try {
       const data = await fetchRecipeById(recipeId);
       setRecipe(data);
-      setMainImage(data.image);
-
-      const imagesArray = [data.image];
-      if (Array.isArray(data.additional_images)) {
-        imagesArray.push(...data.additional_images);
-      }
-      setDisplayImages(imagesArray);
     } catch (error) {
       console.error('Error fetching recipe:', error);
       setError(error.message);
@@ -112,14 +81,6 @@ const RecipePage = (props) => {
     try {
       const data = await fetchUserRecipeById(recipeId);
       setRecipe(data);
-      const image = data.image ? data.image : '';
-      setMainImage(image);
-
-      const imagesArray = [image];
-      if (Array.isArray(data.additional_images)) {
-        imagesArray.push(...data.additional_images);
-      }
-      setDisplayImages(imagesArray);
     } catch (error) {
       console.error('Error fetching user recipe:', error);
       setError(error.message);
@@ -128,17 +89,11 @@ const RecipePage = (props) => {
     }
   };
 
-  const handleToggle = (isMetric) => {
-    setIsMetric(isMetric);
-  };
-
   const handleEditClick = () => {
     if (!isAuthenticated) {
       login();
     } else {
       setEditedRecipe({ ...recipe });
-      setCompletedIngredients([]);
-      setCompletedInstructions([]);
       setIsEditing(true);
     }
   };
@@ -190,7 +145,9 @@ const RecipePage = (props) => {
   const validateInputs = () => {
     let isValid = true;
     editedRecipe.ingredients.forEach((ingredient) => {
-      const amount = isMetric ? ingredient.metric : ingredient.imperial;
+      const amount = editedRecipe.isMetric
+        ? ingredient.metric
+        : ingredient.imperial;
       if (amount && isNaN(amount.quantity)) {
         isValid = false;
       }
@@ -203,144 +160,6 @@ const RecipePage = (props) => {
 
   const handleUpdateRecipeId = (newRecipeId) => {
     navigate(`/recipe/user/${newRecipeId}`);
-  };
-
-  const handleImageClick = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleImageUpload = async (files) => {
-    const formData = new FormData();
-    const newDisplayImages = [...displayImages];
-    const newFiles = [...(recipe.additional_images || [])];
-
-    if (!mainImage && files.length > 0) {
-      // If there is no main image and files are uploaded, upload the first image as the main image
-      const mainImageFile = files[0];
-      formData.append('images', mainImageFile);
-      const imageUrl = URL.createObjectURL(mainImageFile);
-      setMainImage(imageUrl);
-      newDisplayImages.unshift(imageUrl);
-
-      try {
-        const updatedRecipe = await uploadMainImage(recipe._id, formData);
-        setRecipe(updatedRecipe);
-        setDisplayImages([
-          updatedRecipe.image,
-          ...updatedRecipe.additional_images,
-        ]);
-        if (!window.location.pathname.includes('/user/')) {
-          handleUpdateRecipeId(updatedRecipe._id);
-        }
-      } catch (error) {
-        console.error('Error uploading main image:', error);
-      }
-    } else {
-      // If there is already a main image, upload all images as additional images
-      files.forEach((file) => {
-        formData.append('images', file);
-        const imageUrl = URL.createObjectURL(file);
-        newDisplayImages.push(imageUrl);
-        newFiles.push(imageUrl);
-      });
-
-      try {
-        const updatedRecipe = await uploadAdditionalImage(recipe._id, formData);
-        setRecipe(updatedRecipe);
-        setDisplayImages([
-          updatedRecipe.image,
-          ...updatedRecipe.additional_images,
-        ]);
-        if (!window.location.pathname.includes('/user/')) {
-          handleUpdateRecipeId(updatedRecipe._id);
-        }
-      } catch (error) {
-        console.error('Error uploading additional images:', error);
-      }
-    }
-  };
-
-  const handleNextImage = () => {
-    if (currentImageIndex + visibleImageCount < displayImages.length) {
-      setCurrentImageIndex(currentImageIndex + 1);
-    }
-  };
-
-  const handlePrevImage = () => {
-    if (currentImageIndex > 0) {
-      setCurrentImageIndex(currentImageIndex - 1);
-    }
-  };
-
-  const handleImageSelect = (image) => {
-    setMainImage(image);
-  };
-
-  const addIngredient = () => {
-    const newIngredients = [
-      ...editedRecipe.ingredients,
-      {
-        name: '',
-        metric: { quantity: '', unit: '' },
-        imperial: { quantity: '', unit: '' },
-        other: { quantity: '', unit: '' },
-      },
-    ];
-    setEditedRecipe({
-      ...editedRecipe,
-      ingredients: newIngredients,
-    });
-  };
-
-  const addEquipment = () => {
-    const newEquipment = [...editedRecipe.equipment, ''];
-    setEditedRecipe({
-      ...editedRecipe,
-      equipment: newEquipment,
-    });
-  };
-
-  const addInstruction = () => {
-    const newInstructions = [...editedRecipe.instructions, ''];
-    setEditedRecipe({
-      ...editedRecipe,
-      instructions: newInstructions,
-    });
-  };
-
-  const removeIngredient = (index) => {
-    const newIngredients = editedRecipe.ingredients.filter(
-      (_, i) => i !== index
-    );
-    setEditedRecipe({ ...editedRecipe, ingredients: newIngredients });
-  };
-
-  const removeEquipment = (index) => {
-    const newEquipment = editedRecipe.equipment.filter((_, i) => i !== index);
-    setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
-  };
-
-  const removeInstruction = (index) => {
-    const newInstructions = editedRecipe.instructions.filter(
-      (_, i) => i !== index
-    );
-    setEditedRecipe({ ...editedRecipe, instructions: newInstructions });
-  };
-
-  const toggleCompletedIngredient = (index) => {
-    setCompletedIngredients((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
-    );
-  };
-
-  const toggleCompletedInstruction = (index) => {
-    setCompletedInstructions((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
-    );
   };
 
   const scrollToCard = (cardId) => {
@@ -404,10 +223,6 @@ const RecipePage = (props) => {
       ? `${hours} hrs ${remainingMinutes} mins`
       : `${remainingMinutes} mins`;
   };
-
-  const canNavigatePrev = currentImageIndex > 0;
-  const canNavigateNext =
-    currentImageIndex + visibleImageCount < displayImages.length;
 
   return (
     <div className="text-gray-800 text-left">
@@ -477,304 +292,141 @@ const RecipePage = (props) => {
           </div>
 
           {/* Row 2 */}
-          <div
-            id="card1"
-            className="bg-[#ffbeb5] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out"
-          >
-            <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
-              <a
-                href="#card1"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToCard('card1');
-                }}
-              >
-                Images
-              </a>
-              <img
-                src="/assets/images/gallery.png"
-                alt="Gallery"
-                className="w-20 h-20 ml-2 -mt-4 transition-transform duration-300 ease-in-out card-hover-transform"
-                style={{
-                  position: 'absolute',
-                  right: 0, // Adjust this value to control how far it pokes out
-                  top: -30, // Adjust this value to control how high it pokes out
-                }}
-              />
-            </h3>
-            <div className="h-full rounded-lg text-gray-300 relative z-0">
-              <div className="relative">
-                {mainImage ? (
-                  <img
-                    src={mainImage}
-                    alt={recipe.title}
-                    className="rounded-lg cursor-pointer w-full max-h-[24rem] object-cover"
-                  />
-                ) : (
-                  <div className="w-full max-h-[24rem] flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 1024 1024"
-                      className="w-full h-full"
-                    >
-                      <path d={PLACEHOLDER_SVG} fill="currentColor" />
-                    </svg>
-                  </div>
-                )}
-                <div
-                  className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity rounded-lg cursor-pointer"
-                  onClick={handleImageClick}
-                >
-                  <span className="text-white text-4xl">+</span>
-                </div>
-              </div>
-              {displayImages.length > 1 && (
-                <div className="w-full mt-4 flex justify-between items-center space-x-2">
-                  <button
-                    onClick={handlePrevImage}
-                    className={`h-20 w-12 ${canNavigatePrev ? 'text-blue-500 hover:text-blue-200 hover:bg-blue-500' : 'opacity-50 cursor-not-allowed text-gray-500'} ${!canNavigatePrev ? '' : 'hover:bg-blue-100'} rounded-l-lg`}
-                    disabled={!canNavigatePrev}
-                  >
-                    <i className="fas fa-chevron-left text-2xl"></i>
-                  </button>
-                  <div className="flex flex-wrap justify-center space-x-2">
-                    {displayImages
-                      .slice(
-                        currentImageIndex,
-                        currentImageIndex + visibleImageCount
-                      )
-                      .map((image, index, arr) => (
-                        <div
-                          key={index}
-                          className={`w-20 h-20 transform transition duration-300 ease-in-out hover:scale-110 cursor-pointer ${index === 0 ? 'rounded-l-lg' : ''} ${index === arr.length - 1 ? 'rounded-r-lg' : ''}`}
-                          onClick={() => handleImageSelect(image)}
-                        >
-                          <img
-                            src={image}
-                            alt={`Additional ${index}`}
-                            className={`w-full h-full object-cover rounded-lg ${mainImage === image ? 'border-4 border-[#fd7563]' : ''}`}
-                          />
-                        </div>
-                      ))}
-                  </div>
-                  <button
-                    onClick={handleNextImage}
-                    className={`h-20 w-12 ${canNavigateNext ? 'text-blue-500 hover:text-blue-200 hover:bg-blue-500' : 'opacity-50 cursor-not-allowed text-gray-500'} ${!canNavigateNext ? '' : 'hover:bg-blue-100'} rounded-r-lg`}
-                    disabled={!canNavigateNext}
-                  >
-                    <i className="fas fa-chevron-right text-2xl"></i>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-          <div
-            id="card2"
-            className="bg-[#FFF4C1] p-4 rounded-lg w-full lg:col-span-5 relative transform transition-transform duration-300 ease-in-out"
-          >
-            <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
-              {isEditing ? (
-                <button className="text-blue-500" onClick={addIngredient}>
-                  <i className="fas fa-plus"></i> Add Ingredient
-                </button>
-              ) : (
-                <a
-                  href="#card2"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToCard('card2');
-                  }}
-                >
-                  Ingredients
-                </a>
-              )}
-              <img
-                src="/assets/images/grocery.png"
-                alt="Gallery"
-                className="w-20 h-20 ml-2 -mt-4 transition-transform duration-300 ease-in-out card-hover-transform"
-                style={{
-                  position: 'absolute',
-                  right: 0, // Adjust this value to control how far it pokes out
-                  top: -30, // Adjust this value to control how high it pokes out
-                }}
-              />
-            </h3>
-            <div className="flex w-full justify-center">
-              <ToggleSwitch onToggle={handleToggle} />
-            </div>
-            <Ingredients
-              ingredients={
-                isEditing ? editedRecipe.ingredients : recipe.ingredients
+          <RecipeImageContainer
+            images={recipe.images}
+            scrollToCard={scrollToCard}
+          />
+          <IngredientsContainer
+            ingredients={
+              isEditing ? editedRecipe.ingredients : recipe.ingredients
+            }
+            isEditing={isEditing}
+            onInputChange={(e, index, field, subField) => {
+              const newIngredients = [...editedRecipe.ingredients];
+              if (subField) {
+                newIngredients[index][field][subField] = e.target.value;
+              } else {
+                newIngredients[index][field] = e.target.value;
               }
-              isMetric={isMetric}
-              isEditing={isEditing}
-              onInputChange={(e, index, field, subField) => {
-                const newIngredients = [...editedRecipe.ingredients];
-                if (subField) {
-                  newIngredients[index][field][subField] = e.target.value;
-                } else {
-                  newIngredients[index][field] = e.target.value;
-                }
-                setEditedRecipe({
-                  ...editedRecipe,
-                  ingredients: newIngredients,
-                });
-              }}
-              onRemove={removeIngredient}
-              onToggleComplete={toggleCompletedIngredient}
-              completedIngredients={completedIngredients}
-            />
-          </div>
+              setEditedRecipe({
+                ...editedRecipe,
+                ingredients: newIngredients,
+              });
+            }}
+            onRemove={(index) => {
+              const newIngredients = editedRecipe.ingredients.filter(
+                (_, i) => i !== index
+              );
+              setEditedRecipe({ ...editedRecipe, ingredients: newIngredients });
+            }}
+            completedIngredients={completedIngredients}
+            toggleCompletedIngredient={(index) => {
+              setCompletedIngredients((prev) =>
+                prev.includes(index)
+                  ? prev.filter((i) => i !== index)
+                  : [...prev, index]
+              );
+            }}
+            addIngredient={() => {
+              const newIngredients = [
+                ...editedRecipe.ingredients,
+                {
+                  name: '',
+                  metric: { quantity: '', unit: '' },
+                  imperial: { quantity: '', unit: '' },
+                  other: { quantity: '', unit: '' },
+                },
+              ];
+              setEditedRecipe({
+                ...editedRecipe,
+                ingredients: newIngredients,
+              });
+            }}
+            scrollToCard={scrollToCard}
+          />
 
           {/* Row 3 */}
-          <div
-            id="card3"
-            className="bg-[#E6E6FA] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out"
-          >
-            <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
-              {isEditing ? (
-                <button
-                  className="text-blue-500 hover:text-white hover:bg-blue-500 rounded-md p-2"
-                  onClick={addInstruction}
-                >
-                  <i className="fas fa-plus"></i> Add Instruction
-                </button>
-              ) : (
-                <a
-                  href="#card3"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToCard('card3');
-                  }}
-                >
-                  Instructions
-                </a>
-              )}
-              <img
-                src="/assets/images/workflow.png"
-                alt="Gallery"
-                className="w-20 h-20 ml-2 -mt-4 transition-transform duration-300 ease-in-out card-hover-transform"
-                style={{
-                  position: 'absolute',
-                  right: 0, // Adjust this value to control how far it pokes out
-                  top: -30, // Adjust this value to control how high it pokes out
-                }}
-              />
-            </h3>
-            <Instructions
-              instructions={
-                isEditing ? editedRecipe.instructions : recipe.instructions
-              }
+          <InstructionsContainer
+            instructions={
+              isEditing ? editedRecipe.instructions : recipe.instructions
+            }
+            isEditing={isEditing}
+            onInputChange={(e, index) => {
+              const newInstructions = [...editedRecipe.instructions];
+              newInstructions[index] = e.target.value;
+              setEditedRecipe({
+                ...editedRecipe,
+                instructions: newInstructions,
+              });
+            }}
+            onRemove={(index) => {
+              const newInstructions = editedRecipe.instructions.filter(
+                (_, i) => i !== index
+              );
+              setEditedRecipe({
+                ...editedRecipe,
+                instructions: newInstructions,
+              });
+            }}
+            completedInstructions={completedInstructions}
+            toggleCompletedInstruction={(index) => {
+              setCompletedInstructions((prev) =>
+                prev.includes(index)
+                  ? prev.filter((i) => i !== index)
+                  : [...prev, index]
+              );
+            }}
+            addInstruction={() => {
+              const newInstructions = [...editedRecipe.instructions, ''];
+              setEditedRecipe({
+                ...editedRecipe,
+                instructions: newInstructions,
+              });
+            }}
+            scrollToCard={scrollToCard}
+          />
+
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 lg:col-span-5">
+            <EquipmentContainer
+              equipment={isEditing ? editedRecipe.equipment : recipe.equipment}
               isEditing={isEditing}
               onInputChange={(e, index) => {
-                const newInstructions = [...editedRecipe.instructions];
-                newInstructions[index] = e.target.value;
+                const newEquipment = [...editedRecipe.equipment];
+                newEquipment[index] = e.target.value;
+                setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
+              }}
+              onRemove={(index) => {
+                const newEquipment = editedRecipe.equipment.filter(
+                  (_, i) => i !== index
+                );
+                setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
+              }}
+              addEquipment={() => {
+                const newEquipment = [...editedRecipe.equipment, ''];
                 setEditedRecipe({
                   ...editedRecipe,
-                  instructions: newInstructions,
+                  equipment: newEquipment,
                 });
               }}
-              onRemove={removeInstruction}
-              onToggleComplete={toggleCompletedInstruction}
-              completedInstructions={completedInstructions}
+              scrollToCard={scrollToCard}
             />
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 lg:col-span-5">
-            <div
-              id="card4"
-              className="bg-[#FFDAB9] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out"
-            >
-              <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
-                {isEditing ? (
-                  <button className="text-blue-500" onClick={addEquipment}>
-                    <i className="fas fa-plus"></i> Add Equipment
-                  </button>
-                ) : (
-                  <a
-                    href="#card4"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToCard('card4');
-                    }}
-                  >
-                    Equipment
-                  </a>
-                )}
-                <img
-                  src="/assets/images/kitchen-tool.png"
-                  alt="Gallery"
-                  className="w-20 h-20 ml-2 -mt-4 transition-transform duration-300 ease-in-out card-hover-transform"
-                  style={{
-                    position: 'absolute',
-                    right: 0, // Adjust this value to control how far it pokes out
-                    top: -30, // Adjust this value to control how high it pokes out
-                  }}
-                />
-              </h3>
-              <Equipment
-                equipment={
-                  isEditing ? editedRecipe.equipment : recipe.equipment
-                }
-                isEditing={isEditing}
-                onInputChange={(e, index) => {
-                  const newEquipment = [...editedRecipe.equipment];
-                  newEquipment[index] = e.target.value;
-                  setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
-                }}
-                onRemove={removeEquipment}
-                colorClass=""
-              />
-            </div>
-            <div
-              id="card5"
-              className="bg-[#B0E0E6]  p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out"
-            >
-              <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
-                <a
-                  href="#card5"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToCard('card5');
-                  }}
-                >
-                  Nutrition
-                </a>
-                <img
-                  src="/assets/images/nutritional-pyramid.png"
-                  alt="Gallery"
-                  className="w-20 h-20 ml-2 -mt-4 transition-transform duration-300 ease-in-out card-hover-transform"
-                  style={{
-                    position: 'absolute',
-                    right: 0, // Adjust this value to control how far it pokes out
-                    top: -30, // Adjust this value to control how high it pokes out
-                  }}
-                />
-              </h3>
-              <NutritionalInfo
-                nutrients={
-                  isEditing ? editedRecipe.nutrients : recipe.nutrients
-                }
-                isEditing={isEditing}
-                onInputChange={(e, field) => {
-                  setEditedRecipe({
-                    ...editedRecipe,
-                    nutrients: {
-                      ...editedRecipe.nutrients,
-                      [field]: e.target.value,
-                    },
-                  });
-                }}
-              />
-            </div>
+            <NutritionalInfoContainer
+              nutrients={isEditing ? editedRecipe.nutrients : recipe.nutrients}
+              isEditing={isEditing}
+              onInputChange={(e, field) => {
+                setEditedRecipe({
+                  ...editedRecipe,
+                  nutrients: {
+                    ...editedRecipe.nutrients,
+                    [field]: e.target.value,
+                  },
+                });
+              }}
+              scrollToCard={scrollToCard}
+            />
           </div>
         </div>
       </main>
-
-      <ImageUploadModal
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onUpload={handleImageUpload}
-      />
     </div>
   );
 };

@@ -109,7 +109,7 @@ const HomePage = () => {
     >
       <div className="text-center flex flex-col gap-8 justify-center items-center py-8">
         <h1 className="text-4xl lg:text-8xl font-bold text-[#C16855]">
-          Welcome to Clickapea!
+          Hi Welcome to Clickapea!
         </h1>
         <p className="text-4xl pb-10 text-[#C16855]">
           Your ultimate sous chef bestie
