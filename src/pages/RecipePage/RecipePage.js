@@ -350,12 +350,12 @@ const RecipePage = (props) => {
                   hidden: { opacity: 0 },
                 }}
                 transition={{ duration: 0.5 }}
-                className="w-full grow lg:w-7/12 bg-[#C16855]/100 p-4"
+                className="w-full grow lg:w-7/12 p-4"
               >
                 <RecipeImageContainer images={recipe.images} />
               </motion.div>
             ) : (
-              <div className="w-full grow lg:w-7/12 bg-[#C16855] p-4">
+              <div className="w-full grow lg:w-7/12 px-4 lg:px-0 pt-4">
                 <RecipeImageContainer images={recipe.images} />
               </div>
             )}
