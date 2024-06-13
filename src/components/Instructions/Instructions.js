@@ -23,16 +23,16 @@ const Instructions = ({ instructions, isEditing, onInputChange, onRemove }) => {
             !isEditing ? 'cursor-pointer' : ''
           } ${
             completed[index] && !isEditing
-              ? 'bg-[#D8D1F0] text-[#8B85C3] shadow-inner rounded'
+              ? 'bg-[#31614f] text-[#1EB17C] shadow-inner md:rounded'
               : !isEditing
-                ? 'lg:hover:bg-[#c3b6ee] rounded'
+                ? 'lg:hover:bg-[#234136] hover:text-[#1EB17C] md:rounded'
                 : ''
           }`}
           onClick={() => handleRowClick(index)}
         >
           <div
             className={`text-2xl w-10 text-center ${
-              completed[index] && !isEditing ? 'text-[#8B85C3]' : ''
+              completed[index] && !isEditing ? 'text-[#1EB17C]' : ''
             }`}
           >
             {completed[index] && !isEditing ? (

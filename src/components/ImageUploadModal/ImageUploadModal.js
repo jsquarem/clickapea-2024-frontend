@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
+import ReactDOM from 'react-dom';
 import { useDropzone } from 'react-dropzone';
 import AuthContext from '../../AuthContext';
 import useClickOutside from '../../hooks/useClickOutside';
@@ -68,15 +69,12 @@ const ImageUploadModal = ({
     return null;
   }
 
-  return (
+  const modalContent = (
     <>
       {!isAuthenticated && <LoginModal isOpen={isOpen} onClose={onClose} />}
       {isAuthenticated && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div
-            ref={modalRef}
-            className="bg-white p-6 rounded-lg max-w-md w-full"
-          >
+        <div className="modal">
+          <div ref={modalRef} className="modal-content">
             <div className="flex justify-center items-center mb-4">
               {!scanImage ? (
                 <h2 className="text-xl font-bold text-center">Upload Images</h2>
@@ -168,6 +166,8 @@ const ImageUploadModal = ({
       )}
     </>
   );
+
+  return ReactDOM.createPortal(modalContent, document.body);
 };
 
 export default ImageUploadModal;

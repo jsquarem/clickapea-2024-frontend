@@ -79,11 +79,8 @@ const RecipeImageContainer = ({ images, recipeId, scrollToCard }) => {
   }, [images]);
 
   return (
-    <div
-      id="card1"
-      className="bg-[#ffbeb5] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out"
-    >
-      <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
+    <div id="card1">
+      <h3 className="text-3xl lg:text-4xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
         <a
           href="#card1"
           onClick={(e) => {

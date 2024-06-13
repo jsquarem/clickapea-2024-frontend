@@ -91,10 +91,10 @@ const AddToMyRecipesButton = ({ recipeId, onUpdateRecipeId }) => {
   }, [dropdownRef]);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative w-full" ref={dropdownRef}>
       <button
         onClick={handleButtonClick}
-        className="bg-[#76cfae] hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full"
+        className="bg-[#76cfae] hover:bg-green-700 text-white font-bold py-2 px-4 rounded items-center w-full"
       >
         <i className="fas fa-user-plus mr-2"></i>
         <span>Add to My Recipes</span>

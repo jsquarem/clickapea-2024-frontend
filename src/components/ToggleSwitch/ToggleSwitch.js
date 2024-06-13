@@ -9,10 +9,10 @@ const ToggleSwitch = ({ onToggle }) => {
   };
 
   return (
-    <div className="flex items-center space-x-2 md:space-x-4 text-lg">
+    <div className="flex justify-between items-center space-x-2 md:space-x-4 text-lg">
       <span
-        className={`lg:mr-2 ${!checked ? 'font-bold text-blue-500' : 'text-gray-500'}`}
-        style={{ width: '60px', textAlign: 'right' }}
+        className={`text-2xl ${!checked ? 'font-bold text-[#37A0C5]' : 'text-gray-600'}`}
+        style={{ width: '90px', textAlign: 'right' }}
       >
         <span className="inline">Imperial</span>
       </span>
@@ -32,8 +32,8 @@ const ToggleSwitch = ({ onToggle }) => {
         ></span>
       </label>
       <span
-        className={`lg:ml-2 ${checked ? 'font-bold text-blue-500' : 'text-gray-500'}`}
-        style={{ width: '60px', textAlign: 'left' }}
+        className={`text-2xl ${checked ? 'font-bold text-[#37A0C5]' : 'text-gray-600'}`}
+        style={{ width: '90px', textAlign: 'left' }}
       >
         <span className="inline">Metric</span>
       </span>
