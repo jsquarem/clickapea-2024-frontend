@@ -203,7 +203,7 @@ const RecipePage = (props) => {
               animate={inView1 ? 'visible' : 'hidden'}
               variants={{
                 visible: { opacity: 1 },
-                hidden: { opacity: 0 },
+                hidden: { opacity: 0.5 },
               }}
               transition={{ duration: 0.5 }}
               className="w-full flex flex-col lg:flex-row px-10"
@@ -347,7 +347,7 @@ const RecipePage = (props) => {
                 animate={inView2 ? 'visible' : 'hidden'}
                 variants={{
                   visible: { opacity: 1 },
-                  hidden: { opacity: 0 },
+                  hidden: { opacity: 0.5 },
                 }}
                 transition={{ duration: 0.5 }}
                 className="w-full grow lg:w-7/12 p-4"
@@ -368,7 +368,7 @@ const RecipePage = (props) => {
                 animate={inView3 ? 'visible' : 'hidden'}
                 variants={{
                   visible: { opacity: 1 },
-                  hidden: { opacity: 0 },
+                  hidden: { opacity: 0.5 },
                 }}
                 transition={{ duration: 0.5 }}
                 className="w-full lg:w-5/12 grow bg-[#FCC474] p-4 text-2xl"
@@ -489,7 +489,7 @@ const RecipePage = (props) => {
                 animate={inView4 ? 'visible' : 'hidden'}
                 variants={{
                   visible: { opacity: 1 },
-                  hidden: { opacity: 0 },
+                  hidden: { opacity: 0.5 },
                 }}
                 transition={{ duration: 0.5 }}
                 className="w-full lg:w-7/12 grow bg-[#1EB17C] p-4 text-2xl"
@@ -584,7 +584,7 @@ const RecipePage = (props) => {
                 animate={inView5 ? 'visible' : 'hidden'}
                 variants={{
                   visible: { opacity: 1 },
-                  hidden: { opacity: 0 },
+                  hidden: { opacity: 0.5 },
                 }}
                 transition={{ duration: 0.5 }}
                 className="flex flex-col lg:gap-4 w-full lg:w-5/12"
