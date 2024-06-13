@@ -1,7 +1,10 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL:
+    process.env.NODE_ENV === 'development'
+      ? process.env.REACT_APP_API_ALIAS
+      : process.env.REACT_APP_API_URL,
 });
 
 // Add a request interceptor to include the token in the headers
