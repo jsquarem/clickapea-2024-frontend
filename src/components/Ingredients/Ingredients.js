@@ -160,11 +160,11 @@ const Ingredients = ({
           >
             <li
               key={index}
-              className={`flex justify-center items-center py-1 px-2 w-full ${
+              className={`flex justify-center items-center py-3 px-2 w-full ${
                 !isEditing ? 'cursor-pointer' : ''
               } ${
                 completed[index] && !isEditing
-                  ? 'bg-yellow-200 text-yellow-600 shadow-inner md:rounded'
+                  ? 'bg-yellow-200 text-yellow-600shadow-inner-lg md:rounded'
                   : !isEditing
                     ? 'lg:hover:bg-yellow-100 mf:rounded'
                     : ''
@@ -180,12 +180,12 @@ const Ingredients = ({
                 }}
               >
                 {completed[index] && !isEditing ? (
-                  <i className="fas fa-check text-yellow-600 text-3xl"></i>
+                  <i className="fas fa-check text-yellow-600 text-3xl drop-shadow-lg"></i>
                 ) : (
-                  <span className="text-3xl">&#8226;</span>
+                  <span className="text-3xl ">&#8226;</span>
                 )}
               </div>
-              <div className="flex-1">
+              <div className="flex-1 ">
                 {isEditing ? (
                   <div className="grid grid-cols-5 gap-2">
                     <div className="grid col-span-4 grid-rows-2 gap-2">
@@ -259,7 +259,7 @@ const Ingredients = ({
                     </button>
                   </div>
                 ) : (
-                  <div>
+                  <div className="drop-shadow-lg">
                     {displayAmount} {ingredient.name}
                   </div>
                 )}

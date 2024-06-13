@@ -23,9 +23,9 @@ const Instructions = ({ instructions, isEditing, onInputChange, onRemove }) => {
             !isEditing ? 'cursor-pointer' : ''
           } ${
             completed[index] && !isEditing
-              ? 'bg-[#31614f] text-[#1EB17C] shadow-inner md:rounded'
+              ? 'bg-[#31614f] text-[#1EB17C] shadow-inner-lg md:rounded'
               : !isEditing
-                ? 'lg:hover:bg-[#234136] hover:text-[#1EB17C] md:rounded'
+                ? 'lg:hover:bg-[#234136] lg:hover:text-[#1EB17C] md:rounded'
                 : ''
           }`}
           onClick={() => handleRowClick(index)}
@@ -36,9 +36,9 @@ const Instructions = ({ instructions, isEditing, onInputChange, onRemove }) => {
             }`}
           >
             {completed[index] && !isEditing ? (
-              <i className="fas fa-check"></i>
+              <i className="fas fa-check text-4xl font-bold drop-shadow-lg"></i>
             ) : (
-              <div>{index + 1}</div>
+              <div className="text-4xl font-bold">{index + 1}</div>
             )}
           </div>
           <div className="flex-1 ml-4">
@@ -57,7 +57,7 @@ const Instructions = ({ instructions, isEditing, onInputChange, onRemove }) => {
                 </button>
               </div>
             ) : (
-              <p>{instruction}</p>
+              <p className="drop-shadow-lg">{instruction}</p>
             )}
           </div>
         </div>
