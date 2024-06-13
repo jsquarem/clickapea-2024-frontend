@@ -35,11 +35,11 @@ const RecipePage = (props) => {
 
   const isSmallDevice = window.innerWidth <= 640; // Tailwind's sm breakpoint is 640px
 
-  const [ref1, inView1] = useInView({ threshold: 0.5, triggerOnce: false });
-  const [ref2, inView2] = useInView({ threshold: 0.5, triggerOnce: false });
-  const [ref3, inView3] = useInView({ threshold: 0.5, triggerOnce: false });
-  const [ref4, inView4] = useInView({ threshold: 0.5, triggerOnce: false });
-  const [ref5, inView5] = useInView({ threshold: 0.5, triggerOnce: false });
+  const [ref1, inView1] = useInView({ threshold: 0.1, triggerOnce: false });
+  const [ref2, inView2] = useInView({ threshold: 0.1, triggerOnce: false });
+  const [ref3, inView3] = useInView({ threshold: 0.1, triggerOnce: false });
+  const [ref4, inView4] = useInView({ threshold: 0.1, triggerOnce: false });
+  const [ref5, inView5] = useInView({ threshold: 0.1, triggerOnce: false });
 
   const [bgColor, setBgColor] = useState('bg-white');
 
