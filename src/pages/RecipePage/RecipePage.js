@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 import RecipeInfo from '../../components/RecipeInfo/RecipeInfo';
 import AddToMyRecipesButton from '../../components/AddToMyRecipesButton/AddToMyRecipesButton';
 import AddToCartButton from '../../components/AddToCartButton/AddToCartButton';
@@ -30,8 +32,26 @@ const RecipePage = (props) => {
   const [completedIngredients, setCompletedIngredients] = useState([]);
   const [completedInstructions, setCompletedInstructions] = useState([]);
   const [saveMessage, setSaveMessage] = useState('');
-  const cardPositions = useRef({});
-  const cardTiltAngles = useRef({});
+
+  const isSmallDevice = window.innerWidth <= 640; // Tailwind's sm breakpoint is 640px
+
+  const [ref1, inView1] = useInView({ threshold: 0.5, triggerOnce: false });
+  const [ref2, inView2] = useInView({ threshold: 0.5, triggerOnce: false });
+  const [ref3, inView3] = useInView({ threshold: 0.5, triggerOnce: false });
+  const [ref4, inView4] = useInView({ threshold: 0.5, triggerOnce: false });
+  const [ref5, inView5] = useInView({ threshold: 0.5, triggerOnce: false });
+
+  const [bgColor, setBgColor] = useState('bg-white');
+
+  useEffect(() => {
+    if (isSmallDevice) {
+      if (inView2) setBgColor('bg-gradient-to-b from-transparent to-[#FCC474]');
+      else if (inView3) setBgColor('bg-[#FCC474]');
+      else if (inView4) setBgColor('bg-[#1EB17C]');
+      else if (inView5) setBgColor('bg-[#FFD699]');
+      else setBgColor('bg-white');
+    }
+  }, [inView2, inView3, inView4, inView5, isSmallDevice]);
 
   useEffect(() => {
     if (props.recipe) {
@@ -45,25 +65,6 @@ const RecipePage = (props) => {
       }
     }
   }, [id, props.recipe]);
-
-  useEffect(() => {
-    if (!loading && recipe) {
-      setInitialCardPositions();
-    }
-  }, [loading, recipe]);
-
-  const setInitialCardPositions = () => {
-    const cardIds = ['card1', 'card2', 'card3', 'card4', 'card5'];
-    cardIds.forEach((cardId, index) => {
-      const element = document.getElementById(cardId);
-      if (element) {
-        cardPositions.current[cardId] = element.offsetTop;
-        const angle =
-          (index % 2 === 0 ? -1 : 1) * (Math.floor(Math.random() * 5) + 1);
-        cardTiltAngles.current[cardId] = angle;
-      }
-    });
-  };
 
   const loadRecipeById = async (recipeId) => {
     try {
@@ -162,42 +163,6 @@ const RecipePage = (props) => {
     navigate(`/recipe/user/${newRecipeId}`);
   };
 
-  const scrollToCard = (cardId) => {
-    const elementTop = cardPositions.current[cardId];
-    if (elementTop !== undefined) {
-      window.scrollTo({
-        top: elementTop - 70,
-        behavior: 'smooth',
-      });
-    }
-  };
-
-  const handleScroll = () => {
-    if (window.innerWidth > 768) return; // Only apply tilt on mobile
-    const scrollPosition = window.scrollY;
-    const cardIds = ['card1', 'card2', 'card3', 'card4', 'card5'];
-    cardIds.forEach((cardId) => {
-      const element = document.getElementById(cardId);
-      if (element) {
-        const elementTop = cardPositions.current[cardId];
-        const angle = cardTiltAngles.current[cardId];
-        if (
-          scrollPosition >= elementTop - 30 &&
-          scrollPosition < elementTop + element.offsetHeight - 30
-        ) {
-          element.style.transform = `rotate(${angle}deg)`;
-        } else {
-          element.style.transform = `rotate(0deg)`;
-        }
-      }
-    });
-  };
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   if (loading) {
     return (
       <div className="min-h-[40vh] lg:min-h-[61vh]">
@@ -226,204 +191,507 @@ const RecipePage = (props) => {
 
   return (
     <div className="text-gray-800 text-left">
-      <main className="max-w-6xl mx-auto p-6 bg-white mt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <main
+        className={`max-w-6xl mx-auto lg:p-6 mt-6 transition-colors duration-500 ${bgColor}`}
+      >
+        <div className="flex flex-col lg:gap-4">
           {/* Row 1 */}
-          <div className="bg-white p-4 rounded-lg lg:col-span-6">
-            <RecipeInfo
-              title={isEditing ? editedRecipe.title : recipe.title}
-              author={isEditing ? editedRecipe.author : recipe.author}
-              host={isEditing ? editedRecipe.host : recipe.host}
-              recipeUrl={isEditing ? editedRecipe.url : recipe.url}
-              totalTime={
-                isEditing
-                  ? editedRecipe.total_time
-                  : formatTotalTime(recipe.total_time)
-              }
-              servings={isEditing ? editedRecipe.yields : recipe.yields}
-              isEditing={isEditing}
-              onInputChange={handleInputChange}
-            />
-          </div>
-          <div className="bg-white p-4 rounded-lg lg:col-span-6">
-            <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2">
-              <AddToMyRecipesButton
-                recipeId={recipe._id}
-                onUpdateRecipeId={handleUpdateRecipeId}
-              />
-              <AddToCartButton />
-              {isEditing ? (
-                <>
-                  <button
-                    onClick={handleSaveClick}
-                    className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
-                  >
-                    <span>Save</span>
-                  </button>
-                  <button
-                    onClick={() => setIsEditing(false)}
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
-                  >
-                    <span>Cancel</span>
-                  </button>
-                  <div className="text-green-500 pt-2">{saveMessage}</div>
-                </>
-              ) : (
-                <div className="relative group">
-                  <button
-                    onClick={handleEditClick}
-                    className={`font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto text-white ${isAuthenticated ? 'bg-[#37A0C5] hover:bg-blue-700' : 'bg-gray-500 cursor-not-allowed'}`}
-                  >
-                    <span>
-                      <i className="fas fa-edit mr-2"></i>Edit
-                    </span>
-                  </button>
-                  {!isAuthenticated && (
-                    <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-full bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      Please log in to edit
+          {isSmallDevice ? (
+            <motion.div
+              ref={ref1}
+              initial="hidden"
+              animate={inView1 ? 'visible' : 'hidden'}
+              variants={{
+                visible: { opacity: 1 },
+                hidden: { opacity: 0 },
+              }}
+              transition={{ duration: 0.5 }}
+              className="w-full flex flex-col lg:flex-row px-10"
+            >
+              <div className="w-full lg:w-6/12">
+                <RecipeInfo
+                  title={isEditing ? editedRecipe.title : recipe.title}
+                  author={isEditing ? editedRecipe.author : recipe.author}
+                  host={isEditing ? editedRecipe.host : recipe.host}
+                  recipeUrl={isEditing ? editedRecipe.url : recipe.url}
+                  totalTime={
+                    isEditing
+                      ? editedRecipe.total_time
+                      : formatTotalTime(recipe.total_time)
+                  }
+                  servings={isEditing ? editedRecipe.yields : recipe.yields}
+                  isEditing={isEditing}
+                  onInputChange={handleInputChange}
+                />
+              </div>
+
+              <div className="flex justify-center w-full lg:w-6/12 pb-10 lg:pb-0">
+                <div className="flex flex-col gap-2 justify-center items-center lg:w-1/2 text-center">
+                  <AddToMyRecipesButton
+                    recipeId={recipe._id}
+                    onUpdateRecipeId={handleUpdateRecipeId}
+                  />
+                  <AddToCartButton />
+                  {isEditing ? (
+                    <>
+                      <button
+                        onClick={handleSaveClick}
+                        className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded items-center w-full"
+                      >
+                        <span>Save</span>
+                      </button>
+                      <button
+                        onClick={() => setIsEditing(false)}
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded items-center w-full"
+                      >
+                        <span>Cancel</span>
+                      </button>
+                      <div className="text-green-500 pt-2">{saveMessage}</div>
+                    </>
+                  ) : (
+                    <div className="relative group w-full">
+                      <button
+                        onClick={handleEditClick}
+                        className={`font-bold text py-2 px-4 rounded items-center w-full text-white ${isAuthenticated ? 'bg-[#37A0C5] hover:bg-blue-700' : 'bg-gray-500 cursor-not-allowed'}`}
+                      >
+                        <span>
+                          <i className="fas fa-edit mr-2"></i>Edit
+                        </span>
+                      </button>
+                      {!isAuthenticated && (
+                        <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-full bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          Please log in to edit
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
+              </div>
+              {validationError && (
+                <div className="text-red-500 pt-2">{validationError}</div>
+              )}
+            </motion.div>
+          ) : (
+            <div className="w-full flex flex-col lg:flex-row px-10">
+              <div className="w-full lg:w-6/12">
+                <RecipeInfo
+                  title={isEditing ? editedRecipe.title : recipe.title}
+                  author={isEditing ? editedRecipe.author : recipe.author}
+                  host={isEditing ? editedRecipe.host : recipe.host}
+                  recipeUrl={isEditing ? editedRecipe.url : recipe.url}
+                  totalTime={
+                    isEditing
+                      ? editedRecipe.total_time
+                      : formatTotalTime(recipe.total_time)
+                  }
+                  servings={isEditing ? editedRecipe.yields : recipe.yields}
+                  isEditing={isEditing}
+                  onInputChange={handleInputChange}
+                />
+              </div>
+
+              <div className="flex justify-center w-full lg:w-6/12 pb-10 lg:pb-0">
+                <div className="flex flex-col gap-2 justify-center items-center lg:w-1/2 text-center">
+                  <AddToMyRecipesButton
+                    recipeId={recipe._id}
+                    onUpdateRecipeId={handleUpdateRecipeId}
+                  />
+                  <AddToCartButton />
+                  {isEditing ? (
+                    <>
+                      <button
+                        onClick={handleSaveClick}
+                        className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded items-center w-full"
+                      >
+                        <span>Save</span>
+                      </button>
+                      <button
+                        onClick={() => setIsEditing(false)}
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded items-center w-full"
+                      >
+                        <span>Cancel</span>
+                      </button>
+                      <div className="text-green-500 pt-2">{saveMessage}</div>
+                    </>
+                  ) : (
+                    <div className="relative group w-full">
+                      <button
+                        onClick={handleEditClick}
+                        className={`font-bold text py-2 px-4 rounded items-center w-full text-white ${isAuthenticated ? 'bg-[#37A0C5] hover:bg-blue-700' : 'bg-gray-500 cursor-not-allowed'}`}
+                      >
+                        <span>
+                          <i className="fas fa-edit mr-2"></i>Edit
+                        </span>
+                      </button>
+                      {!isAuthenticated && (
+                        <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-full bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          Please log in to edit
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+              {validationError && (
+                <div className="text-red-500 pt-2">{validationError}</div>
               )}
             </div>
-            {validationError && (
-              <div className="text-red-500 pt-2">{validationError}</div>
+          )}
+
+          {/* Row 2 */}
+          <div className="flex flex-col lg:flex-row lg:gap-4">
+            {isSmallDevice ? (
+              <motion.div
+                ref={ref2}
+                initial="hidden"
+                animate={inView2 ? 'visible' : 'hidden'}
+                variants={{
+                  visible: { opacity: 1 },
+                  hidden: { opacity: 0 },
+                }}
+                transition={{ duration: 0.5 }}
+                className="w-full grow lg:w-7/12 bg-[#C16855]/100 p-4"
+              >
+                <RecipeImageContainer images={recipe.images} />
+              </motion.div>
+            ) : (
+              <div className="w-full grow lg:w-7/12 bg-[#C16855] p-4">
+                <RecipeImageContainer images={recipe.images} />
+              </div>
+            )}
+
+            {/* Row 3 */}
+            {isSmallDevice ? (
+              <motion.div
+                ref={ref3}
+                initial="hidden"
+                animate={inView3 ? 'visible' : 'hidden'}
+                variants={{
+                  visible: { opacity: 1 },
+                  hidden: { opacity: 0 },
+                }}
+                transition={{ duration: 0.5 }}
+                className="w-full lg:w-5/12 grow bg-[#FCC474] p-4 text-2xl"
+              >
+                <IngredientsContainer
+                  ingredients={
+                    isEditing ? editedRecipe.ingredients : recipe.ingredients
+                  }
+                  isEditing={isEditing}
+                  onInputChange={(e, index, field, subField) => {
+                    const newIngredients = [...editedRecipe.ingredients];
+                    if (subField) {
+                      newIngredients[index][field][subField] = e.target.value;
+                    } else {
+                      newIngredients[index][field] = e.target.value;
+                    }
+                    setEditedRecipe({
+                      ...editedRecipe,
+                      ingredients: newIngredients,
+                    });
+                  }}
+                  onRemove={(index) => {
+                    const newIngredients = editedRecipe.ingredients.filter(
+                      (_, i) => i !== index
+                    );
+                    setEditedRecipe({
+                      ...editedRecipe,
+                      ingredients: newIngredients,
+                    });
+                  }}
+                  completedIngredients={completedIngredients}
+                  toggleCompletedIngredient={(index) => {
+                    setCompletedIngredients((prev) =>
+                      prev.includes(index)
+                        ? prev.filter((i) => i !== index)
+                        : [...prev, index]
+                    );
+                  }}
+                  addIngredient={() => {
+                    const newIngredients = [
+                      ...editedRecipe.ingredients,
+                      {
+                        name: '',
+                        metric: { quantity: '', unit: '' },
+                        imperial: { quantity: '', unit: '' },
+                        other: { quantity: '', unit: '' },
+                      },
+                    ];
+                    setEditedRecipe({
+                      ...editedRecipe,
+                      ingredients: newIngredients,
+                    });
+                  }}
+                />
+              </motion.div>
+            ) : (
+              <div className="w-full lg:w-5/12 grow bg-[#FCC474] p-4 text-2xl">
+                <IngredientsContainer
+                  ingredients={
+                    isEditing ? editedRecipe.ingredients : recipe.ingredients
+                  }
+                  isEditing={isEditing}
+                  onInputChange={(e, index, field, subField) => {
+                    const newIngredients = [...editedRecipe.ingredients];
+                    if (subField) {
+                      newIngredients[index][field][subField] = e.target.value;
+                    } else {
+                      newIngredients[index][field] = e.target.value;
+                    }
+                    setEditedRecipe({
+                      ...editedRecipe,
+                      ingredients: newIngredients,
+                    });
+                  }}
+                  onRemove={(index) => {
+                    const newIngredients = editedRecipe.ingredients.filter(
+                      (_, i) => i !== index
+                    );
+                    setEditedRecipe({
+                      ...editedRecipe,
+                      ingredients: newIngredients,
+                    });
+                  }}
+                  completedIngredients={completedIngredients}
+                  toggleCompletedIngredient={(index) => {
+                    setCompletedIngredients((prev) =>
+                      prev.includes(index)
+                        ? prev.filter((i) => i !== index)
+                        : [...prev, index]
+                    );
+                  }}
+                  addIngredient={() => {
+                    const newIngredients = [
+                      ...editedRecipe.ingredients,
+                      {
+                        name: '',
+                        metric: { quantity: '', unit: '' },
+                        imperial: { quantity: '', unit: '' },
+                        other: { quantity: '', unit: '' },
+                      },
+                    ];
+                    setEditedRecipe({
+                      ...editedRecipe,
+                      ingredients: newIngredients,
+                    });
+                  }}
+                />
+              </div>
             )}
           </div>
 
-          {/* Row 2 */}
-          <RecipeImageContainer
-            images={recipe.images}
-            scrollToCard={scrollToCard}
-          />
-          <IngredientsContainer
-            ingredients={
-              isEditing ? editedRecipe.ingredients : recipe.ingredients
-            }
-            isEditing={isEditing}
-            onInputChange={(e, index, field, subField) => {
-              const newIngredients = [...editedRecipe.ingredients];
-              if (subField) {
-                newIngredients[index][field][subField] = e.target.value;
-              } else {
-                newIngredients[index][field] = e.target.value;
-              }
-              setEditedRecipe({
-                ...editedRecipe,
-                ingredients: newIngredients,
-              });
-            }}
-            onRemove={(index) => {
-              const newIngredients = editedRecipe.ingredients.filter(
-                (_, i) => i !== index
-              );
-              setEditedRecipe({ ...editedRecipe, ingredients: newIngredients });
-            }}
-            completedIngredients={completedIngredients}
-            toggleCompletedIngredient={(index) => {
-              setCompletedIngredients((prev) =>
-                prev.includes(index)
-                  ? prev.filter((i) => i !== index)
-                  : [...prev, index]
-              );
-            }}
-            addIngredient={() => {
-              const newIngredients = [
-                ...editedRecipe.ingredients,
-                {
-                  name: '',
-                  metric: { quantity: '', unit: '' },
-                  imperial: { quantity: '', unit: '' },
-                  other: { quantity: '', unit: '' },
-                },
-              ];
-              setEditedRecipe({
-                ...editedRecipe,
-                ingredients: newIngredients,
-              });
-            }}
-            scrollToCard={scrollToCard}
-          />
+          <div className="flex flex-col lg:flex-row lg:gap-4">
+            {/* Row 4 */}
+            {isSmallDevice ? (
+              <motion.div
+                ref={ref4}
+                initial="hidden"
+                animate={inView4 ? 'visible' : 'hidden'}
+                variants={{
+                  visible: { opacity: 1 },
+                  hidden: { opacity: 0 },
+                }}
+                transition={{ duration: 0.5 }}
+                className="w-full lg:w-7/12 grow bg-[#1EB17C] p-4 text-2xl"
+              >
+                <InstructionsContainer
+                  instructions={
+                    isEditing ? editedRecipe.instructions : recipe.instructions
+                  }
+                  isEditing={isEditing}
+                  onInputChange={(e, index) => {
+                    const newInstructions = [...editedRecipe.instructions];
+                    newInstructions[index] = e.target.value;
+                    setEditedRecipe({
+                      ...editedRecipe,
+                      instructions: newInstructions,
+                    });
+                  }}
+                  onRemove={(index) => {
+                    const newInstructions = editedRecipe.instructions.filter(
+                      (_, i) => i !== index
+                    );
+                    setEditedRecipe({
+                      ...editedRecipe,
+                      instructions: newInstructions,
+                    });
+                  }}
+                  completedInstructions={completedInstructions}
+                  toggleCompletedInstruction={(index) => {
+                    setCompletedInstructions((prev) =>
+                      prev.includes(index)
+                        ? prev.filter((i) => i !== index)
+                        : [...prev, index]
+                    );
+                  }}
+                  addInstruction={() => {
+                    const newInstructions = [...editedRecipe.instructions, ''];
+                    setEditedRecipe({
+                      ...editedRecipe,
+                      instructions: newInstructions,
+                    });
+                  }}
+                />
+              </motion.div>
+            ) : (
+              <div className="w-full lg:w-7/12 grow bg-[#1EB17C] p-4 text-2xl">
+                <InstructionsContainer
+                  instructions={
+                    isEditing ? editedRecipe.instructions : recipe.instructions
+                  }
+                  isEditing={isEditing}
+                  onInputChange={(e, index) => {
+                    const newInstructions = [...editedRecipe.instructions];
+                    newInstructions[index] = e.target.value;
+                    setEditedRecipe({
+                      ...editedRecipe,
+                      instructions: newInstructions,
+                    });
+                  }}
+                  onRemove={(index) => {
+                    const newInstructions = editedRecipe.instructions.filter(
+                      (_, i) => i !== index
+                    );
+                    setEditedRecipe({
+                      ...editedRecipe,
+                      instructions: newInstructions,
+                    });
+                  }}
+                  completedInstructions={completedInstructions}
+                  toggleCompletedInstruction={(index) => {
+                    setCompletedInstructions((prev) =>
+                      prev.includes(index)
+                        ? prev.filter((i) => i !== index)
+                        : [...prev, index]
+                    );
+                  }}
+                  addInstruction={() => {
+                    const newInstructions = [...editedRecipe.instructions, ''];
+                    setEditedRecipe({
+                      ...editedRecipe,
+                      instructions: newInstructions,
+                    });
+                  }}
+                />
+              </div>
+            )}
 
-          {/* Row 3 */}
-          <InstructionsContainer
-            instructions={
-              isEditing ? editedRecipe.instructions : recipe.instructions
-            }
-            isEditing={isEditing}
-            onInputChange={(e, index) => {
-              const newInstructions = [...editedRecipe.instructions];
-              newInstructions[index] = e.target.value;
-              setEditedRecipe({
-                ...editedRecipe,
-                instructions: newInstructions,
-              });
-            }}
-            onRemove={(index) => {
-              const newInstructions = editedRecipe.instructions.filter(
-                (_, i) => i !== index
-              );
-              setEditedRecipe({
-                ...editedRecipe,
-                instructions: newInstructions,
-              });
-            }}
-            completedInstructions={completedInstructions}
-            toggleCompletedInstruction={(index) => {
-              setCompletedInstructions((prev) =>
-                prev.includes(index)
-                  ? prev.filter((i) => i !== index)
-                  : [...prev, index]
-              );
-            }}
-            addInstruction={() => {
-              const newInstructions = [...editedRecipe.instructions, ''];
-              setEditedRecipe({
-                ...editedRecipe,
-                instructions: newInstructions,
-              });
-            }}
-            scrollToCard={scrollToCard}
-          />
-
-          <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 lg:col-span-5">
-            <EquipmentContainer
-              equipment={isEditing ? editedRecipe.equipment : recipe.equipment}
-              isEditing={isEditing}
-              onInputChange={(e, index) => {
-                const newEquipment = [...editedRecipe.equipment];
-                newEquipment[index] = e.target.value;
-                setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
-              }}
-              onRemove={(index) => {
-                const newEquipment = editedRecipe.equipment.filter(
-                  (_, i) => i !== index
-                );
-                setEditedRecipe({ ...editedRecipe, equipment: newEquipment });
-              }}
-              addEquipment={() => {
-                const newEquipment = [...editedRecipe.equipment, ''];
-                setEditedRecipe({
-                  ...editedRecipe,
-                  equipment: newEquipment,
-                });
-              }}
-              scrollToCard={scrollToCard}
-            />
-            <NutritionalInfoContainer
-              nutrients={isEditing ? editedRecipe.nutrients : recipe.nutrients}
-              isEditing={isEditing}
-              onInputChange={(e, field) => {
-                setEditedRecipe({
-                  ...editedRecipe,
-                  nutrients: {
-                    ...editedRecipe.nutrients,
-                    [field]: e.target.value,
-                  },
-                });
-              }}
-              scrollToCard={scrollToCard}
-            />
+            {/* Row 5 */}
+            {isSmallDevice ? (
+              <motion.div
+                ref={ref5}
+                initial="hidden"
+                animate={inView5 ? 'visible' : 'hidden'}
+                variants={{
+                  visible: { opacity: 1 },
+                  hidden: { opacity: 0 },
+                }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col lg:gap-4 w-full lg:w-5/12"
+              >
+                <div className="bg-[#FFD699] p-4 grow">
+                  <EquipmentContainer
+                    equipment={
+                      isEditing ? editedRecipe.equipment : recipe.equipment
+                    }
+                    isEditing={isEditing}
+                    onInputChange={(e, index) => {
+                      const newEquipment = [...editedRecipe.equipment];
+                      newEquipment[index] = e.target.value;
+                      setEditedRecipe({
+                        ...editedRecipe,
+                        equipment: newEquipment,
+                      });
+                    }}
+                    onRemove={(index) => {
+                      const newEquipment = editedRecipe.equipment.filter(
+                        (_, i) => i !== index
+                      );
+                      setEditedRecipe({
+                        ...editedRecipe,
+                        equipment: newEquipment,
+                      });
+                    }}
+                    addEquipment={() => {
+                      const newEquipment = [...editedRecipe.equipment, ''];
+                      setEditedRecipe({
+                        ...editedRecipe,
+                        equipment: newEquipment,
+                      });
+                    }}
+                  />
+                </div>
+                <div className="bg-[#D8CDC3] p-4 grow">
+                  <NutritionalInfoContainer
+                    nutrients={
+                      isEditing ? editedRecipe.nutrients : recipe.nutrients
+                    }
+                    isEditing={isEditing}
+                    onInputChange={(e, field) => {
+                      setEditedRecipe({
+                        ...editedRecipe,
+                        nutrients: {
+                          ...editedRecipe.nutrients,
+                          [field]: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </motion.div>
+            ) : (
+              <div className="flex flex-col lg:gap-4 w-full lg:w-5/12">
+                <div className="bg-[#FFD699] p-4 grow">
+                  <EquipmentContainer
+                    equipment={
+                      isEditing ? editedRecipe.equipment : recipe.equipment
+                    }
+                    isEditing={isEditing}
+                    onInputChange={(e, index) => {
+                      const newEquipment = [...editedRecipe.equipment];
+                      newEquipment[index] = e.target.value;
+                      setEditedRecipe({
+                        ...editedRecipe,
+                        equipment: newEquipment,
+                      });
+                    }}
+                    onRemove={(index) => {
+                      const newEquipment = editedRecipe.equipment.filter(
+                        (_, i) => i !== index
+                      );
+                      setEditedRecipe({
+                        ...editedRecipe,
+                        equipment: newEquipment,
+                      });
+                    }}
+                    addEquipment={() => {
+                      const newEquipment = [...editedRecipe.equipment, ''];
+                      setEditedRecipe({
+                        ...editedRecipe,
+                        equipment: newEquipment,
+                      });
+                    }}
+                  />
+                </div>
+                <div className="bg-[#D8CDC3] p-4 grow">
+                  <NutritionalInfoContainer
+                    nutrients={
+                      isEditing ? editedRecipe.nutrients : recipe.nutrients
+                    }
+                    isEditing={isEditing}
+                    onInputChange={(e, field) => {
+                      setEditedRecipe({
+                        ...editedRecipe,
+                        nutrients: {
+                          ...editedRecipe.nutrients,
+                          [field]: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>

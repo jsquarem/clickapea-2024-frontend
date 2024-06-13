@@ -19,11 +19,8 @@ const IngredientsContainer = ({
   };
 
   return (
-    <div
-      id="card2"
-      className="bg-[#FFF4C1] p-4 rounded-lg w-full lg:col-span-5 relative transform transition-transform duration-300 ease-in-out"
-    >
-      <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
+    <div id="card2">
+      <h3 className="text-3xl lg:text-4xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
         {isEditing ? (
           <button className="text-blue-500" onClick={addIngredient}>
             <i className="fas fa-plus"></i> Add Ingredient
@@ -50,7 +47,7 @@ const IngredientsContainer = ({
           }}
         />
       </h3>
-      <div className="flex w-full justify-center">
+      <div className="flex w-full justify-center pb-4">
         <ToggleSwitch onToggle={handleToggle} />
       </div>
       <Ingredients

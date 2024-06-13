@@ -12,11 +12,8 @@ const InstructionsContainer = ({
   scrollToCard,
 }) => {
   return (
-    <div
-      id="card3"
-      className="bg-[#E6E6FA] p-4 rounded-lg w-full lg:col-span-7 relative transform transition-transform duration-300 ease-in-out"
-    >
-      <h3 className="text-xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
+    <div id="card3">
+      <h3 className="text-3xl lg:text-4xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
         {isEditing ? (
           <button
             className="text-blue-500 hover:text-white hover:bg-blue-500 rounded-md p-2"

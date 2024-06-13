@@ -76,6 +76,11 @@ const RecipeInfo = ({
       </>
     ) : (
       <>
+        {title && (
+          <h2 className="font-bold text-3xl text-center lg:text-5xl lg:text-left pb-2">
+            {title}
+          </h2>
+        )}
         {author && (
           <p>
             <span className="font-bold">Author:</span> {author}
