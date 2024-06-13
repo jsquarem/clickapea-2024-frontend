@@ -1,40 +1,28 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import AuthContext from '../../AuthContext';
 import useClickOutside from '../../hooks/useClickOutside';
-import LoginModal from '../LoginModal/LoginModal';
+import AddRecipeForm from '../AddRecipeForm/AddRecipeForm';
 import Loading from '../Loading/Loading';
+import { addRecipe, scanRecipe } from '../../utils/api';
 import './AddRecipeModal.css';
 
-const AddRecipeModal = ({
-  isOpen,
-  onClose,
-  onUpload,
-  isLoadingScan,
-  scanImage,
-  scanMessage,
-}) => {
+const AddRecipeModal = ({ isOpen, onClose }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [hasCamera, setHasCamera] = useState(false);
+  const [activeTab, setActiveTab] = useState('add'); // 'add' or 'scan'
+  const [scanImage, setScanImage] = useState(null);
+  const [isLoadingScan, setIsLoadingScan] = useState(false);
+  const [scanMessage, setScanMessage] = useState('');
   const { isAuthenticated } = useContext(AuthContext);
   const modalRef = useRef(null);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkForCamera = async () => {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const hasVideoInput = devices.some(
-          (device) => device.kind === 'videoinput'
-        );
-        setHasCamera(hasVideoInput);
-      } catch (error) {
-        console.error('Error checking for camera:', error);
-        setHasCamera(false);
-      }
-    };
-
-    checkForCamera();
-  }, []);
+  useClickOutside(modalRef, () => {
+    if (!isLoadingScan) {
+      onClose();
+    }
+  });
 
   const onDrop = (acceptedFiles) => {
     setSelectedFiles(acceptedFiles);
@@ -46,11 +34,6 @@ const AddRecipeModal = ({
     noClick: true,
   });
 
-  const handleUpload = () => {
-    onUpload(selectedFiles);
-    setSelectedFiles([]);
-  };
-
   const handleCapture = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -58,11 +41,61 @@ const AddRecipeModal = ({
     }
   };
 
-  useClickOutside(modalRef, () => {
-    if (!isLoadingScan) {
-      onClose();
+  const handleUpload = async () => {
+    setIsLoadingScan(true);
+    const file = selectedFiles[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setScanImage(imageUrl);
+
+      const formData = new FormData();
+      formData.append('imageFile', file);
+
+      try {
+        const result = await scanRecipe(formData);
+        navigate('/create-recipe', { state: { ...result, image: imageUrl } });
+        onClose(); // Close modal after navigating
+      } catch (error) {
+        console.error('Error scanning recipe:', error);
+      } finally {
+        setIsLoadingScan(false);
+      }
     }
-  });
+  };
+
+  const handleAddRecipeSubmit = async (url) => {
+    setIsLoadingScan(true);
+    setScanMessage('');
+    try {
+      const data = await addRecipe(url);
+      navigate(`/recipe/${data._id}`);
+      onClose(); // Close modal after navigating
+    } catch (error) {
+      console.error('Error adding recipe:', error);
+      setScanMessage(error.message || 'Failed to add recipe');
+    } finally {
+      setIsLoadingScan(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedFiles([]);
+      setScanImage(null);
+      setScanMessage('');
+      setIsLoadingScan(false);
+    }
+  }, [isOpen]);
+
+  // Cleanup effect to handle component unmounting
+  useEffect(() => {
+    return () => {
+      setSelectedFiles([]);
+      setScanImage(null);
+      setScanMessage('');
+      setIsLoadingScan(false);
+    };
+  }, []);
 
   if (!isOpen) {
     return null;
@@ -70,19 +103,27 @@ const AddRecipeModal = ({
 
   return (
     <>
-      {!isAuthenticated && <LoginModal isOpen={isOpen} onClose={onClose} />}
       {isAuthenticated && (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div
             ref={modalRef}
-            className="bg-white p-6 rounded-lg max-w-md w-full"
+            className="bg-white p-6 rounded-lg max-w-lg w-full"
           >
-            <div className="flex justify-center items-center mb-4">
-              {!scanImage ? (
-                <h2 className="text-xl font-bold text-center">Upload Images</h2>
-              ) : (
-                ''
-              )}
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex">
+                <button
+                  onClick={() => setActiveTab('add')}
+                  className={`p-2 ${activeTab === 'add' ? 'font-bold' : ''}`}
+                >
+                  Add Recipe
+                </button>
+                <button
+                  onClick={() => setActiveTab('scan')}
+                  className={`p-2 ${activeTab === 'scan' ? 'font-bold' : ''}`}
+                >
+                  Scan Recipe
+                </button>
+              </div>
               <button
                 onClick={onClose}
                 className="text-gray-500 hover:text-gray-700 ml-auto"
@@ -104,6 +145,8 @@ const AddRecipeModal = ({
                   />
                 )}
               </div>
+            ) : activeTab === 'add' ? (
+              <AddRecipeForm onSubmit={handleAddRecipeSubmit} />
             ) : (
               <>
                 <div
@@ -123,24 +166,22 @@ const AddRecipeModal = ({
                     Browse
                   </button>
                 </div>
-                {hasCamera && (
-                  <div className="text-center mt-4">
-                    <label htmlFor="cameraInput" className="cursor-pointer">
-                      <div className="bg-gray-200 p-2 rounded-lg">
-                        <i className="fas fa-camera text-2xl text-gray-500"></i>
-                        <p className="text-gray-500">Take a photo</p>
-                      </div>
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      capture="camera"
-                      id="cameraInput"
-                      style={{ display: 'none' }}
-                      onChange={handleCapture}
-                    />
-                  </div>
-                )}
+                <div className="text-center mt-4">
+                  <label htmlFor="cameraInput" className="cursor-pointer">
+                    <div className="bg-gray-200 p-2 rounded-lg">
+                      <i className="fas fa-camera text-2xl text-gray-500"></i>
+                      <p className="text-gray-500">Take a photo</p>
+                    </div>
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="camera"
+                    id="cameraInput"
+                    style={{ display: 'none' }}
+                    onChange={handleCapture}
+                  />
+                </div>
                 <ul className="mt-4">
                   {selectedFiles.map((file) => (
                     <li key={file.path || file.name}>

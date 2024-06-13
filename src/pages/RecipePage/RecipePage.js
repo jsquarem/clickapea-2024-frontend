@@ -18,6 +18,7 @@ import IngredientsContainer from '../../components/IngredientsContainer/Ingredie
 import InstructionsContainer from '../../components/InstructionsContainer/InstructionsContainer';
 import EquipmentContainer from '../../components/EquipmentContainer/EquipmentContainer';
 import NutritionalInfoContainer from '../../components/NutritionalInfoContainer/NutritionalInfoContainer';
+import TextToSpeech from '../../components/TextToSpeech/TextToSpeech';
 
 const RecipePage = (props) => {
   const { id } = useParams();
@@ -52,7 +53,7 @@ const RecipePage = (props) => {
       else setBgColor('bg-white');
     }
   }, [inView2, inView3, inView4, inView5, isSmallDevice]);
-
+  console.log(recipe?.ingredients, '<-recipe.ingredients');
   useEffect(() => {
     if (props.recipe) {
       setRecipe(props.recipe);
@@ -188,6 +189,32 @@ const RecipePage = (props) => {
       ? `${hours} hrs ${remainingMinutes} mins`
       : `${remainingMinutes} mins`;
   };
+
+  const formatIngredients = (ingredients, isMetric) => {
+    let formattedIngredients = [];
+    if (ingredients.length > 0) {
+      formattedIngredients = ingredients
+        .map((ingredient) => {
+          const quantity =
+            ingredient.other?.quantity ||
+            (isMetric
+              ? ingredient.metric?.quantity
+              : ingredient.imperial?.quantity);
+          const unit =
+            ingredient.other?.unit ||
+            (isMetric ? ingredient.metric?.unit : ingredient.imperial?.unit);
+          return `${quantity || ''} ${unit || ''} of ${ingredient.name || ''}`;
+        })
+        .join('. ');
+    }
+    return formattedIngredients;
+  };
+  if (recipe) {
+    console.log(
+      formatIngredients(recipe.ingredients, false),
+      '<-recipe.ingredients'
+    );
+  }
 
   return (
     <div className="text-gray-800 text-left">
@@ -373,6 +400,9 @@ const RecipePage = (props) => {
                 transition={{ duration: 0.5 }}
                 className="w-full lg:w-5/12 grow bg-[#FCC474] p-4 text-2xl"
               >
+                <TextToSpeech
+                  text={formatIngredients(recipe.ingredients, false)}
+                />
                 <IngredientsContainer
                   ingredients={
                     isEditing ? editedRecipe.ingredients : recipe.ingredients
@@ -426,6 +456,9 @@ const RecipePage = (props) => {
               </motion.div>
             ) : (
               <div className="w-full lg:w-5/12 grow bg-[#FCC474] p-4 text-2xl">
+                <TextToSpeech
+                  text={formatIngredients(recipe.ingredients, false)}
+                />
                 <IngredientsContainer
                   ingredients={
                     isEditing ? editedRecipe.ingredients : recipe.ingredients
