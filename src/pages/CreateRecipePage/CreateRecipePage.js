@@ -9,7 +9,9 @@ import ImageUploadModal from '../../components/ImageUploadModal/ImageUploadModal
 import LoginModal from '../../components/LoginModal/LoginModal';
 import Loading from '../../components/Loading/Loading';
 import AuthContext from '../../AuthContext';
-import { createRecipe, scanRecipe } from '../../utils/api';
+import { createRecipe } from '../../utils/api';
+import { PLACEHOLDER_SVG } from '../../utils/constants';
+import AddRecipeModal from '../../components/AddRecipeModal/AddRecipeModal';
 import './CreateRecipePage.css';
 
 const CreateRecipePage = () => {
@@ -40,16 +42,17 @@ const CreateRecipePage = () => {
   const [validationError, setValidationError] = useState(null);
   const [saveMessage, setSaveMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [mainImage, setMainImage] = useState(initialImage);
   const [mainImageFile, setMainImageFile] = useState(null);
   const [displayImages, setDisplayImages] = useState([initialImage]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [visibleImageCount, setVisibleImageCount] = useState(5);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isLoadingScan, setIsLoadingScan] = useState(false);
-  const [isScanModalOpen, setIsScanModalOpen] = useState(false);
-  const [scanImage, setScanImage] = useState(null);
-  const [isScanned, setIsScanned] = useState(false);
+
+  const [isLoadingScan] = useState(false);
+  const [scanImage] = useState(null);
+  const [isScanned] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -84,6 +87,10 @@ const CreateRecipePage = () => {
 
   const handleToggle = (isMetric) => {
     setIsMetric(isMetric);
+  };
+
+  const toggleModal = () => {
+    setShowModal(!showModal);
   };
 
   const handleSaveClick = async () => {
@@ -156,42 +163,13 @@ const CreateRecipePage = () => {
     setDisplayImages(newDisplayImages);
     setRecipe((prevRecipe) => ({
       ...prevRecipe,
-      image: newDisplayImages[0],
+      images: newDisplayImages[0],
       additional_images: newFiles,
     }));
   };
 
-  const handleScanRecipeClick = () => {
-    setIsScanModalOpen(true);
-  };
-
-  const handleScanImageUpload = async (files) => {
-    setIsLoadingScan(true);
-    const file = files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setScanImage(imageUrl);
-      // setIsScanModalOpen(false);
-
-      const formData = new FormData();
-      formData.append('imageFile', file);
-
-      try {
-        const result = await scanRecipe(formData);
-        setRecipe((prevRecipe) => ({
-          ...prevRecipe,
-          ingredients: result.ingredients,
-          instructions: result.instructions,
-        }));
-        handleImageUpload([file]); // Add the scanned image as the main or additional image
-        setIsScanModalOpen(false);
-      } catch (error) {
-        console.error('Error scanning recipe:', error);
-      } finally {
-        setIsLoadingScan(false);
-      }
-    }
-    setIsScanned(true);
+  const handleImageClick = () => {
+    setIsModalOpen(true);
   };
 
   const handleInputChange = (field, value, subField = null, index = null) => {
@@ -228,18 +206,8 @@ const CreateRecipePage = () => {
     }
     return isValid;
   };
-
-  const handleMainImageClick = (e) => {
-    e.stopPropagation();
-    setIsModalOpen(true);
-  };
-
   const handleModalClose = () => {
     setIsModalOpen(false);
-  };
-
-  const handleScanModalClose = () => {
-    setIsScanModalOpen(false);
   };
 
   const handleNextImage = () => {
@@ -311,11 +279,6 @@ const CreateRecipePage = () => {
     );
   }
 
-  const canNavigatePrev = displayImages.length > 1 && currentImageIndex > 0;
-  const canNavigateNext =
-    displayImages.length > 1 &&
-    currentImageIndex + visibleImageCount < displayImages.length;
-
   return (
     <div className="text-gray-800 text-left">
       <main className="max-w-6xl mx-auto p-6 bg-white mt-6">
@@ -339,16 +302,16 @@ const CreateRecipePage = () => {
           <div className="flex flex-col w-full lg:w-1/2 pb-4">
             <div className="flex flex-row justify-end gap-2">
               <button
-                onClick={handleScanRecipeClick}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
+                onClick={toggleModal} // Add button to open AddRecipeModal
+                className="hover:bg-[#c4985b] bg-yellow-500 text-white hover:text-[#db9585] lg:mx-auto font-bold w-6/12 lg:w-6/12 py-2 px-4 lg:py-5 lg:px-20 text-center rounded-lg"
               >
-                <span>Scan Recipe</span>
+                Add Recipe
               </button>
               <button
                 onClick={handleSaveClick}
-                className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded inline-flex items-center w-full lg:w-auto"
+                className="bg-[#1EB17C] hover:bg-[#67cfa9] text-white lg:mx-auto font-bold w-6/12 lg:w-4/12 py-2 px-4 lg:py-4 lg:px-20 rounded-lg text-center"
               >
-                <span>Save</span>
+                Save
               </button>
             </div>
             {validationError && (
@@ -379,94 +342,82 @@ const CreateRecipePage = () => {
             )}
           </div>
         </div>
-        <div className="flex flex-wrap lg:flex-nowrap mb-6 min-h-[38rem]">
-          <div className="w-full lg:w-1/2 lg:h-[32rem] h-full rounded-lg mb-4 lg:mb-0 cursor-pointer">
-            <div
-              className={`relative h-full pt-4 ${
-                !mainImage
-                  ? 'hover:bg-gray-300 bg-gray-200 border border-dashed border-gray-400'
-                  : ''
-              } rounded-lg flex justify-center items-center`}
-              onClick={handleMainImageClick}
-            >
+        <div className="flex flex-col mb-6 min-h-[38rem]">
+          <div className="h-full text-gray-300 relative z-0">
+            <div className="relative">
               {mainImage ? (
-                <>
-                  <img
-                    src={mainImage}
-                    alt={recipe.title}
-                    className="rounded-lg cursor-pointer w-full h-[18rem] lg:h-[32rem] object-cover"
-                  />
-                  <div
-                    className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity rounded-lg cursor-pointer"
-                    onClick={handleMainImageClick}
-                  >
-                    <span className="text-white text-4xl">+</span>
-                  </div>
-                </>
+                <img
+                  src={mainImage}
+                  alt="Main"
+                  className="cursor-pointer w-full max-h-[40rem] object-cover"
+                />
               ) : (
-                <div className="flex items-center justify-between h-[18rem] lg:h[24rem]">
-                  <h3 className="text-3xl font-semibold text-blue-500">
-                    <i className="fas fa-plus"></i> Add an Image
-                  </h3>
-                </div>
+                // <div className="w-full max-h-[24rem] flex items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 1024 1024"
+                  className="cursor-pointer w-full max-h-[50rem] object-cover"
+                >
+                  <path d={PLACEHOLDER_SVG} fill="currentColor" />
+                </svg>
+                // </div>
               )}
-            </div>
-            <div className="w-full mt-4 flex justify-between items-center space-x-2 min-h-28">
-              <button
-                onClick={handlePrevImage}
-                className={`flex items-center justify-center h-20 w-12 rounded-l-lg ${
-                  canNavigatePrev
-                    ? 'text-blue-500 hover:text-blue-200 hover:bg-blue-500'
-                    : 'opacity-50 cursor-not-allowed text-gray-500'
-                } ${!canNavigatePrev ? '' : 'hover:bg-blue-100'}`}
-                disabled={!canNavigatePrev}
+              <div
+                className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity rounded-lg cursor-pointer"
+                onClick={handleImageClick}
               >
-                <i className="fas fa-chevron-left text-2xl"></i>
-              </button>
-              <div className="flex flex-wrap justify-center space-x-2">
-                {displayImages
-                  .slice(
-                    currentImageIndex,
-                    currentImageIndex + visibleImageCount
-                  )
-                  .map((image, index, arr) => (
-                    <div
-                      key={index}
-                      className={`w-20 h-20 transform transition duration-300 ease-in-out hover:scale-105 cursor-pointer`}
-                      onClick={(e) => handleImageSelect(image, e)}
-                    >
-                      <img
-                        src={image}
-                        alt={`Additional ${index}`}
-                        className={`w-full h-full object-cover ${
-                          mainImage === image
-                            ? 'border-4 border-blue-500 rounded-lg'
-                            : ''
-                        }`}
-                      />
-                    </div>
-                  ))}
+                <span className="text-white text-4xl">+</span>
               </div>
-              <button
-                onClick={handleNextImage}
-                className={`h-20 flex items-center justify-center w-12 rounded-r-lg ${
-                  canNavigateNext
-                    ? 'text-blue-500 hover:text-blue-200 hover:bg-blue-500'
-                    : 'opacity-50 cursor-not-allowed text-gray-500'
-                } ${!canNavigateNext ? '' : 'hover:bg-blue-100'}`}
-                disabled={!canNavigateNext}
-              >
-                <i className="fas fa-chevron-right text-2xl"></i>
-              </button>
             </div>
+            {displayImages.length > 0 && (
+              <div className="w-full mt-4 flex justify-between items-center space-x-2">
+                <button
+                  onClick={handlePrevImage}
+                  className={`h-20 w-12 ${currentImageIndex > 0 ? 'text-[#37A0C5] hover:text-white hover:bg-[#37A0C5]' : 'opacity-50 cursor-not-allowed text-gray-500'} rounded-l-lg`}
+                  disabled={currentImageIndex <= 0}
+                >
+                  <i className="fas fa-chevron-left text-2xl"></i>
+                </button>
+                <div className="flex flex-wrap justify-center space-x-2">
+                  {displayImages
+                    .slice(
+                      currentImageIndex,
+                      currentImageIndex + visibleImageCount
+                    )
+                    .map((image, index, arr) => (
+                      <div
+                        key={index}
+                        className={`w-20 h-20 transform transition duration-300 ease-in-out hover:scale-110 cursor-pointer ${index === 0 ? 'rounded-l-lg' : ''} ${index === arr.length - 1 ? 'rounded-r-lg' : ''}`}
+                        onClick={() => handleImageSelect(image)}
+                      >
+                        <img
+                          src={image}
+                          alt={`Additional ${index}`}
+                          className={`w-full h-full object-cover rounded-lg ${mainImage === image ? 'border-4 border-[#fd7563]' : ''}`}
+                        />
+                      </div>
+                    ))}
+                </div>
+                <button
+                  onClick={handleNextImage}
+                  className={`h-20 w-12 ${currentImageIndex + visibleImageCount < displayImages.length ? 'text-[#37A0C5] hover:text-white hover:bg-[#37A0C5]' : 'opacity-50 cursor-not-allowed text-gray-500'} rounded-r-lg`}
+                  disabled={
+                    currentImageIndex + visibleImageCount >=
+                    displayImages.length
+                  }
+                >
+                  <i className="fas fa-chevron-right text-2xl"></i>
+                </button>
+              </div>
+            )}
           </div>
 
-          <section className="w-full lg:w-1/2 lg:pl-6 mt-6 lg:mt-0">
+          <section className="w-full mt-6 lg:mt-0">
             {recipe.ingredients.length > 0 ? (
-              <section className="mb-6 min-h-96">
+              <>
                 <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-xl font-semibold">
-                    <button className="text-blue-500" onClick={addIngredient}>
+                  <h3 className="text-4xl font-semibold">
+                    <button className="text-[#37A0C5]" onClick={addIngredient}>
                       <i className="fas fa-plus"></i> Add Ingredient
                     </button>
                   </h3>
@@ -490,21 +441,21 @@ const CreateRecipePage = () => {
                   }}
                   onRemove={removeIngredient}
                 />
-              </section>
+              </>
             ) : (
               <section onClick={addIngredient} className="mb-6 cursor-pointer">
                 <div className="mb-4 flex items-center justify-center h-96 hover:bg-gray-300 bg-gray-200 w-full rounded-lg border border-dashed border-gray-400">
-                  <h3 className="text-2xl font-semibold text-center items-center text-blue-500">
+                  <h3 className="text-4xl font-semibold text-center items-center text-[#37A0C5]">
                     <i className="fas fa-plus"></i> Add Ingredients
                   </h3>
                 </div>
               </section>
             )}
             {recipe.equipment.length > 0 ? (
-              <section className="mb-6 min-h-48">
+              <section className="mb-6">
                 <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-xl font-semibold">
-                    <button onClick={addEquipment} className="text-blue-500">
+                  <h3 className="text-4xl font-semibold">
+                    <button onClick={addEquipment} className="text-[#37A0C5]">
                       <i className="fas fa-plus"></i> Add Equipment
                     </button>
                   </h3>
@@ -523,8 +474,8 @@ const CreateRecipePage = () => {
             ) : (
               <section onClick={addEquipment} className="mb-6 cursor-pointer">
                 <div className="mb-4 h-48 flex items-center justify-center rounded-lg hover:bg-gray-300 bg-gray-200 border border-dashed border-gray-400">
-                  <h3 className="text-xl font-semibold">
-                    <button className="text-blue-500">
+                  <h3 className="text-4xl font-semibold">
+                    <button className="text-[#37A0C5]">
                       <i className="fas fa-plus"></i> Add Equipment
                     </button>
                   </h3>
@@ -535,12 +486,12 @@ const CreateRecipePage = () => {
         </div>
 
         {recipe.instructions.length > 0 ? (
-          <div className="flex flex-col lg:flex-row">
-            <div className="lg:w-2/3">
+          <div className="flex flex-col">
+            <div className="w-full">
               <section className="mb-6 min-h-48">
                 <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-xl font-semibold">
-                    <button className="text-blue-500" onClick={addInstruction}>
+                  <h3 className="text-4xl font-semibold">
+                    <button className="text-[#37A0C5]" onClick={addInstruction}>
                       <i className="fas fa-plus"></i> Add Instruction
                     </button>
                   </h3>
@@ -569,8 +520,8 @@ const CreateRecipePage = () => {
               className="mb-6 w-full cursor-pointer"
             >
               <div className="mb-4 flex items-center justify-center h-48 rounded-lg hover:bg-gray-300 bg-gray-200 border border-dashed border-gray-400 w-full">
-                <h3 className="text-xl font-semibold">
-                  <button className="text-blue-500">
+                <h3 className="text-4xl font-semibold">
+                  <button className="text-[#37A0C5]">
                     <i className="fas fa-plus"></i> Add Instructions
                   </button>
                 </h3>
@@ -589,14 +540,18 @@ const CreateRecipePage = () => {
         scanMessage={''}
       />
 
-      <ImageUploadModal
+      {showModal && (
+        <AddRecipeModal isOpen={showModal} onClose={toggleModal} /> // Add AddRecipeModal component
+      )}
+
+      {/* <ImageUploadModal
         isOpen={isScanModalOpen}
         onClose={handleScanModalClose}
         onUpload={handleScanImageUpload}
         isLoadingScan={isLoadingScan}
         scanImage={scanImage}
         scanMessage={'Scanning Recipe:'}
-      />
+      /> */}
 
       {!isAuthenticated && (
         <LoginModal

@@ -47,11 +47,11 @@ const Instructions = ({ instructions, isEditing, onInputChange, onRemove }) => {
                 <textarea
                   value={instruction}
                   onChange={(e) => onInputChange(e, index)}
-                  className="form-textarea w-11/12 h-24"
+                  className="form-textarea w-full h-24"
                 />
                 <button
                   onClick={() => onRemove(index)}
-                  className="ml-2 bg-red-500 hover:bg-red-700 text-white font-bold px-4 rounded flex items-center justify-center"
+                  className="ml-2 bg-red-500 hover:bg-red-700 text-white font-bold px-10 rounded flex items-center justify-center"
                 >
                   <i className="fas fa-times"></i>
                 </button>

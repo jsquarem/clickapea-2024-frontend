@@ -1,20 +1,22 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { motion, useCycle } from 'framer-motion';
 import AuthContext from '../../AuthContext';
-import AddRecipeModal from '../../components/AddRecipeModal/AddRecipeModal'; // Import the AddRecipeModal component
+import AddRecipeModal from '../../components/AddRecipeModal/AddRecipeModal';
+import { MenuToggle } from '../../components/MenuToggle/MenuToggle';
 import './Header.css';
 
 const Header = () => {
   const { isAuthenticated, user, login, logout } = useContext(AuthContext);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false); // State to manage AddRecipeModal visibility
+  const [showModal, setShowModal] = useState(false);
   const [headerSticky, setHeaderSticky] = useState(false);
   const [isMobile] = useState(window.innerWidth <= 768);
   const dropdownRef = useRef(null);
   const menuRef = useRef(null);
   const hamburgerRef = useRef(null);
   const location = useLocation();
+  const [isOpen, toggleOpen] = useCycle(false, true);
 
   const handleProfileClick = () => {
     setShowDropdown(!showDropdown);
@@ -24,17 +26,39 @@ const Header = () => {
     setShowModal(!showModal);
   };
 
+  const sidebar = {
+    open: {
+      height: 'auto',
+      opacity: 1,
+      transition: {
+        type: 'spring',
+        stiffness: 20,
+        restDelta: 2,
+      },
+    },
+    closed: {
+      height: 0,
+      opacity: 0,
+      transition: {
+        delay: 0.5,
+        type: 'spring',
+        stiffness: 400,
+        damping: 40,
+      },
+    },
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (dropdownRef.current && !dropdownRef.current?.contains(event.target)) {
         setShowDropdown(false);
       }
       if (
         menuRef.current &&
-        !menuRef.current.contains(event.target) &&
-        !hamburgerRef.current.contains(event.target)
+        !menuRef.current?.contains(event.target) &&
+        !hamburgerRef.current?.contains(event.target)
       ) {
-        setMenuOpen(false);
+        toggleOpen(0);
       }
     };
 
@@ -46,18 +70,14 @@ const Header = () => {
 
   useEffect(() => {
     // Close the mobile menu when navigating to a new page
-    setMenuOpen(false);
+    toggleOpen(0);
   }, [location]);
 
   useEffect(() => {
     // Close dropdown and menu when user logs in
     setShowDropdown(false);
-    setMenuOpen(false);
+    toggleOpen(0);
   }, [isAuthenticated]);
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
 
   const handleScroll = () => {
     if (window.pageYOffset > 0) {
@@ -85,11 +105,10 @@ const Header = () => {
       ? `${baseClass} ${hoverClass} ${activeClass} ${activePageClass}`
       : `${baseClass} ${hoverClass} ${activeClass}`;
   };
-  // bg-[#76cfae]
 
   return (
     <header
-      className={`site-nav ${headerSticky && !menuOpen ? 'bg-opacity' : 'bg-[#1EB17C]'} p-4 flex items-center justify-between sticky top-0 z-30`}
+      className={`site-nav ${headerSticky && !isOpen ? 'bg-opacity' : 'bg-[#1EB17C]'} p-4 flex items-center justify-between sticky top-0 z-30`}
     >
       <Link to="/">
         <div className="flex flex-row justify-start items-center">
@@ -110,22 +129,19 @@ const Header = () => {
         </div>
       </Link>
       <button
-        onClick={toggleModal} // Add button to open AddRecipeModal
+        onClick={toggleModal}
         className="hover:bg-[#c4985b] lg:mx-auto bg-yellow-500 text-white hover:text-[#db9585] font-bold w-1/4 lg:w-1/6 py-1 px-1 lg:py-5 lg:px-10 rounded-lg"
       >
         Add Recipe
       </button>
-      <button
-        className="block lg:hidden text-[#387961] focus:outline-none"
-        onClick={toggleMenu}
-        ref={hamburgerRef} // Attach the ref to the hamburger icon
-      >
-        <i className="fas fa-bars fa-2x"></i>
-      </button>
-      <nav
+      <MenuToggle toggle={toggleOpen} isOpen={isOpen} />
+      <motion.nav
+        initial={false}
+        animate={isOpen ? 'open' : 'closed'}
+        variants={sidebar}
         ref={menuRef}
         className={`${
-          menuOpen ? 'block' : 'hidden'
+          isOpen ? 'block' : 'hidden'
         } lg:flex lg:items-center lg:space-x-4 lg:ml-auto absolute lg:static top-full left-0 w-full lg:w-auto bg-[#76cfae] lg:bg-transparent z-30 border-t-1 border-[#387961] lg:border-0 drop-shadow-md`}
       >
         <Link to="/" className={getLinkClass('/')}>
@@ -186,7 +202,7 @@ const Header = () => {
               )}
             </div>
             <div
-              className={`${menuOpen ? 'block' : 'hidden'} lg:hidden text-left`}
+              className={`${isOpen ? 'block' : 'hidden'} lg:hidden text-left`}
             >
               <Link to="/profile" className={getLinkClass('/profile')}>
                 <div className="flex items-center lg:flex-col lg:items-center">
@@ -207,7 +223,7 @@ const Header = () => {
         ) : (
           <div
             className={`${
-              menuOpen ? 'block' : 'hidden'
+              isOpen ? 'block' : 'hidden'
             } lg:block lg:ml-4 text-center py-4`}
           >
             <button
@@ -218,10 +234,8 @@ const Header = () => {
             </button>
           </div>
         )}
-      </nav>
-      {showModal && (
-        <AddRecipeModal isOpen={showModal} onClose={toggleModal} /> // Add AddRecipeModal component
-      )}
+      </motion.nav>
+      {showModal && <AddRecipeModal isOpen={showModal} onClose={toggleModal} />}
     </header>
   );
 };

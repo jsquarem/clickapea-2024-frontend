@@ -107,7 +107,7 @@ const RecipeImageContainer = ({ images, recipeId, scrollToCard }) => {
             <img
               src={mainImage}
               alt="Main"
-              className="rounded-lg cursor-pointer w-full max-h-[24rem] object-cover"
+              className="cursor-pointer w-full max-h-[40rem] object-cover"
             />
           ) : (
             <div className="w-full max-h-[24rem] flex items-center justify-center">
