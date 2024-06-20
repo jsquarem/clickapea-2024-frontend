@@ -18,7 +18,6 @@ import IngredientsContainer from '../../components/IngredientsContainer/Ingredie
 import InstructionsContainer from '../../components/InstructionsContainer/InstructionsContainer';
 import EquipmentContainer from '../../components/EquipmentContainer/EquipmentContainer';
 import NutritionalInfoContainer from '../../components/NutritionalInfoContainer/NutritionalInfoContainer';
-import TextToSpeech from '../../components/TextToSpeech/TextToSpeech';
 
 const RecipePage = (props) => {
   const { id } = useParams();
@@ -53,7 +52,7 @@ const RecipePage = (props) => {
       else setBgColor('bg-white');
     }
   }, [inView2, inView3, inView4, inView5, isSmallDevice]);
-  console.log(recipe?.ingredients, '<-recipe.ingredients');
+
   useEffect(() => {
     if (props.recipe) {
       setRecipe(props.recipe);
@@ -190,31 +189,8 @@ const RecipePage = (props) => {
       : `${remainingMinutes} mins`;
   };
 
-  const formatIngredients = (ingredients, isMetric) => {
-    let formattedIngredients = [];
-    if (ingredients.length > 0) {
-      formattedIngredients = ingredients
-        .map((ingredient) => {
-          const quantity =
-            ingredient.other?.quantity ||
-            (isMetric
-              ? ingredient.metric?.quantity
-              : ingredient.imperial?.quantity);
-          const unit =
-            ingredient.other?.unit ||
-            (isMetric ? ingredient.metric?.unit : ingredient.imperial?.unit);
-          return `${quantity || ''} ${unit || ''} of ${ingredient.name || ''}`;
-        })
-        .join('. ');
-    }
-    return formattedIngredients;
-  };
-  if (recipe) {
-    console.log(
-      formatIngredients(recipe.ingredients, false),
-      '<-recipe.ingredients'
-    );
-  }
+  console.log(recipe, '<-recipe');
+  console.log(recipe.dietary_restrictions, '<-recipe.dietary_restrictions');
 
   return (
     <div className="text-gray-800 text-left">
@@ -247,6 +223,7 @@ const RecipePage = (props) => {
                       : formatTotalTime(recipe.total_time)
                   }
                   servings={isEditing ? editedRecipe.yields : recipe.yields}
+                  dietaryRestrictions={recipe.dietary_restrictions}
                   isEditing={isEditing}
                   onInputChange={handleInputChange}
                 />
@@ -312,6 +289,7 @@ const RecipePage = (props) => {
                       : formatTotalTime(recipe.total_time)
                   }
                   servings={isEditing ? editedRecipe.yields : recipe.yields}
+                  dietaryRestrictions={recipe.dietary_restrictions}
                   isEditing={isEditing}
                   onInputChange={handleInputChange}
                 />
@@ -366,7 +344,7 @@ const RecipePage = (props) => {
           )}
 
           {/* Row 2 */}
-          <div className="flex flex-col lg:flex-row lg:gap-4">
+          <div className="flex flex-col lg:gap-4">
             {isSmallDevice ? (
               <motion.div
                 ref={ref2}
@@ -379,11 +357,17 @@ const RecipePage = (props) => {
                 transition={{ duration: 0.5 }}
                 className="w-full grow lg:w-7/12 p-4"
               >
-                <RecipeImageContainer images={recipe.images} />
+                <RecipeImageContainer
+                  images={recipe.images}
+                  recipeId={recipe._id}
+                />
               </motion.div>
             ) : (
-              <div className="w-full grow lg:w-7/12 px-4 lg:px-0 pt-4">
-                <RecipeImageContainer images={recipe.images} />
+              <div className="w-full grow px-4 lg:px-0 pt-4">
+                <RecipeImageContainer
+                  images={recipe.images}
+                  recipeId={recipe._id}
+                />
               </div>
             )}
 
@@ -398,11 +382,8 @@ const RecipePage = (props) => {
                   hidden: { opacity: 0.5 },
                 }}
                 transition={{ duration: 0.5 }}
-                className="w-full lg:w-5/12 grow bg-[#FCC474] p-4 text-2xl"
+                className="w-full grow bg-[#FCC474] p-4  pt-4 text-2xl"
               >
-                <TextToSpeech
-                  text={formatIngredients(recipe.ingredients, false)}
-                />
                 <IngredientsContainer
                   ingredients={
                     isEditing ? editedRecipe.ingredients : recipe.ingredients
@@ -455,10 +436,7 @@ const RecipePage = (props) => {
                 />
               </motion.div>
             ) : (
-              <div className="w-full lg:w-5/12 grow bg-[#FCC474] p-4 text-2xl">
-                <TextToSpeech
-                  text={formatIngredients(recipe.ingredients, false)}
-                />
+              <div className="w-full grow bg-[#FCC474] p-4 text-2xl">
                 <IngredientsContainer
                   ingredients={
                     isEditing ? editedRecipe.ingredients : recipe.ingredients

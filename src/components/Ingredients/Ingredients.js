@@ -135,7 +135,10 @@ const Ingredients = ({
   let displayAmount;
 
   return (
-    <ul id="ingredients-list" className="list-disc list-inside mb-4">
+    <ul
+      id="ingredients-list"
+      className="list-disc list-inside mb-4 grid grid-cols-1 md:grid-cols-2 gap-x-4"
+    >
       {ingredients.map((ingredient, index) => {
         const amount = isMetric ? ingredient.metric : ingredient.imperial;
         const other = ingredient.other;
@@ -154,123 +157,119 @@ const Ingredients = ({
         }
 
         return (
-          <div
+          <li
             key={index}
-            className="flex flex-row justify-center items-center pb-2"
+            className={`flex flex-row justify-center items-center py-3 px-2 w-full ${
+              !isEditing ? 'cursor-pointer' : ''
+            } ${
+              completed[index] && !isEditing
+                ? 'bg-yellow-200 text-yellow-600 shadow-inner-lg md:rounded'
+                : !isEditing
+                  ? 'lg:hover:bg-yellow-100 mf:rounded'
+                  : ''
+            }`}
+            onClick={() => !isEditing && handleItemClick(index)}
           >
-            <li
-              key={index}
-              className={`flex justify-center items-center py-3 px-2 w-full ${
-                !isEditing ? 'cursor-pointer' : ''
-              } ${
-                completed[index] && !isEditing
-                  ? 'bg-yellow-200 text-yellow-600shadow-inner-lg md:rounded'
-                  : !isEditing
-                    ? 'lg:hover:bg-yellow-100 mf:rounded'
-                    : ''
-              }`}
-              onClick={() => !isEditing && handleItemClick(index)}
+            <div
+              className="flex-shrink-0 mr-4"
+              style={{
+                height: '1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+              }}
             >
-              <div
-                className="flex-shrink-0 mr-4"
-                style={{
-                  height: '1.5rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                {completed[index] && !isEditing ? (
-                  <i className="fas fa-check text-yellow-600 text-3xl drop-shadow-lg"></i>
-                ) : (
-                  <span className="text-3xl ">&#8226;</span>
-                )}
-              </div>
-              <div className="flex-1 ">
-                {isEditing ? (
-                  <div className="grid grid-cols-5 gap-2">
-                    <div className="grid col-span-4 grid-rows-2 gap-2">
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={
-                            amount?.quantity !== undefined
-                              ? amount.quantity
-                              : other?.quantity !== undefined
-                                ? other.quantity
-                                : ''
-                          }
-                          onChange={(e) =>
-                            handleInputChange(
-                              e,
-                              index,
-                              isMetric ? 'metric' : 'imperial',
-                              'quantity'
-                            )
-                          }
-                          className="form-input w-1/3 h-10"
-                        />
-                        <Select
-                          value={{
-                            value: amount?.unit || '',
-                            label: amount?.unit || '',
-                          }}
-                          onChange={(selectedOption) =>
-                            handleInputChange(
-                              { target: { value: selectedOption.value } },
-                              index,
-                              isMetric ? 'metric' : 'imperial',
-                              'unit'
-                            )
-                          }
-                          options={groupedOptions}
-                          className="form-select w-full"
-                          styles={{
-                            control: (base) => ({
-                              ...base,
-                              height: '2.5rem',
-                              minHeight: '2.5rem',
-                            }),
-                            valueContainer: (base) => ({
-                              ...base,
-                              height: '2.5rem',
-                              display: 'flex',
-                              alignItems: 'center',
-                            }),
-                            input: (base) => ({
-                              ...base,
-                              margin: 0,
-                              padding: 0,
-                            }),
-                          }}
-                        />
-                      </div>
+              {completed[index] && !isEditing ? (
+                <i className="fas fa-check text-yellow-600 text-3xl drop-shadow-lg"></i>
+              ) : (
+                <span className="text-3xl ">&#8226;</span>
+              )}
+            </div>
+            <div className="flex-1">
+              {isEditing ? (
+                <div className="grid grid-cols-5 gap-2">
+                  <div className="grid col-span-4 grid-rows-2 gap-2">
+                    <div className="flex gap-2">
                       <input
                         type="text"
-                        value={ingredient.name}
-                        onChange={(e) => handleInputChange(e, index, 'name')}
-                        className="form-input w-full h-10"
+                        value={
+                          amount?.quantity !== undefined
+                            ? amount.quantity
+                            : other?.quantity !== undefined
+                              ? other.quantity
+                              : ''
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            e,
+                            index,
+                            isMetric ? 'metric' : 'imperial',
+                            'quantity'
+                          )
+                        }
+                        className="form-input w-1/3 h-10"
+                      />
+                      <Select
+                        value={{
+                          value: amount?.unit || '',
+                          label: amount?.unit || '',
+                        }}
+                        onChange={(selectedOption) =>
+                          handleInputChange(
+                            { target: { value: selectedOption.value } },
+                            index,
+                            isMetric ? 'metric' : 'imperial',
+                            'unit'
+                          )
+                        }
+                        options={groupedOptions}
+                        className="form-select w-full"
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            height: '2.5rem',
+                            minHeight: '2.5rem',
+                          }),
+                          valueContainer: (base) => ({
+                            ...base,
+                            height: '2.5rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                          }),
+                          input: (base) => ({
+                            ...base,
+                            margin: 0,
+                            padding: 0,
+                          }),
+                        }}
                       />
                     </div>
-                    <button
-                      onClick={() => onRemove(index)}
-                      className="ml-2 h-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded"
-                    >
-                      <i className="fas fa-times"></i>
-                    </button>
+                    <input
+                      type="text"
+                      value={ingredient.name}
+                      onChange={(e) => handleInputChange(e, index, 'name')}
+                      className="form-input w-full h-10"
+                    />
                   </div>
-                ) : (
-                  <div className="drop-shadow-lg">
-                    {displayAmount} {ingredient.name}
-                  </div>
-                )}
-              </div>
-            </li>
+                  <button
+                    onClick={() => onRemove(index)}
+                    className="ml-2 h-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                </div>
+              ) : (
+                <div className="drop-shadow-lg">
+                  {displayAmount}&nbsp;
+                  {ingredient.name}
+                </div>
+              )}
+            </div>
             {errors[index]?.quantity && (
               <span className="text-red-500 text-sm">
                 Quantity must be a number
               </span>
             )}
-          </div>
+          </li>
         );
       })}
     </ul>

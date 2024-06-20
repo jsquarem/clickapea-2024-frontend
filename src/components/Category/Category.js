@@ -13,8 +13,9 @@ const Category = ({
   moveCategoryDown,
   onShowDeleteModal,
 }) => {
+  console.log(recipes, 'Category');
   return (
-    <div className="bg-white p-4 rounded-lg shadow mb-4 transition-transform duration-300 ease-in-out draggable-category">
+    <div className="mb-4 transition-transform duration-300 ease-in-out draggable-category">
       <div className="flex">
         <div className="flex flex-col items-center justify-center mr-4">
           <button

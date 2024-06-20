@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import AuthContext from '../../AuthContext';
-import AddRecipeForm from '../../components/AddRecipeForm/AddRecipeForm';
 import Category from '../../components/Category/Category';
 import Loading from '../../components/Loading/Loading';
 import FlipMove from 'react-flip-move';
@@ -48,6 +47,7 @@ const CategoriesPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteAction, setDeleteAction] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [showAddCategoryForm, setShowAddCategoryForm] = useState(null);
 
   const fetchAndSetCategories = useCallback(async () => {
     if (isAuthenticated && user) {
@@ -69,6 +69,7 @@ const CategoriesPage = () => {
             )
           );
         }
+        setShowAddCategoryForm(false);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching categories:', error);
@@ -147,6 +148,13 @@ const CategoriesPage = () => {
         }
       }
     }
+  };
+  const handleNewCategoryClick = () => {
+    setShowAddCategoryForm(!showAddCategoryForm);
+  };
+
+  const handleCancelClick = () => {
+    setShowAddCategoryForm(false);
   };
 
   const handleAddCategory = async (event) => {
@@ -265,37 +273,48 @@ const CategoriesPage = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col md:flex-row w-full justify-between space-y-4 md:space-y-0 md:space-x-8">
-          <div className="w-full lg:w-1/3">
-            <h2 className="text-2xl font-bold text-left">Add a Category</h2>
-            <form
-              onSubmit={handleAddCategory}
-              className="mb-4 flex justify-start items-center space-x-2 w-full"
-            >
-              <input
-                type="text"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                placeholder="New Category Name"
-                className="border p-2 rounded w-7/12 lg:w-2/3"
-              />
-              <button
-                type="submit"
-                className="bg-blue-500 text-white p-2 rounded w-5/12 lg:w-1/3"
-              >
-                Add Category
-              </button>
-            </form>
-          </div>
-          <div className="w-full lg:w-1/2 text-left">
-            <AddRecipeForm />
-          </div>
-        </div>
       </div>
-      <div className="bg-gray-100 text-gray-800 p-6 max-w-6xl mx-auto lg:min-h-[46vh]">
+      <div className="p-6 max-w-6xl mx-auto lg:min-h-[46vh] flex flex-col justify-start">
         <Droppable droppableId="all-categories" type="CATEGORY">
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
+              {showAddCategoryForm ? (
+                <form
+                  onSubmit={handleAddCategory}
+                  className="mb-4 flex flex-row justify-start items-center space-x-2 w-full"
+                >
+                  <input
+                    type="text"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder="New Category Name"
+                    className="border p-2 rounded w-7/12 lg:w-5/12"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-[#37A0C5] hover:bg-[#62d5ff] text-white p-2 rounded w-3/12 lg:w-2/12"
+                  >
+                    Add Category
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="bg-[#C16855] text-white p-2 rounded w-3/12 lg:w-2/12"
+                    onClick={handleCancelClick}
+                  >
+                    Cancel
+                  </button>
+                </form>
+              ) : (
+                <div
+                  className="bg-gray-200 rounded h-48 text-center flex justify-center items-center cursor-pointer"
+                  onClick={handleNewCategoryClick}
+                >
+                  <p className="text-4xl font-semibold">
+                    <i className="fas fa-plus"></i> Add New Category
+                  </p>
+                </div>
+              )}
               <FlipMove duration={300} easing="ease-in-out">
                 {categoryOrder.map((categoryId, index) => {
                   const category = categories[categoryId];

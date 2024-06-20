@@ -5,6 +5,7 @@ import { Draggable } from '@hello-pangea/dnd';
 import { Link } from 'react-router-dom';
 
 const DraggableRecipe = ({ recipe, index, onShowDeleteModal }) => {
+  console.log(recipe, 'DraggableRecipe');
   return (
     <Draggable key={recipe.id} draggableId={recipe.id} index={index}>
       {(provided, snapshot) => (
@@ -21,7 +22,7 @@ const DraggableRecipe = ({ recipe, index, onShowDeleteModal }) => {
             <Link to={`/recipe/user/${recipe.id}`}>
               <div className="w-48 h-32 bg-cover bg-center rounded-lg">
                 <img
-                  src={recipe.image}
+                  src={recipe?.images ? recipe.images[0] : ''}
                   alt={`recipe-${index}`}
                   className={`w-full h-full object-cover rounded-lg`}
                 />

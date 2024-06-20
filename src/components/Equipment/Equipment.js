@@ -60,7 +60,7 @@ const equipmentIconMap = {
   'stand mixer': '048-mixer.svg',
   microwave: '049-microwave.svg',
   oven: '050-gas-stove.svg',
-  stove: '050-gas-stove.svg',
+  stove: '076-stove.svg',
   toaster: '051-toaster.svg',
   'toaster oven': '052-microwave-1.svg',
   'waffle maker': '053-waffle-iron.svg',
@@ -131,7 +131,7 @@ const Equipment = ({
               />
               <button
                 onClick={() => onRemove(index)}
-                className="ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                className="ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2.5 px-6 rounded"
               >
                 <i className="fas fa-times"></i>
               </button>
