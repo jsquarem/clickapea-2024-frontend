@@ -9,7 +9,7 @@ const NutritionalInfoContainer = ({
 }) => {
   return (
     <div id="card5">
-      <h3 className="text-3xl lg:text-4xl font-semibold font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
+      <h3 className="text-3xl lg:text-4xl font-semibold mb-2 cursor-pointer relative z-10 flex items-center">
         <a
           href="#card5"
           onClick={(e) => {

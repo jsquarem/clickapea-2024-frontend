@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import AuthContext, { AuthProvider } from './AuthContext';
+import { CartProvider } from './CartContext'; // Import CartProvider
 import HomePage from './pages/HomePage/HomePage';
 import RecipePage from './pages/RecipePage/RecipePage';
 import ImagePreprocessingPage from './pages/ImagePreprocessingPage/ImagePreprocessingPage';
@@ -10,6 +11,7 @@ import AddRecipePage from './pages/AddRecipePage/AddRecipePage';
 import MyRecipesPage from './pages/MyRecipesPage/MyRecipesPage';
 import RecipeListPage from './pages/RecipeListPage/RecipeListPage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
+import ShoppingCartPage from './pages/ShoppingCartPage/ShoppingCartPage';
 import Protected from './Protected';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -78,6 +80,7 @@ const App = () => {
             <Route path="/add-recipe" element={<AddRecipePage />} />
             <Route path="/create-recipe" element={<CreateRecipePage />} />
             <Route path="/recipes" element={<RecipeListPage />} />
+            <Route path="/shopping-cart" element={<ShoppingCartPage />} />
             <Route
               path="/recipe/user/:id"
               element={
@@ -114,7 +117,11 @@ const App = () => {
 
 const AppWrapper = () => (
   <AuthProvider>
-    <App />
+    <CartProvider>
+      {' '}
+      {/* Wrap App with CartProvider */}
+      <App />
+    </CartProvider>
   </AuthProvider>
 );
 

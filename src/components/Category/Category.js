@@ -1,8 +1,7 @@
-// src/components/Category/Category.js
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import DraggableRecipe from '../DraggableRecipe/DraggableRecipe';
+import { motion, useAnimation } from 'framer-motion';
 
 const Category = ({
   category,
@@ -12,8 +11,51 @@ const Category = ({
   moveCategoryUp,
   moveCategoryDown,
   onShowDeleteModal,
+  isEditMode,
+  handleAddToCart,
+  editAnimationCount,
 }) => {
   console.log(recipes, 'Category');
+  const controls = useAnimation();
+
+  useEffect(() => {
+    if (isEditMode && editAnimationCount > 0) {
+      console.log('Category useEffect triggered for entering edit mode', {
+        isEditMode,
+        editAnimationCount,
+      });
+      const animate = async () => {
+        for (let i = 0; i < editAnimationCount; i++) {
+          console.log(`Cycle ${i + 1}: Scaling and tilting left.`);
+          await controls.start({
+            scale: 1.05,
+            rotate: -10,
+            transition: { duration: 0.2 },
+            zIndex: 10,
+          });
+          console.log(`Cycle ${i + 1}: Scaling and tilting right.`);
+          await controls.start({
+            scale: 1.05,
+            rotate: 10,
+            transition: { duration: 0.2 },
+            zIndex: 10,
+          });
+          console.log(`Cycle ${i + 1}: Resetting scale and rotation.`);
+          await controls.start({
+            scale: 1,
+            rotate: 0,
+            transition: { duration: 0.2 },
+            zIndex: 10,
+          });
+          console.log(`Cycle ${i + 1}: Waiting for 1 second.`);
+          await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second
+        }
+        console.log('Category Animation completed.');
+      };
+      animate();
+    }
+  }, [isEditMode, controls, editAnimationCount]);
+
   return (
     <div className="mb-4 transition-transform duration-300 ease-in-out draggable-category">
       <div className="flex">
@@ -46,13 +88,14 @@ const Category = ({
             <h3 className="text-xl font-semibold mb-2 text-left">
               {category.title}
             </h3>
-            {category.title !== 'All Recipes' && (
-              <button
+            {isEditMode && category.title !== 'All Recipes' && (
+              <motion.button
                 onClick={() => onShowDeleteModal('category', category.id)}
                 className="text-red-500 hover:text-red-700"
+                animate={controls}
               >
-                <i className="fas fa-trash-alt"></i>
-              </button>
+                <i className="fas fa-trash-alt text-2xl hover:scale-125"></i>
+              </motion.button>
             )}
           </div>
           <Droppable
@@ -79,6 +122,9 @@ const Category = ({
                     recipe={recipe}
                     index={recipeIndex}
                     onShowDeleteModal={onShowDeleteModal}
+                    isEditMode={isEditMode}
+                    handleAddToCart={handleAddToCart}
+                    editAnimationCount={editAnimationCount}
                   />
                 ))}
                 {provided.placeholder}

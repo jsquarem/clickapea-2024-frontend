@@ -1,16 +1,18 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import AuthContext from '../../AuthContext';
-import AddRecipeModal from '../../components/AddRecipeModal/AddRecipeModal'; // Import the AddRecipeModal component
+import ShoppingCart from '../ShoppingCart/ShoppingCart';
+import AddRecipeModal from '../../components/AddRecipeModal/AddRecipeModal';
 import './Header.css';
 
 const Header = () => {
   const { isAuthenticated, user, login, logout } = useContext(AuthContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false); // State to manage AddRecipeModal visibility
+  const [showModal, setShowModal] = useState(false);
   const [headerSticky, setHeaderSticky] = useState(false);
   const [isMobile] = useState(window.innerWidth <= 768);
+  const [showCart, setShowCart] = useState(false);
   const dropdownRef = useRef(null);
   const menuRef = useRef(null);
   const hamburgerRef = useRef(null);
@@ -45,12 +47,10 @@ const Header = () => {
   }, [dropdownRef, menuRef, hamburgerRef]);
 
   useEffect(() => {
-    // Close the mobile menu when navigating to a new page
     setMenuOpen(false);
   }, [location]);
 
   useEffect(() => {
-    // Close dropdown and menu when user logs in
     setShowDropdown(false);
     setMenuOpen(false);
   }, [isAuthenticated]);
@@ -85,7 +85,6 @@ const Header = () => {
       ? `${baseClass} ${hoverClass} ${activeClass} ${activePageClass}`
       : `${baseClass} ${hoverClass} ${activeClass}`;
   };
-  // bg-[#76cfae]
 
   return (
     <header
@@ -110,7 +109,7 @@ const Header = () => {
         </div>
       </Link>
       <button
-        onClick={toggleModal} // Add button to open AddRecipeModal
+        onClick={toggleModal}
         className="hover:bg-[#c4985b] lg:mx-auto bg-yellow-500 text-white hover:text-[#db9585] font-bold w-1/4 lg:w-1/6 py-1 px-1 lg:py-5 lg:px-10 rounded-lg"
       >
         Add Recipe
@@ -118,7 +117,7 @@ const Header = () => {
       <button
         className="block lg:hidden text-[#387961] focus:outline-none"
         onClick={toggleMenu}
-        ref={hamburgerRef} // Attach the ref to the hamburger icon
+        ref={hamburgerRef}
       >
         <i className="fas fa-bars fa-2x"></i>
       </button>
@@ -156,6 +155,23 @@ const Header = () => {
             <span className="ml-2 lg:ml-0">Create Recipe</span>
           </div>
         </Link>
+        <div
+          className="relative group"
+          onMouseEnter={() => setShowCart(true)}
+          onMouseLeave={() => setShowCart(false)}
+        >
+          <div className={getLinkClass('/shopping-cart')}>
+            <div className="flex items-center lg:flex-col lg:items-center">
+              <i className="fa-solid fa-shopping-cart lg:mb-1 lg:text-lg"></i>
+              <span className="ml-2 lg:ml-0">Shopping Cart</span>
+            </div>
+          </div>
+          {showCart && (
+            <div className="absolute top-full left-0 lg:right-0 w-full lg:w-64 bg-white border rounded shadow-lg mt-2 z-10 overflow-hidden">
+              <ShoppingCart />
+            </div>
+          )}
+        </div>
         {isAuthenticated && user ? (
           <>
             <div className="relative lg:ml-4 lg:p-0" ref={dropdownRef}>
@@ -219,9 +235,7 @@ const Header = () => {
           </div>
         )}
       </nav>
-      {showModal && (
-        <AddRecipeModal isOpen={showModal} onClose={toggleModal} /> // Add AddRecipeModal component
-      )}
+      {showModal && <AddRecipeModal isOpen={showModal} onClose={toggleModal} />}
     </header>
   );
 };

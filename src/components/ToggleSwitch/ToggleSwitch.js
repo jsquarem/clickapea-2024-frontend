@@ -10,12 +10,13 @@ const ToggleSwitch = ({ onToggle }) => {
 
   return (
     <div className="flex justify-between items-center space-x-2 md:space-x-4 text-lg">
-      <span
-        className={`text-2xl ${!checked ? 'font-bold text-[#37A0C5]' : 'text-gray-600'}`}
+      <div
+        className={`text-2xl ${!checked ? 'font-bold text-[#37A0C5]' : 'text-gray-600 cursor-pointer hover:text-[#37A0C5]'}`}
         style={{ width: '90px', textAlign: 'right' }}
+        onClick={handleChange}
       >
-        <span className="inline">Imperial</span>
-      </span>
+        Imperial
+      </div>
       <label className="toggle-switch relative inline-block w-14 h-8">
         <input
           type="checkbox"
@@ -31,12 +32,13 @@ const ToggleSwitch = ({ onToggle }) => {
           }}
         ></span>
       </label>
-      <span
-        className={`text-2xl ${checked ? 'font-bold text-[#37A0C5]' : 'text-gray-600'}`}
+      <div
+        onClick={handleChange}
+        className={`text-2xl ${checked ? 'font-bold text-[#37A0C5]' : 'text-gray-600 cursor-pointer hover:text-[#37A0C5]'}`}
         style={{ width: '90px', textAlign: 'left' }}
       >
-        <span className="inline">Metric</span>
-      </span>
+        Metric
+      </div>
     </div>
   );
 };

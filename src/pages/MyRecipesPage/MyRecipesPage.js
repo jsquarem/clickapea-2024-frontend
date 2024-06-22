@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useCallback,
+  useRef,
+} from 'react';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import AuthContext from '../../AuthContext';
 import Category from '../../components/Category/Category';
@@ -48,6 +54,11 @@ const CategoriesPage = () => {
   const [deleteAction, setDeleteAction] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [showAddCategoryForm, setShowAddCategoryForm] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editAnimationCount, setEditAnimationCount] = useState(1);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+
+  const inputRef = useRef(null); // Create a ref for the input element
 
   const fetchAndSetCategories = useCallback(async () => {
     if (isAuthenticated && user) {
@@ -150,8 +161,14 @@ const CategoriesPage = () => {
     }
   };
   const handleNewCategoryClick = () => {
-    setShowAddCategoryForm(!showAddCategoryForm);
+    setShowAddCategoryForm(true);
   };
+
+  useEffect(() => {
+    if (showAddCategoryForm && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showAddCategoryForm]);
 
   const handleCancelClick = () => {
     setShowAddCategoryForm(false);
@@ -176,6 +193,7 @@ const CategoriesPage = () => {
         sortCategoryOrder([...prevOrder, newCategory._id], categories)
       );
       setNewCategoryName('');
+      setShowAddCategoryForm(false);
     } catch (error) {
       console.error('Error adding category:', error);
     }
@@ -245,6 +263,18 @@ const CategoriesPage = () => {
     }
   };
 
+  const handleEditToggle = () => {
+    setIsEditMode(!isEditMode);
+    console.log(`Toggled edit mode: ${!isEditMode}`);
+    if (!isEditMode) {
+      setEditAnimationCount(1); // Reset the animation cycle count when entering edit mode
+    }
+  };
+
+  const handleAddToCart = (recipeId) => {
+    console.log(`Adding recipe with ID ${recipeId} to cart.`);
+  };
+
   if (loading) {
     return (
       <div className="h-[48vh]">
@@ -265,16 +295,30 @@ const CategoriesPage = () => {
       <div className="p-6 max-w-6xl mx-auto">
         <div className="flex flex-row justify-center items-start">
           <h1 className="text-4xl font-bold text-center pb-4">My Recipes</h1>
-          <div className="relative group ml-2 mt-1">
-            <i className="fas fa-question-circle text-xl cursor-pointer"></i>
-            <div className="absolute top-full right-0 transform mt-2 w-48 bg-black text-white text-center rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+          <div className="relative ml-2 mt-1">
+            <i
+              className="fas fa-question-circle text-xl cursor-pointer"
+              onMouseEnter={() => setTooltipVisible(true)}
+              onMouseLeave={() => setTooltipVisible(false)}
+            ></i>
+            <div
+              className={`absolute top-full right-0 transform mt-2 w-48 bg-black text-white text-center rounded-lg p-2 transition-opacity duration-300 z-20 ${tooltipVisible ? 'opacity-100' : 'opacity-0'}`}
+            >
               Drag recipes to the desired category. Click arrows to change
               category order.
             </div>
           </div>
         </div>
+        <div className="flex flex-row justify-end items-center mt-4">
+          <button
+            className="bg-blue-500 text-white p-2 rounded"
+            onClick={handleEditToggle}
+          >
+            {isEditMode ? 'Exit Edit Mode' : 'Enter Edit Mode'}
+          </button>
+        </div>
       </div>
-      <div className="p-6 max-w-6xl mx-auto lg:min-h-[46vh] flex flex-col justify-start">
+      <div className="p-6 max-w-6xl mx-auto lg:min-h-[46vh] flex flex-col justify-start overflow-visible">
         <Droppable droppableId="all-categories" type="CATEGORY">
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
@@ -284,6 +328,7 @@ const CategoriesPage = () => {
                   className="mb-4 flex flex-row justify-start items-center space-x-2 w-full"
                 >
                   <input
+                    ref={inputRef} // Attach the ref to the input element
                     type="text"
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
@@ -337,6 +382,9 @@ const CategoriesPage = () => {
                         moveCategoryDown={moveCategoryDown}
                         handleDeleteCategory={handleDeleteCategory}
                         onShowDeleteModal={handleShowDeleteModal} // Pass down to handle modal
+                        isEditMode={isEditMode}
+                        handleAddToCart={handleAddToCart}
+                        editAnimationCount={editAnimationCount} // Pass the animation count
                       />
                     </div>
                   );
