@@ -3,16 +3,19 @@ import { Link, useLocation } from 'react-router-dom';
 import AuthContext from '../../AuthContext';
 import ShoppingCart from '../ShoppingCart/ShoppingCart';
 import AddRecipeModal from '../../components/AddRecipeModal/AddRecipeModal';
+import { CartContext } from '../../CartContext';
 import './Header.css';
 
 const Header = () => {
   const { isAuthenticated, user, login, logout } = useContext(AuthContext);
+  const { cartItems } = useContext(CartContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [headerSticky, setHeaderSticky] = useState(false);
   const [isMobile] = useState(window.innerWidth <= 768);
   const [showCart, setShowCart] = useState(false);
+  const [animateCart, setAnimateCart] = useState(false);
   const dropdownRef = useRef(null);
   const menuRef = useRef(null);
   const hamburgerRef = useRef(null);
@@ -74,6 +77,12 @@ const Header = () => {
     };
   }, []);
 
+  useEffect(() => {
+    setAnimateCart(true);
+    const timeout = setTimeout(() => setAnimateCart(false), 300);
+    return () => clearTimeout(timeout);
+  }, [cartItems]);
+
   const getLinkClass = (path) => {
     const baseClass =
       'flex text-[#387961] font-bold text-left lg:text-center p-2 lg:border-0 lg:rounded';
@@ -85,6 +94,11 @@ const Header = () => {
       ? `${baseClass} ${hoverClass} ${activeClass} ${activePageClass}`
       : `${baseClass} ${hoverClass} ${activeClass}`;
   };
+
+  const cartItemCount = cartItems.reduce(
+    (count, item) => count + item.quantity,
+    0
+  );
 
   return (
     <header
@@ -155,22 +169,23 @@ const Header = () => {
             <span className="ml-2 lg:ml-0">Create Recipe</span>
           </div>
         </Link>
-        <div
-          className="relative group"
-          onMouseEnter={() => setShowCart(true)}
-          onMouseLeave={() => setShowCart(false)}
-        >
-          <div className={getLinkClass('/shopping-cart')}>
+        <div className="relative">
+          <button
+            onClick={() => setShowCart(true)}
+            className={getLinkClass('/shopping-cart')}
+          >
             <div className="flex items-center lg:flex-col lg:items-center">
               <i className="fa-solid fa-shopping-cart lg:mb-1 lg:text-lg"></i>
               <span className="ml-2 lg:ml-0">Shopping Cart</span>
+              {cartItemCount > 0 && (
+                <span
+                  className={`absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 py-1 text-xs transform transition-transform duration-300 ${animateCart ? 'scale-125' : 'scale-100'}`}
+                >
+                  {cartItemCount}
+                </span>
+              )}
             </div>
-          </div>
-          {showCart && (
-            <div className="absolute top-full left-0 lg:right-0 w-full lg:w-64 bg-white border rounded shadow-lg mt-2 z-10 overflow-hidden">
-              <ShoppingCart />
-            </div>
-          )}
+          </button>
         </div>
         {isAuthenticated && user ? (
           <>
@@ -236,6 +251,7 @@ const Header = () => {
         )}
       </nav>
       {showModal && <AddRecipeModal isOpen={showModal} onClose={toggleModal} />}
+      <ShoppingCart isOpen={showCart} onClose={() => setShowCart(false)} />
     </header>
   );
 };

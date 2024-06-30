@@ -235,7 +235,7 @@ const RecipePage = (props) => {
                     recipeId={recipe._id}
                     onUpdateRecipeId={handleUpdateRecipeId}
                   />
-                  <AddToCartButton />
+                  <AddToCartButton recipe={recipe} />
                   {isEditing ? (
                     <>
                       <button
@@ -301,7 +301,7 @@ const RecipePage = (props) => {
                     recipeId={recipe._id}
                     onUpdateRecipeId={handleUpdateRecipeId}
                   />
-                  <AddToCartButton />
+                  <AddToCartButton recipe={recipe} />
                   {isEditing ? (
                     <>
                       <button
